@@ -132,7 +132,7 @@ sub getMaxStream {
 
 sub getTargetJson {
 	my ($target, $minsets, $minreps, $period) = @_;
-	return '' unless $f->can_read("${target}.json");
+	return '' unless $f->can_read("$DATA_DIR/${target}.json");
 	my $stream = getMaxStream($target);
 
 	if ($target =~ m/^SLIC-/) {
