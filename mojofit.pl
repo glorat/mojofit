@@ -491,6 +491,11 @@ sub getMaxFromSets {
 	return undef;
 }
 
+sub name {
+	my ($self) = @_;
+	my $name = $self->{name};
+	return $LIFT_ALIAS{$name} || $name;
+}
 
 package Mojofit::StreamItem;
 use List::Util qw(first max maxstr min minstr reduce shuffle sum);
@@ -520,7 +525,7 @@ sub calcVolumeFromItem {
 	foreach my $action (@{$item->{actions}}) {
 		if ($action->{sets}->[0]->{kg} && $action->{sets}->[0]->{reps} ) {
 			my $volume = sum (map {$_->{kg} * $_->{reps}} (@{$action->{sets}}));
-			$volmap{$action->{name}} = $volume;
+			$volmap{$action->name} = $volume;
 		}
 	}
 	$item->{volume} =  \%volmap;
@@ -530,7 +535,7 @@ sub getMaxFromItem {
 	my ($item, $name) = @_;
 	
 	foreach my $action (@{$item->{actions}}) {
-		if ($name eq $action->{name}) {
+		if ($name eq $action->name) {
 			return $action->{max} if exists($action->{max});
 			return $action->{sets}->[0]->{kg};
 		}
@@ -545,8 +550,8 @@ sub validPowerLift {
 
 sub filterPowerLifts {
 	my ($item) = @_;
-	my @poweractions = grep {$Mojofit::POWERSET{$_->{name}}} (@{$item->{actions}});
-	#my @poweractions = grep {$_->{name} =~ m/Barbell/ } (@{$item->{actions}});
+	my @poweractions = grep {$Mojofit::POWERSET{$_->name}} (@{$item->{actions}});
+	#my @poweractions = grep {$_->name =~ m/Barbell/ } (@{$item->{actions}});
 	$item->{actions} = \@poweractions;
 	return $item;
 }
@@ -595,7 +600,7 @@ sub filterPowerlifts {
 	my ($stream) = shift;
 	my @ret;
 	foreach my $item ($stream->items) {
-		#my @poweractions = grep {$Mojofit::POWERSET{$_->{name}}} (@{$item->{actions}});
+		#my @poweractions = grep {$Mojofit::POWERSET{$_->name}} (@{$item->{actions}});
 		#$item->{actions} = \@poweractions;
 		$item->filterPowerLifts;
 		#push @ret, $item if scalar(@poweractions);
