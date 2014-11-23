@@ -28,6 +28,16 @@ $Fitstore::DATA_DIR = $DATA_DIR;
 # Config
 our @POWERLIFTS = ('Barbell Squat', 'Barbell Bench Press', 'Barbell Deadlift', 'Standing Barbell Shoulder Press (OHP)', 'Pendlay Row');
 our %POWERSET = map {$_ => 1} (@POWERLIFTS);
+my %LIFT_ALIAS = (
+    'Squat'=>'Barbell Squat',
+    'Press'=>'Standing Barbell Shoulder Press (OHP)',
+    'Overhead Press' => 'Standing Barbell Shoulder Press (OHP)',
+    'Bench'=>'Barbell Bench Press',
+    'Bench Press' => 'Barbell Bench Press',
+    'Row' => 'Pendlay Row',
+    'Barbell Row' => 'Pendlay Row',
+    'Deadlift'=>'Barbell Deadlift',);
+
 
 # Util objects
 our($f) = File::Util->new();
@@ -638,12 +648,10 @@ __DATA__
 @@ userusername.html.ep
 <html>
   <head>
-  <!--
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <script type="text/javascript" src="http://canvg.googlecode.com/svn/trunk/rgbcolor.js"></script> 
     <script type="text/javascript" src="http://canvg.googlecode.com/svn/trunk/canvg.js"></script>
-	-->
     <script type="text/javascript">
       google.load("visualization", "1", {packages:["corechart"]});
       // google.setOnLoadCallback(drawChart);
