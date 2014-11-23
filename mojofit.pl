@@ -52,8 +52,21 @@ get '/user/:username' => sub {
 	my $stream = getMaxStream($target);
 
 	$c->stash('interpolateNulls', 1);
-	$c->stash('log', formatStream($stream));
+	$c->stash('log', formatStream($c, $stream));
 };
+
+get '/userraw/:username' => sub {
+	my $c = shift;
+	my $target = $c->param('username');
+	$target =~ m/^[A-Za-z0-9\-\.]+$/ or return $c->render(text => 'Invalid username');
+	
+	$f->can_read("$DATA_DIR/${target}.json") or return $c->render(json => 'Unknown username');
+	my $jsonStream=$f->load_file("$DATA_DIR/${target}.json");
+	# TODO: json
+	$c->render(text => $jsonStream, format=>'json');
+
+};
+
 
 any '/userjson/:username/:minsets/:minreps/:period' => sub {
 	my $c = shift;
@@ -283,8 +296,9 @@ sub consistency {
 }
 
 sub formatStream {
-	my ($stream) = @_;
+	my ($c, $stream) = @_;
 	my $ret = '';
+	my $showNotes = $c->param('shownotes');
 	# Display
 	foreach my $item (@$stream) {
 		my $dt = DateTime->from_epoch( epoch => $item->{date});
@@ -294,6 +308,7 @@ sub formatStream {
 			foreach my $set ($action->{sets}) {
 				$ret .= formatSets($set);
 			}
+			$ret .= "Notes: $item->{notes}" if $showNotes;
 		}
 		$ret .= "\n";
 	}
@@ -414,8 +429,22 @@ app->start;
 
 
 package Mojofit::Set;
+sub new {
+	my ($class, $set) = @_;
+	if ($set->{lb}) {
+		$set->{kg} = 0.453592 * $set->{lb};
+	}
+	bless $set, 'Mojofit::Set';
+	
+}
+
+sub kg {
+	return shift->{kg};
+}
+
 
 package Mojofit::Action;
+use Data::Dumper;
 use List::Util qw(first max maxstr min minstr reduce shuffle sum);
 
 sub filterSetReps {
@@ -430,7 +459,11 @@ sub filterSetReps {
 
 sub filterMaxWeight {
 	my ($action) = shift;
-	my $max = max map {$_->{kg}} (@{$action->{sets}});
+	my @sets = @{$action->{sets}};
+	my @kgs = map {$_->kg} (@sets);
+	@kgs or return $action;
+	my $max = max (@kgs);
+	$max or Carp::confess Dumper(\@sets);
 	my @maxsets = grep {$_->{kg} == $max} (@{$action->{sets}});
 	$action->{sets} = \@maxsets;
 	return $action;
@@ -528,9 +561,7 @@ sub getStream {
 	foreach my $item (@$stream) {
 		bless $item, 'Mojofit::StreamItem';
 		foreach my $action (@{$item->{'actions'}}) {
-			foreach my $set (@{$action->{sets}}) {
-				bless $set, 'Mojofit::Set';
-			}
+			$action->{sets} = [map {Mojofit::Set->new($_)} (@{$action->{sets}})];
 			bless $action, 'Mojofit::Action';
 		}
 	}
@@ -607,10 +638,12 @@ __DATA__
 @@ userusername.html.ep
 <html>
   <head>
+  <!--
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <script type="text/javascript" src="http://canvg.googlecode.com/svn/trunk/rgbcolor.js"></script> 
     <script type="text/javascript" src="http://canvg.googlecode.com/svn/trunk/canvg.js"></script>
+	-->
     <script type="text/javascript">
       google.load("visualization", "1", {packages:["corechart"]});
       // google.setOnLoadCallback(drawChart);
@@ -682,6 +715,7 @@ __DATA__
 	<form>
 	<input type="number" name="minsets" value="<%== $minsets %>" size="2" max="99"> sets x <input type="number" name="minreps" value="<%== $minreps %>" width="2"> reps<br>
 	Smooth to periodic cycle <%= check_box useperiod => 1 %> of <input type="number" name="period" value="<%== $period %>" width="2"> days<br>
+	<input type="checkbox" name="shownotes">Show notes<br>
 	<input type="submit">
 	</form>
 	
@@ -689,6 +723,9 @@ __DATA__
       Image will be placed here
     </div>
 	<button onclick="toImg(document.getElementById('chart_div'), document.getElementById('img_div'));">Convert to image</button>
+	<p>
+	<a href="/userraw/<%== $username %>">Download raw data (JSON)</a>
+	</p>
 	<pre><%== $log %></pre>
   </body>
 </html>

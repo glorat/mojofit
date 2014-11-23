@@ -80,12 +80,13 @@ sub parse_action {
 	$exname = $SLIC_TO_MOJO{$exname} if $SLIC_TO_MOJO{$exname};
 	
 	my $action = {name=>$exname, sets=> [] };
-	
+	my $mainunit = 'kg';
 	foreach (@exbits) {
 		if (m/(.*?)\s?([\d\.]+)([a-z]+)$/) {
 			my ($reps, $weight, $unit) = ($1,$2,$3);
 			my $set = parse_reps($reps, $weight, $unit);
 			push @{$action->{sets}}, @$set;
+			$mainunit = $unit;
 			
 		}
 		else {
@@ -95,8 +96,7 @@ sub parse_action {
 	
 	parse_warn ("$exname");
 	foreach (@{$action->{sets}}) {
-	my $unit = 'kg';
-		parse_warn ("$_->{reps} x $_->{$unit}$unit");
+		parse_warn ("$_->{reps} x $_->{$mainunit}$mainunit");
 	}
 	
 	parse_warn ("***");
@@ -106,14 +106,14 @@ sub parse_action {
 sub parse_reps {
 	my ($str, $weight, $unit) = @_;
 
-	if ($str =~ m/(\d+)x(\d+)/) { # 5x5 100kg
+	if ($str =~ m/(\d+)x(\d+)/) { # 5x5 100xx
 		my ($sets, $reps) = ($1,$2);
 		return [map { {reps=>$reps, $unit=>$weight} } (1..$sets)];
 	}
 	elsif ($str =~ m/(\d+)x/) { #5x100kg
 		return [{reps=>$1, $unit=>$weight}];
 	}
-	elsif ($str =~ m|\d+(/\d+)+|) { # 1/0/0 100kg
+	elsif ($str =~ m|\d+(/\d+)+|) { # 1/0/0 100xx
 		my @reps = split(m|/|, $str);
 		return [map { {reps=>$_, $unit=>$weight} } @reps];
 	}
