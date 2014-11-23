@@ -737,7 +737,7 @@ __DATA__
     </div>
 	<button onclick="toImg(document.getElementById('chart_div'), document.getElementById('img_div'));">Convert to image</button>
 	<p>
-	<a href="/userraw/<%== $username %>">Download raw data (JSON)</a>
+	<a href="/userraw/<%== $username %>">Download raw data (JSON)</a> - for a computer readable form
 	</p>
 	<pre><%== $log %></pre>
   </body>
@@ -746,9 +746,26 @@ __DATA__
 @@slic.html.ep
 
 <html>
-  <head><title>SLIC parser</title></head>
+  <head><title>SLIC training log importer</title></head>
   <body>
-  <p>Go to your workout tab and copy paste all the text on each of your workout tabs into the below. Only the Chrome browser has been tested. It will probably not work with other browsers</p>
+  <h1>SLIC training log importer</h1>
+  <p>Follow these instructions to get your data over:
+  <ul>
+  <li>Go to your training log in SLIC in a new window/tab. Clicking on your name anywhere on the site works</li>
+  <li>Look across the top for several tabs (Training Log / Workouts / Graph etc)</li>
+  <li>Click on "Workouts"</li>
+  <li>After the workouts are loaded, you may have several "pages" of logs (e.g. Page 1 of 9). For each page you need to...
+  <ul>
+  <li>Click on the next page number (or start with Page 1)</li>
+  <li>Ctrl-a, Ctrl-c... to copy the text of the whole page</li>
+  <li>Select the textbox below and press Ctrl-v to paste it into the box</li>
+  <li>
+  </ul>
+  <li>Press the submit button below to import those pages! If it works, you are taken to a summary of your training log and a graph
+  </ul>
+  </p>
+  <p>Note that you can submit your log one page at a time or all in one go or repeat previous submissions (useful if I had a bug). Each submission will replace existing entries by date</p>
+  <p>Only the Chrome and Firefox browsers have been tested. It will probably not work with other browsers</p>
   <form method="POST" action="/slicparse">
   <textarea name="text" cols="80" rows="25"></textarea>
   <input type="submit">
