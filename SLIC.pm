@@ -22,7 +22,7 @@ sub parse_text {
 	close OUT;
 	
 	@WARNS = ();
-	$text =~ m/\n([\S\ ]*?)'s? Log \-/s or die ("Can't find your name inside the text");
+	$text =~ m/\n([\S\ ]*?)'s? Log \-/s or die ("Can't find your name inside the text. Did you copy the ENTIRE page?");
 	my $name = $1;
 	$name =~ m/^\w[\w\ \d]+$/ or die ("Invalid name parsed $name"); #Whitelist name for file saving
 	my @posts = split(/Joined: \w+ \d+\s*(?:Follow)?\s*/, $text);
@@ -51,8 +51,9 @@ sub parse_post {
 		return $item;
 	}
 	else {
-		parse_warn ("Failed to parse post for $name: $post");
-		die "Failed to parse post for $name: $post";
+		my $msg = "Failed to parse post for $name. Did you make sure to only copy from WORKOUTS tab? : $post";
+		parse_warn ($msg);
+		die $msg;
 		return {};
 	}
 }

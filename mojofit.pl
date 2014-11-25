@@ -749,7 +749,7 @@ __DATA__
   <head><title>SLIC training log importer</title></head>
   <body>
   <h1>SLIC training log importer</h1>
-  <p>Follow these instructions to get your data over:
+  <p>Follow these instructions <strong>carefully</strong> to get your data over:
   <ul>
   <li>Go to your training log in SLIC in a new window/tab. Clicking on your name anywhere on the site works</li>
   <li>Look across the top for several tabs (Training Log / Workouts / Graph etc)</li>
@@ -765,7 +765,8 @@ __DATA__
   </ul>
   </p>
   <p>Note that you can submit your log one page at a time or all in one go or repeat previous submissions (useful if I had a bug). Each submission will replace existing entries by date</p>
-  <p>Only the Chrome and Firefox browsers have been tested. It will probably not work with other browsers</p>
+  <p>Only the Chrome and Firefox browsers have been tested. It will probably not work with other browsers. If it works it should look like <a href="/user/KevinTam">my log</a></p>
+
   <form method="POST" action="/slicparse">
   <textarea name="text" cols="80" rows="25"></textarea>
   <input type="submit">
