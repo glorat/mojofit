@@ -42,8 +42,19 @@ my %LIFT_ALIAS = (
 # Util objects
 our($f) = File::Util->new();
 
+any '/' => sub {
+    shift->render_static('index.html');
+};
+
 get '/user/:username' => sub {
 	my $c = shift;
+
+	my $target = $c->param('username');
+	$target =~ m/^[A-Za-z0-9\-\.]+$/ or return $c->render(text => 'Invalid username');
+	
+	$c->redirect_to("/#/user/$target");
+	return;
+	
 	my $minreps = $c->param('minreps');
 	my $minsets = $c->param('minsets');
 	my $period = $c->param('period');
@@ -57,8 +68,6 @@ get '/user/:username' => sub {
 	$c->stash('period',$period);
 	$c->stash('jsperiod', $c->param('useperiod') ? $c->param('period') : 0);
 	#$c->stash('useperiod',$useperiod);
-	my $target = $c->param('username');
-	$target =~ m/^[A-Za-z0-9\-\.]+$/ or return $c->render(text => 'Invalid username');
 	my $stream = getMaxStream($target);
 
 	$c->stash('interpolateNulls', 1);
@@ -78,17 +87,21 @@ get '/userraw/:username' => sub {
 };
 
 
-any '/userjson/:username/:minsets/:minreps/:period' => sub {
+sub userjson {
 	my $c = shift;
 	my $target = $c->param('username');
 	$target =~ m/^[A-Za-z0-9\-\.]+$/ or return $c->render(text => 'Invalid username');
 	my $minsets = $c->param('minsets') || 1;
 	my $minreps = $c->param('minreps') || 1;
-	my $period = $c->param('period');
+	my $period = $c->param('period') || 0;
 	my $js = getTargetJson($target, $minsets, $minreps, $period);
-	my $json = "jsonData=$js; drawChart();";
-	$c->render(text => $json, format => 'json');
-};
+	my $json = "jsonData=$js;";
+	$c->render(text => $json, format => 'javascript');
+}
+
+any '/userjson/:username/:minsets/:minreps/:period' => sub {userjson(@_)};
+
+any '/userjson/:username' => => sub {userjson(@_)};
 
 any '/uservolume/:username' => sub {
 	my $c = shift;
@@ -665,10 +678,13 @@ __DATA__
 	  google.setOnLoadCallback(defaultChart);
 	  
 	  function defaultChart() {
-		  jsonData = $.ajax({
+		  var foo = $.ajax({
 		            url: "/userjson/<%== $username %>/<%== $minsets %>/<%== $minreps %>/<%== $jsperiod %>",
 		            dataType:"script",
-		            async: true
+		            async: true,
+					success: function(data, text, foo) {
+						drawChart();
+					}
 		            });
 	  }
 	  
@@ -770,5 +786,6 @@ __DATA__
   <form method="POST" action="/slicparse">
   <textarea name="text" cols="80" rows="25"></textarea>
   <input type="submit">
+  </form>
   </body>
 </html>

@@ -1,0 +1,36 @@
+<h1>Training log for <em>{{ userId }}</em></h1>
+<div id="chart_div" style="width: 900px; height: 500px;">Loading...</div>
+        <!--
+<form>
+    <input type="number" name="minsets" value="<%== $minsets %>" size="2" max="99"> sets x <input type="number" name="minreps" value="<%== $minreps %>" width="2"> reps<br>
+    Smooth to periodic cycle <%= check_box useperiod => 1 %> of <input type="number" name="period" value="<%== $period %>" width="2"> days<br>
+    <input type="checkbox" name="shownotes">Show notes<br>
+    <input type="submit">
+</form>-->
+
+<div id="img_div" style="position: fixed; top: 0; right: 0; z-index: 10; border: 1px solid #b9b9b9">
+    Image will be placed here
+</div>
+<button onclick="toImg(document.getElementById('chart_div'), document.getElementById('img_div'));">Convert to image</button>
+<p>
+    <a href="/userraw/<%== $username %>">Download raw data (JSON)</a> - for a computer readable form, for backup, and for import to other sites (e.g. CrazyStrength)
+</p>
+
+<section class="panel panel-default">
+    <header class="panel-heading">All items</header>
+    <div class="panel-body">
+        There are {{user.data.length}} items...
+        <ul ng-repeat="i in user.data">
+            <li>{{ datestr(i.date) }}</li>
+            <!--<li><a href="#/issuance/{{i.id}}">{{i.owner}} {{i.name}}</a></li>-->
+            <ul ng-repeat="action in i.actions">
+                <li>{{ action.name }}</li>
+                <!--<li><a href="#/issuance/{{i.id}}">{{i.owner}} {{i.name}}</a></li>-->
+                <ul ng-repeat="set in action.sets">
+                    <li><set-text data="set"></set-text></li>
+                    <!--<li><a href="#/issuance/{{i.id}}">{{i.owner}} {{i.name}}</a></li>-->
+                </ul>
+            </ul>
+        </ul>
+    </div>
+</section>
