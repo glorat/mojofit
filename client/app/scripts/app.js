@@ -28,12 +28,19 @@ angular.module('clientApp').config(['$routeProvider',
                 templateUrl: 'views/user.html',
                 controller: 'UserCtrl',
                 controllerAs: 'user'
-            }).
-            when('/slic', {
+            })
+            .when('/slic', {
                 templateUrl: 'views/slic.html'
-            }).
-            otherwise({
-                redirectTo: 'views/main.html',
-                controller: 'MainCtrl'
+            })
+            .when('/about', {
+                templateUrl: 'views/about.html',
+                controller: 'AboutCtrl'
+            })
+            .otherwise({
+                templateUrl: 'views/slic.html'
             });
     }]);
+
+angular.module('clientApp')
+    .controller('AboutCtrl', function ($scope) {
+    });
