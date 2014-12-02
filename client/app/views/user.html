@@ -15,10 +15,9 @@
 <p>
     <a href="/userraw/{{ userId }}">Download raw data (JSON)</a> - for a computer readable form, for backup, and for import to other sites (e.g. CrazyStrength)
 </p>
-
     <div>
         There are {{user.data.length}} log entries...
-        <div ng-repeat="i in user.data.reverse()" class="panel panel-default">
+        <div ng-repeat="i in user.data" class="panel panel-default">
             <header class="panel-heading">{{ datestr(i.date) }}</header>
             <ul ng-repeat="action in i.actions">
                 <li>{{ action.name }}</li>
