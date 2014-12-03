@@ -116,7 +116,7 @@ sub parse_reps {
 	}
 	elsif ($str =~ m|\d+(/\d+)+|) { # 1/0/0 100xx
 		my @reps = split(m|/|, $str);
-		return [map { {reps=>$_, $unit=>$weight} } @reps];
+		return [map { {reps=>$_, $unit=>$weight, unit=>$unit, weight=>$weight} } @reps];
 	}
 	else {
 		parse_warn ("Can't parse rep scheme: $str");

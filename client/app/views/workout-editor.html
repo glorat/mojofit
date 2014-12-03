@@ -1,0 +1,10 @@
+<form>
+Date: {{ workout.date }}
+<ul ng-repeat="action in workout.actions">
+    <li>Name: <input type="text" ng-model="action.name"></li>
+    <ul ng-repeat="set in action.sets">
+        <li><input ng-model="set.reps" type="text" size="2"> reps</li>
+    </ul>
+</ul>
+Notes: <textarea ng-model="workout.notes"></textarea>
+</form>

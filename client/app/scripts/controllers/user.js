@@ -24,7 +24,7 @@ angular.module('clientApp')
 
         var userstream = this;
         userstream.data = [];
-        $http.get('/userraw/'+$scope.userId+'.json').success(function(data) {
+        $http.get('/userraw/'+$scope.userId).success(function(data) {
             userstream.data = data;
         });
 
@@ -58,6 +58,17 @@ angular.module('clientApp').directive('setText', function () {
                 return $scope.data[myUnit];
             };
         },
-        template: '{{ data.reps }} x {{ value() }} {{ storedUnit() }}'
+        template: '{{ data.reps }} x {{ data.weight }} {{ data.unit }}'
     };
+});
+
+angular.module('clientApp').directive('editWorkout', function() {
+   return {
+       restrict: 'E',
+       scope: {workout:'='},
+       templateUrl: 'views/workout-editor.html',
+       controller: function ($scope) {
+
+       }
+   };
 });

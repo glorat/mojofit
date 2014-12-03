@@ -88,6 +88,7 @@ sub handle {
 
 package Fitstore::MainView;
 use JSON;
+use Mojofit;
 
 our @ISA = qw'Fitstore';
 
@@ -103,6 +104,26 @@ sub new {
 sub handle_item_submitted {
 	my ($self, $event) = @_;
 	my $item = $event->{item};
+	$item->{actions} = [map {
+		$_->{sets} = [map {
+			my $set = $_;
+			if ($set->{lb}) {
+				# Back compat
+				$set->{kg} = 0.453592 * $set->{lb};
+				$set->{unit} = 'lb';
+				$set->{weight} = $set->{lb};
+			}
+			elsif($set->{kg}) {
+				# Back compat
+				$set->{unit} = 'kg';
+				$set->{weight} = $set->{kg};
+			}
+			$set
+		} (@{$_->{sets}})];
+		$_;
+		
+	} (@{$item->{actions}})];
+	
 	$self->{bydate}->{$item->{date}} = $item;
 }
 
