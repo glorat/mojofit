@@ -172,6 +172,7 @@ sub getStream {
 	bless $stream, "Mojofit::Stream";
 	foreach my $item (@$stream) {
 		bless $item, 'Mojofit::StreamItem';
+		$item->{date} /= 1000; # perl likes s, js likes ms
 		foreach my $action (@{$item->{'actions'}}) {
 			$action->{sets} = [map {Mojofit::Set->new($_)} (@{$action->{sets}})];
 			bless $action, 'Mojofit::Action';

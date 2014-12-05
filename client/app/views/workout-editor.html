@@ -1,10 +1,23 @@
 <form>
-Date: {{ workout.date }}
+<!-- Date: {{ workout.date }} -->
+    <p class="input-group">
+        <input type="text" class="form-control" datepicker-popup="yyyy/MM/dd" ng-model="workout.date" is-open="opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" />
+        <span class="input-group-btn">
+            <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+        </span>
+    </p>
+
 <ul ng-repeat="action in workout.actions">
-    <li>Name: <input type="text" ng-model="action.name"></li>
-    <ul ng-repeat="set in action.sets">
-        <li><input ng-model="set.reps" type="text" size="2"> reps</li>
-    </ul>
+    <span>Name: <input type="text" ng-model="action.name">
+        <div class="btn-group btn-group-xs" role="group">
+            <button type="button" class="btn btn-default" ng-click="addAction($index)"><span class="glyphicon glyphicon-plus"></span></button>
+            <button type="button" class="btn btn-default" ng-click="removeAction($index)"><span class="glyphicon glyphicon-minus"></span></button>
+        </div>
+    </span>
+    <action-sets-editor action="action"></action-sets-editor>
 </ul>
-Notes: <textarea ng-model="workout.notes"></textarea>
+<div>Notes: <textarea ng-model="workout.notes"></textarea></div>
+    <div>
+        Output: {{ workout | json }}
+    </div>
 </form>

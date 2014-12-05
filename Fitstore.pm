@@ -104,6 +104,7 @@ sub new {
 sub handle_item_submitted {
 	my ($self, $event) = @_;
 	my $item = $event->{item};
+	$item->{date} *= 1000; # JS likes millis
 	$item->{actions} = [map {
 		$_->{sets} = [map {
 			my $set = $_;

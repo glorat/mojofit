@@ -15,6 +15,11 @@
 <p>
     <a href="/userraw/{{ userId }}">Download raw data (JSON)</a> - for a computer readable form, for backup, and for import to other sites (e.g. CrazyStrength)
 </p>
+    <div class="panel panel-default">
+        <header class="panel-heading">Edit workout</header>
+        <workout-editor workout="user.data[0]"></workout-editor>
+    </div>
+
     <div>
         There are {{user.data.length}} log entries...
         <div ng-repeat="i in user.data" class="panel panel-default">

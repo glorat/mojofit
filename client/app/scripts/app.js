@@ -1,8 +1,8 @@
 'use strict';
 
-google.load('visualization', '1', {packages:['corechart']});
+window.google.load('visualization', '1', {packages:['corechart']});
 
-google.setOnLoadCallback(function() {
+window.google.setOnLoadCallback(function() {
     angular.bootstrap(document.body, ['clientApp']);
 });
 
@@ -17,7 +17,8 @@ google.setOnLoadCallback(function() {
 angular
   .module('clientApp', [
     'ngCookies',
-    'ngRoute'
+    'ngRoute',
+        'ui.bootstrap'
   ]);
 
 
@@ -43,4 +44,5 @@ angular.module('clientApp').config(['$routeProvider',
 
 angular.module('clientApp')
     .controller('AboutCtrl', function ($scope) {
+        $scope.hello = 'world';
     });

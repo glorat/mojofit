@@ -130,6 +130,11 @@ get '/slic' => sub {
 post '/slicparse' => sub {
 	my $c = shift;
 	my $text = $c->param('text');
+	
+	open OUT, ">$DATA_DIR/prev.txt";
+	print OUT $text;
+	close OUT;
+	
 	my ($name, $items, $warns) = SLIC::parse_text($text);
 	foreach (@$warns) { 
 		$c->app->log->warn($_);
