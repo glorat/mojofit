@@ -1,10 +1,48 @@
 'use strict';
 
-window.google.load('visualization', '1', {packages:['corechart']});
+var allDoneJsStep1 = false;
+var allDoneJs = false;
+var init = function() {
+    var doneJs = 0;
+    var asyncJs= [
+        '//www.google.com/jsapi',
+        'http://canvg.googlecode.com/svn/trunk/rgbcolor.js',
+        'http://canvg.googlecode.com/svn/trunk/canvg.js'];
 
-window.google.setOnLoadCallback(function() {
-    angular.bootstrap(document.body, ['clientApp']);
-});
+    var loadCB2 = function() {
+        console.log('Really allDoneJs');
+        allDoneJs = true;
+    };
+
+    var loadCB = function() {
+        console.log('One more done');
+        doneJs++;
+        allDoneJsStep1 = (doneJs === asyncJs.length);
+        if (allDoneJsStep1) {
+            window.google.load('visualization', '1', {
+                'packages': ['corechart'],
+                'callback': loadCB2
+            });
+        }
+    };
+
+    for (var i=0; i<asyncJs.length;i++) {
+        $.ajax({
+            url: asyncJs[i],
+            dataType: 'script',
+            cache: true,
+            success: loadCB
+        });
+    }
+
+};
+init();
+
+//window.google.load('visualization', '1', {packages:['corechart']});
+
+//window.google.setOnLoadCallback(function() {
+//    angular.bootstrap(document.body, ['clientApp']);
+//});
 
 /**
  * @ngdoc overview

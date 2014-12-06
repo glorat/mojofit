@@ -1,12 +1,20 @@
 'use strict';
 
 // Use these two for global callbacks to make the graph work
+
 var jsonData;
 function drawChart() {
-    var data = new window.google.visualization.DataTable(jsonData);
-    var options = {'hAxis':{'title':''},'vAxis':{'title':'','format':'# kg'},'width':900,'height':500,'interpolateNulls':'true','legend':{'position':'top','maxLines':5}};
-    var chart = new window.google.visualization.LineChart(document.getElementById('chart_div'));
-    chart.draw(data, options);
+    // There's a race condition here since google is being async loaded
+    // Ideally one would install a callback
+    if (allDoneJs) {
+        var data = new window.google.visualization.DataTable(jsonData);
+        var options = {'hAxis':{'title':''},'vAxis':{'title':'','format':'# kg'},'width':900,'height':500,'interpolateNulls':'true','legend':{'position':'top','maxLines':5}};
+        var chart = new window.google.visualization.LineChart(document.getElementById('chart_div'));
+        chart.draw(data, options);
+    }
+    else {
+        console.log('Not ready to drawChart');
+    }
 }
 
 /**
@@ -20,25 +28,43 @@ angular.module('clientApp')
   .controller('UserCtrl', function ($scope, $http, $routeParams) {
         $scope.userId = $routeParams.userId;
 
-        console.log('UserCtrl userId ' + $scope.userId);
-
         var userstream = this;
         userstream.data = [];
+
         $http.get('/userraw/'+$scope.userId).success(function(data) {
+            userstream.data = processData(data);
+            userstream.usedExercises = usedExercises(data);
+            userstream.repMax = genRepMax(data, userstream.usedExercises);
+
+            console.log(userstream.repMax);
+        });
+
+        /*jshint unused: vars */
+        function usedExercises(data) {
+            //var nameByUse = {};
+
+            return ['Barbell Squat', 'Barbell Bench Press', 'Barbell Deadlift', 'Standing Barbell Shoulder Press (OHP)'];
+        }
+
+        function processData(data) {
+            // And do some name mappings
+            var aliases = {'Bench Press':'Barbell Bench Press'};
             // Too many strings in the data
             data.map(function(item){
                 item.date = parseInt(item.date);
                 item.actions.map(function(action){
-                   action.sets.map(function(set){
-                       set.reps = parseInt(set.reps);
-                       set.weight = parseInt(set.weight);
-                   });
+                    if (aliases[action.name]) {
+                        action.name = aliases[action.name];
+                    }
+                    action.sets.map(function(set){
+                        set.reps = parseInt(set.reps);
+                        set.weight = parseFloat(set.weight);
+                    });
                 });
                 return item;
             });
-
-            userstream.data = data;
-        });
+            return data;
+        }
 
         $scope.datestr = function(ts) {
             return new Date(ts).toDateString();
@@ -54,6 +80,40 @@ angular.module('clientApp')
             }
         });
 
+        function genRepMax(items, names) {
+            var MAX_REP = 10;
+            var repMaxByName = {};
+            names.forEach(function(name) {
+                var repMax = new Array(MAX_REP);
+                for (var k=0;k<MAX_REP;k++) {repMax[k] ={kg:0,date:0};}
+                repMaxByName[name] = repMax;
+            });
+
+            items.forEach(function(item){
+                item.actions.forEach(function(action) {
+                    if (repMaxByName[action.name]) {
+                        var repMax = repMaxByName[action.name];
+                        action.sets.forEach(function(aset){
+                            var reps = aset.reps-1;
+                            var kg = aset.weight; // FIXME: to kg
+                            if (reps >= MAX_REP) {reps = MAX_REP-1;}
+                            for (var i=0; i<=reps; i++) {
+                                if (repMax[i].kg < kg) {
+                                    repMax[i].kg = kg;
+                                    repMax[i].date = item.date;
+                                    repMax[i].reps = reps;
+                                }
+                            }
+                        });
+                    }
+                });
+
+            });
+            return names.map(function(name) {
+                return {name:name, repMax : repMaxByName[name]};
+            });
+
+        }
     });
 
 
