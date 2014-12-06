@@ -6,7 +6,7 @@ var jsonData;
 function drawChart() {
     // There's a race condition here since google is being async loaded
     // Ideally one would install a callback
-    if (allDoneJs) {
+    if (allDoneJs && jsonData) {
         var data = new window.google.visualization.DataTable(jsonData);
         var options = {'hAxis':{'title':''},'vAxis':{'title':'','format':'# kg'},'width':900,'height':500,'interpolateNulls':'true','legend':{'position':'top','maxLines':5}};
         var chart = new window.google.visualization.LineChart(document.getElementById('chart_div'));

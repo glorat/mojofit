@@ -7,7 +7,8 @@
         </span>
     </p>
 <ul ng-repeat="action in workout.actions">
-    <span>Name: <input type="text" ng-model="action.name">
+    <!-- typeahead="name for name in states | filter:$viewValue | limitTo:8" -->
+    <span>Name: <input type="text" ng-model="action.name" >
         <div class="btn-group btn-group-xs" role="group">
             <button type="button" class="btn btn-default" ng-click="addAction($index)"><span class="glyphicon glyphicon-plus"></span></button>
             <button type="button" class="btn btn-default" ng-click="removeAction($index)"><span class="glyphicon glyphicon-minus"></span></button>
@@ -15,8 +16,9 @@
     </span>
     <action-sets-editor action="action"></action-sets-editor>
 </ul>
-<div>Notes: <textarea ng-model="workout.notes"></textarea></div>
+<div>Notes: <textarea ng-model="workout.notes" rows="10" class="form-control"></textarea></div>
+    <!--
     <div>
         Output: {{ workout | json }}
-    </div>
+    </div>-->
 </form>

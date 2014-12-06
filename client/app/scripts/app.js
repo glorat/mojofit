@@ -12,6 +12,7 @@ var init = function() {
     var loadCB2 = function() {
         console.log('Really allDoneJs');
         allDoneJs = true;
+        drawChart(); // Coupling to fix
     };
 
     var loadCB = function() {
