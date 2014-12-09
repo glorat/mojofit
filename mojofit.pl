@@ -37,7 +37,7 @@ our($f) = File::Util->new();
 helper users => sub { state $users = Mojofit::Model::Users->new };
 app->secrets(['Some randomly chosen secret passphrase for cookies!@£!@£££']);
 my $uri = 'mysql://mojofit:mojoglobal@localhost/mojofit'; # <user>:<pass>@
-helper db => sub { state db = Mango->new($uri) };
+#helper db => sub { state $db = Mango->new($uri) };
 
 
 any '/' => sub {
@@ -87,7 +87,7 @@ post '/login' => sub {
 
 post '/register' => sub {
 	my $c = shift;
-   	my $ip = $self->tx->remote_address; 	
+   	my $ip = $c->tx->remote_address; 	
 };
 
 

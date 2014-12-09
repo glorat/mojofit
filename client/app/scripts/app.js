@@ -57,8 +57,8 @@ angular
   .module('clientApp', [
     'ngCookies',
     'ngRoute',
-        'ui.bootstrap'
-  ]);
+    'ui.bootstrap'
+    ]);
 
 
 angular.module('clientApp').config(['$routeProvider',
@@ -84,4 +84,28 @@ angular.module('clientApp').config(['$routeProvider',
 angular.module('clientApp')
     .controller('AboutCtrl', function ($scope) {
         $scope.hello = 'world';
+    });
+
+angular.module('clientApp')
+    .service('MojoServer', function ($http, $scope) {
+        var getStatus = function() {
+            $http.get('/getUserStatus').success(function(data) {
+                $scope.userStatus = data;
+
+            });
+        };
+        var login = function(email,pass) {
+            $http.post('/login', {email:email, pass:pass}).success(function(data) {
+                $scope.userStatus = data;
+            });
+        };
+
+        var register = function(email, firstname, lastname) {
+            var msg = {email:email, firstname:firstname, lastname:lastname};
+            $http.post('/register', msg).success(function(data) {
+               // What to do with data
+            });
+        };
+
+
     });
