@@ -162,6 +162,7 @@ use JSON;
 use List::Util qw(first max maxstr min minstr reduce shuffle sum);
 use List::MoreUtils qw(all);
 use Data::Dumper;
+use DateTime;
 
 sub getStream {
 	my ($target) = @_;
@@ -176,7 +177,7 @@ sub getStream {
 		foreach my $action (@{$item->{'actions'}}) {
 			$action->{sets} = [map {Mojofit::Set->new($_)} (@{$action->{sets}})];
 			bless $action, 'Mojofit::Action';
-			$action;
+			#$action;
 		}
 	}
 	if ($target !~ m/^SLIC-/) {
@@ -245,3 +246,92 @@ sub toListByDate {
 	}
 	return \@byDate;
 }
+
+
+sub consistency {
+	my ($origstream, $condays) = @_;
+	$condays ||= 7;	
+	my @WEIGHT = (0,1,3,3,2,2,2,2,2);
+	
+	my $stream = [sort {$a->{date} <=> $b->{date}} @$origstream];
+	
+	my $CONBACK = $condays * 24 * 60 * 60;
+	my $sumcon = 0;
+	
+	for my $i (0..scalar(@$stream)-1) {
+		my $item = $stream->[$i];
+		my $back = $i-1;
+		my $workouts = 0; # Workouts in period
+		my $to = DateTime->from_epoch(epoch=>$item->{'date'});
+		my $consistency = 1;
+		$item->{'sincelast'} = 0;
+		while ($back>=0 && $stream->[$back] && ($stream->[$back]->{'date'}+$CONBACK > $item->{'date'})) {
+			my $from = DateTime->from_epoch(epoch=>$stream->[$back]->{'date'});
+			my $delta = $to->delta_days($from)->days;
+			$consistency += 1;# $WEIGHT[$delta];
+			#print STDERR "Hit back $delta\n";
+			my $old = $stream->[$back];
+			if ($old->validPowerLift) {
+				$item->{'sincelast'} ||= $delta;
+				$workouts ++;
+			}
+			$back--;
+		}
+		#print STDERR "Since last $item->{'sincelast'}\n";
+		
+		$item->{'workouts'} = $workouts;
+		$sumcon += $item->{'sincelast'} / 3;
+		for (my $b=$i-1; $b>=$i-4; $b--) {
+			
+			if ($b>=0 && $stream->[$b]) {
+				#print STDERR "$stream->[$b]->{date} - $stream->[$i]->{date}\n" unless defined $stream->[$b]->{'workouts'};
+				$workouts += $stream->[$b]->{'workouts'};
+				#print STDERR "Accumulate $stream->[$b]->{'workouts'}\n";
+			}
+		}
+		$item->{'consistency'} = $workouts; #sprintf('%d', 10* ($workouts / 7) );
+		$item->{'sumcon'} = $sumcon;
+		
+	}
+}
+
+
+sub movingMax {
+	my ($origstream,  $perdays) = @_;
+	$perdays ||=1;
+	my $LOOKBACK= $perdays * 24 * 60 *60; # Days to secs
+	
+	my $stream = [sort {$a->{date} <=> $b->{date}} @$origstream];
+	my %prev = (); #map {$_ => 0 } (@POWERLIFTS);
+	for my $i (0..scalar(@$stream)-1) {
+		my $item = $stream->[$i];
+		my $back = $i-1;
+		#print STDERR "Looking back from $item->{'date'} to $stream->[$back]->{'date'}\n";
+		if ($perdays) {
+			#my %permax = map { $_ => $item->maxFor($_) } (@POWERLIFTS);
+			# Max will use previous max by induction
+			my %permax = map { $_ => $item->maxFor($_) || $prev{$_} } (@POWERLIFTS);
+			while ($back>=0 && $stream->[$back] && ($stream->[$back]->{'date'}+$LOOKBACK > $item->{'date'})) {
+				my $old = $stream->[$back];
+				
+				foreach (@POWERLIFTS) {
+					my $oldmax = $old->maxFor($_);
+					if ($permax{$_} && $oldmax) {
+						$permax{$_} = $permax{$_}< $oldmax ? $oldmax : $permax{$_}
+					}
+				}
+				$back--;
+			}
+			$item->{'permax'} = \%permax;
+			%prev = %permax;
+
+			
+		}
+		else {
+		}
+		#print STDERR "$item->{date} $workouts\n";
+	}
+}
+
+
+1

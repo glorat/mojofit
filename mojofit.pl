@@ -34,9 +34,62 @@ our %POWERSET = map {$_ => 1} (@POWERLIFTS);
 # Util objects
 our($f) = File::Util->new();
 
+helper users => sub { state $users = Mojofit::Model::Users->new };
+app->secrets(['Some randomly chosen secret passphrase for cookies!@£!@£££']);
+my $uri = 'mysql://mojofit:mojoglobal@localhost/mojofit'; # <user>:<pass>@
+helper db => sub { state db = Mango->new($uri) };
+
+
 any '/' => sub {
-    shift->render_static('index.html');
+    shift->reply->static('index.html');
 };
+
+get '/getUserStatus' => sub {
+	my $c = shift;
+	my $status = {};
+	eval {
+		if ($c->session('email')) {
+			# Logged in
+			my $user = $c->users($c->session('email'));
+			$user or $status->{error} = 'Unable to load you from database';
+			$status->{isLoggedIn} = 1;
+			$status->{userPrefs} = $user->{userPrefs};
+		}
+		else {
+			$status->{isLoggedIn} = 0;
+		}
+	};
+	
+	if ($!) {
+		$status->{error} = $_;
+	}
+	$c->render(json => $status);
+};
+
+
+post '/login' => sub {
+	my $c = shift;
+    my $email = lc($c->param('email') || '');
+    my $pass = $c->param('pass') || '';
+ 
+    # Check password and render "index.html.ep" if necessary
+    return $c->render(json => {error=>'Failed to log in'}) unless $c->users->check($email, $pass);
+ 	my $user = $c->users->get($email);
+	
+    # Store login in session
+    $c->session(email => $email);
+	$c->session(expiration => 3600*24*30); # 30-days for now. Low security
+	
+	my $status = {isLoggedIn=>1, userPrefs=> $user->{userPrefs}};
+	$c->render(json=>$status);
+	
+};
+
+post '/register' => sub {
+	my $c = shift;
+   	my $ip = $self->tx->remote_address; 	
+};
+
 
 get '/user/:username' => sub {
 	my $c = shift;
@@ -45,25 +98,6 @@ get '/user/:username' => sub {
 	$target =~ m/^[A-Za-z0-9\-\.]+$/ or return $c->render(text => 'Invalid username');
 	
 	$c->redirect_to("/#/user/$target");
-	return;
-	
-	my $minreps = $c->param('minreps');
-	my $minsets = $c->param('minsets');
-	my $period = $c->param('period');
-	my $useperiod = $c->param('useperiod');
-	$minreps ||= 1;
-	$minsets ||= 1;
-	$period ||= 28;
-	$useperiod ||= 0;
-	$c->stash('minreps',$minreps);
-	$c->stash('minsets',$minsets);
-	$c->stash('period',$period);
-	$c->stash('jsperiod', $c->param('useperiod') ? $c->param('period') : 0);
-	#$c->stash('useperiod',$useperiod);
-	my $stream = getMaxStream($target);
-
-	$c->stash('interpolateNulls', 1);
-	$c->stash('log', formatStream($c, $stream));
 };
 
 get '/userraw/:username' => sub {
@@ -77,7 +111,6 @@ get '/userraw/:username' => sub {
 	$c->render(text => $jsonStream, format=>'json');
 
 };
-
 
 sub userjson {
 	my $c = shift;
@@ -124,7 +157,7 @@ any '/debug' => sub {
 
 get '/slic' => sub {
 	my $c = shift;
-	$c->render();
+	$c->redirect_to("/#/slic");
 };
 
 post '/slicparse' => sub {
@@ -167,56 +200,14 @@ sub getTargetJson {
 	my ($target, $minsets, $minreps, $period) = @_;
 	return '' unless $f->can_read("$DATA_DIR/${target}.json");
 	my $stream = getMaxStream($target);
-	if ($target =~ m/^SLIC-/) {
-		# SLIC JSON
-	}
-	else {
-		# Fitocracy JSON
-		$stream->filterSetReps($minsets, $minreps);
-	}
+	$stream->filterSetReps($minsets, $minreps);
 	
-	consistency($stream);
-	movingMax($stream, $period);
+	
+	$stream->consistency;
+	$stream->movingMax($stream, $period);
 	return powerTableMax($stream, $period);
 	#return powerTableConMax($stream, $period);
 
-}
-
-sub movingMax {
-	my ($origstream,  $perdays) = @_;
-	$perdays ||=1;
-	my $LOOKBACK= $perdays * 24 * 60 *60; # Days to secs
-	
-	my $stream = [sort {$a->{date} <=> $b->{date}} @$origstream];
-	my %prev = (); #map {$_ => 0 } (@POWERLIFTS);
-	for my $i (0..scalar(@$stream)-1) {
-		my $item = $stream->[$i];
-		my $back = $i-1;
-		#print STDERR "Looking back from $item->{'date'} to $stream->[$back]->{'date'}\n";
-		if ($perdays) {
-			#my %permax = map { $_ => $item->maxFor($_) } (@POWERLIFTS);
-			# Max will use previous max by induction
-			my %permax = map { $_ => $item->maxFor($_) || $prev{$_} } (@POWERLIFTS);
-			while ($back>=0 && $stream->[$back] && ($stream->[$back]->{'date'}+$LOOKBACK > $item->{'date'})) {
-				my $old = $stream->[$back];
-				
-				foreach (@POWERLIFTS) {
-					my $oldmax = $old->maxFor($_);
-					if ($permax{$_} && $oldmax) {
-						$permax{$_} = $permax{$_}< $oldmax ? $oldmax : $permax{$_}
-					}
-				}
-				$back--;
-			}
-			$item->{'permax'} = \%permax;
-			%prev = %permax;
-
-			
-		}
-		else {
-		}
-		#print STDERR "$item->{date} $workouts\n";
-	}
 }
 
 
@@ -263,54 +254,6 @@ sub adjustedMax {
 		}
 		
 		#print STDERR "$item->{date} $workouts\n";
-	}
-}
-
-
-sub consistency {
-	my ($origstream, $condays) = @_;
-	$condays ||= 7;	
-	my @WEIGHT = (0,1,3,3,2,2,2,2,2);
-	
-	my $stream = [sort {$a->{date} <=> $b->{date}} @$origstream];
-	
-	my $CONBACK = $condays * 24 * 60 * 60;
-	my $sumcon = 0;
-	
-	for my $i (0..scalar(@$stream)-1) {
-		my $item = $stream->[$i];
-		my $back = $i-1;
-		my $workouts = 0; # Workouts in period
-		my $to = DateTime->from_epoch(epoch=>$item->{'date'});
-		my $consistency = 1;
-		$item->{'sincelast'} = 0;
-		while ($back>=0 && $stream->[$back] && ($stream->[$back]->{'date'}+$CONBACK > $item->{'date'})) {
-			my $from = DateTime->from_epoch(epoch=>$stream->[$back]->{'date'});
-			my $delta = $to->delta_days($from)->days;
-			$consistency += 1;# $WEIGHT[$delta];
-			#print STDERR "Hit back $delta\n";
-			my $old = $stream->[$back];
-			if ($old->validPowerLift) {
-				$item->{'sincelast'} ||= $delta;
-				$workouts ++;
-			}
-			$back--;
-		}
-		#print STDERR "Since last $item->{'sincelast'}\n";
-		
-		$item->{'workouts'} = $workouts;
-		$sumcon += $item->{'sincelast'} / 3;
-		for (my $b=$i-1; $b>=$i-4; $b--) {
-			
-			if ($b>=0 && $stream->[$b]) {
-				#print STDERR "$stream->[$b]->{date} - $stream->[$i]->{date}\n" unless defined $stream->[$b]->{'workouts'};
-				$workouts += $stream->[$b]->{'workouts'};
-				#print STDERR "Accumulate $stream->[$b]->{'workouts'}\n";
-			}
-		}
-		$item->{'consistency'} = $workouts; #sprintf('%d', 10* ($workouts / 7) );
-		$item->{'sumcon'} = $sumcon;
-		
 	}
 }
 
@@ -443,133 +386,6 @@ sub formatWeightedSets {
 #	# Nothing doing! Do not autoload call
 #}
 
-
 app->start;
 
 __DATA__
-@@ userusername.html.ep
-<html>
-  <head>
-    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-    <script type="text/javascript" src="http://canvg.googlecode.com/svn/trunk/rgbcolor.js"></script> 
-    <script type="text/javascript" src="http://canvg.googlecode.com/svn/trunk/canvg.js"></script>
-    <script type="text/javascript">
-      google.load("visualization", "1", {packages:["corechart"]});
-      // google.setOnLoadCallback(drawChart);
-	  var jsonData;
-	  
-	  google.setOnLoadCallback(defaultChart);
-	  
-	  function defaultChart() {
-		  var foo = $.ajax({
-		            url: "/userjson/<%== $username %>/<%== $minsets %>/<%== $minreps %>/<%== $jsperiod %>",
-		            dataType:"script",
-		            async: true,
-					success: function(data, text, foo) {
-						drawChart();
-					}
-		            });
-	  }
-	  
-      function drawChart() {
-		  var data = new google.visualization.DataTable(jsonData);
-		  var options = {"hAxis":{"title":""},"vAxis":{"title":"","format":"# kg"},"width":900,"height":500,"interpolateNulls":<%== $interpolateNulls ? 'true' : 'false' %>,"legend":{"position":"top","maxLines":5}};
-
-        var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
-        chart.draw(data, options);
-      }
-
-	  function getImgData(chartContainer) {
-	    var chartArea = chartContainer.getElementsByTagName('svg')[0].parentNode;
-	    var svg = chartArea.innerHTML;
-	    var doc = chartContainer.ownerDocument;
-	    var canvas = doc.createElement('canvas');
-	    canvas.setAttribute('width', chartArea.offsetWidth);
-	    canvas.setAttribute('height', chartArea.offsetHeight);
-
-
-	    canvas.setAttribute(
-	        'style',
-	        'position: absolute; ' +
-	        'top: ' + (-chartArea.offsetHeight * 2) + 'px;' +
-	        'left: ' + (-chartArea.offsetWidth * 2) + 'px;');
-	    doc.body.appendChild(canvas);
-	    canvg(canvas, svg);
-	    var imgData = canvas.toDataURL("image/png");
-	    canvas.parentNode.removeChild(canvas);
-	    return imgData;
-	  }
-	  
-      function saveAsImg(chartContainer) {
-        var imgData = getImgData(chartContainer);
-        
-        // Replacing the mime-type will force the browser to trigger a download
-        // rather than displaying the image in the browser window.
-        window.location = imgData.replace("image/png", "image/octet-stream");
-      }
-      
-      function toImg(chartContainer, imgContainer) { 
-        var doc = chartContainer.ownerDocument;
-        var img = doc.createElement('img');
-        img.src = getImgData(chartContainer);
-        
-        while (imgContainer.firstChild) {
-          imgContainer.removeChild(imgContainer.firstChild);
-        }
-        imgContainer.appendChild(img);
-      }
-	  
-    </script>
-  </head>
-  <body>
-  <h1>Training log for <em><%== $username %></em></h1>
-    <div id="chart_div" style="width: 900px; height: 500px;">Loading...</div>
-	<form>
-	<input type="number" name="minsets" value="<%== $minsets %>" size="2" max="99"> sets x <input type="number" name="minreps" value="<%== $minreps %>" width="2"> reps<br>
-	Smooth to periodic cycle <%= check_box useperiod => 1 %> of <input type="number" name="period" value="<%== $period %>" width="2"> days<br>
-	<input type="checkbox" name="shownotes">Show notes<br>
-	<input type="submit">
-	</form>
-	
-    <div id="img_div" style="position: fixed; top: 0; right: 0; z-index: 10; border: 1px solid #b9b9b9">
-      Image will be placed here
-    </div>
-	<button onclick="toImg(document.getElementById('chart_div'), document.getElementById('img_div'));">Convert to image</button>
-	<p>
-	<a href="/userraw/<%== $username %>">Download raw data (JSON)</a> - for a computer readable form
-	</p>
-	<pre><%== $log %></pre>
-  </body>
-</html>
-
-@@slic.html.ep
-
-<html>
-  <head><title>SLIC training log importer</title></head>
-  <body>
-  <h1>SLIC training log importer</h1>
-  <p>Follow these instructions <strong>carefully</strong> to get your data over:
-  <ul>
-  <li>Go to your training log in SLIC in a new window/tab. Clicking on your name anywhere on the site works</li>
-  <li>Look across the top for several tabs (Training Log / Workouts / Graph etc)</li>
-  <li>Click on "Workouts"</li>
-  <li>After the workouts are loaded, you may have several "pages" of logs (e.g. Page 1 of 9). For each page you need to...
-  <ul>
-  <li>Click on the next page number (or start with Page 1)</li>
-  <li>Ctrl-a, Ctrl-c... to copy the text of the whole page</li>
-  <li>Select the textbox below and press Ctrl-v to paste it into the box</li>
-  <li>
-  </ul>
-  <li>Press the submit button below to import those pages! If it works, you are taken to a summary of your training log and a graph
-  </ul>
-  </p>
-  <p>Note that you can submit your log one page at a time or all in one go or repeat previous submissions (useful if I had a bug). Each submission will replace existing entries by date</p>
-  <p>Only the Chrome and Firefox browsers have been tested. It will probably not work with other browsers. If it works it should look like <a href="/user/KevinTam">my log</a></p>
-
-  <form method="POST" action="/slicparse">
-  <textarea name="text" cols="80" rows="25"></textarea>
-  <input type="submit">
-  </form>
-  </body>
-</html>
