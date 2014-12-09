@@ -13,6 +13,8 @@ use DateTime::Format::DateParse;
 use Data::Google::Visualization::DataTable;
 
 use Mojolicious::Lite;
+use Mojolicious::Plugin::Database;
+
 use JSON; 
 
 use SLIC;
@@ -35,9 +37,16 @@ our %POWERSET = map {$_ => 1} (@POWERLIFTS);
 our($f) = File::Util->new();
 
 helper users => sub { state $users = Mojofit::Model::Users->new };
+
+app->moniker('mojofit');
 app->secrets(['Some randomly chosen secret passphrase for cookies!@£!@£££']);
-my $uri = 'mysql://mojofit:mojoglobal@localhost/mojofit'; # <user>:<pass>@
-#helper db => sub { state $db = Mango->new($uri) };
+
+plugin 'config';
+my $dbconf = app->config->{dbi};
+$dbconf->{helper} = 'db';
+plugin database => app->config->{dbi};
+
+# helper db => sub { state $db = Mango->new($uri) };
 
 
 any '/' => sub {
