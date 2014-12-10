@@ -1,5 +1,5 @@
 <h1>Training log for <em>{{ userId }}</em></h1>
-<div id="chart_div" style="width: 900px; height: 500px;">Loading...</div>
+
         <!--
 <form>
     <input type="number" name="minsets" value="<%== $minsets %>" size="2" max="99"> sets x <input type="number" name="minreps" value="<%== $minreps %>" width="2"> reps<br>
@@ -7,21 +7,22 @@
     <input type="checkbox" name="shownotes">Show notes<br>
     <input type="submit">
 </form>-->
-
+<!--
 <div id="img_div" style="position: fixed; top: 0; right: 0; z-index: 10; border: 1px solid #b9b9b9">
     Image will be placed here
 </div>
 <button onclick="toImg(document.getElementById('chart_div'), document.getElementById('img_div'));">Convert to image</button>
-<p>
-    <a href="/userraw/{{ userId }}">Download raw data (JSON)</a> - for a computer readable form, for backup, and for import to other sites (e.g. CrazyStrength)
-</p>
-    <div class="panel panel-default" ng-show="editWorkout">
-        <header class="panel-heading">Edit workout</header>
-        <workout-editor workout="editWorkout"></workout-editor>
-        <footer><button class="btn btn-default" ng-click="editWorkout=null">Cancel</button></footer>
-    </div>
+-->
 
-
+<div class="row">
+    <!-- Right sidebar -->
+    <div class="col-md-4 col-md-push-8">
+        <div class="panel panel-default ">
+            <header class="panel-heading">Workout Calendar</header>
+            <div>
+               <datepicker ng-model="activeDate" multi-select="workoutDates"></datepicker>
+            </div>
+         </div>
         <div class="panel panel-default">
             <header class="panel-heading">Rep maxes</header>
             <table class="table">
@@ -38,6 +39,24 @@
             </table>
 
         </div>
+    </div>
+
+
+     <div class="col-md-8 col-md-pull-4">
+
+         <div id="chart_div">Loading...</div>
+         <p>
+             <a href="/userraw/{{ userId }}">Download raw data (JSON)</a> - for a computer readable form, for backup, and for import to other sites (e.g. CrazyStrength)
+         </p>
+
+
+    <div class="panel panel-default" ng-show="editWorkout">
+        <header class="panel-heading">Edit workout</header>
+        <workout-editor workout="editWorkout"></workout-editor>
+        <footer><button class="btn btn-default" ng-click="editWorkout=null">Cancel</button></footer>
+    </div>
+
+
 
     <div>
         There are {{user.data.length}} log entries...
@@ -57,3 +76,6 @@
             <footer class="panel-footer" ng-show="i.notes.length">{{ i.notes }}</footer>
         </div>
     </div>
+
+     </div>
+</div>

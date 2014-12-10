@@ -28,6 +28,9 @@ angular.module('clientApp')
   .controller('UserCtrl', function ($scope, $http, $routeParams) {
         $scope.userId = $routeParams.userId;
 
+        $scope.activeDate = new Date();
+        $scope.workoutDates = [];
+
         var userstream = this;
         userstream.data = [];
 
@@ -36,7 +39,9 @@ angular.module('clientApp')
             userstream.usedExercises = usedExercises(data);
             userstream.repMax = genRepMax(data, userstream.usedExercises);
 
-            console.log(userstream.repMax);
+            $scope.workoutDates = userstream.data.map(function(x){return new Date(x.date).setHours(0,0,0,0).valueOf();});
+            $scope.activeDate = new Date($scope.workoutDates[0]);
+
         });
 
         /*jshint unused: vars */
@@ -63,6 +68,13 @@ angular.module('clientApp')
                 });
                 return item;
             });
+
+            data.sort(function(a,b) {
+               if (b.date < a.date) { return -1; }
+               if (b.date > a.date) { return 1; }
+               return 0;
+            });
+
             return data;
         }
 
@@ -81,7 +93,7 @@ angular.module('clientApp')
         });
 
         function genRepMax(items, names) {
-            var MAX_REP = 10;
+            var MAX_REP = 5;
             var repMaxByName = {};
             names.forEach(function(name) {
                 var repMax = new Array(MAX_REP);
