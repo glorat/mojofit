@@ -57,7 +57,8 @@ angular
   .module('clientApp', [
     'ngCookies',
     'ngRoute',
-    'ui.bootstrap'
+    'ui.bootstrap',
+        'gm.datepickerMultiSelect'
     ]);
 
 

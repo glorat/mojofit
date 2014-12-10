@@ -80,7 +80,7 @@ module.exports = function (grunt) {
               https: false,
               xforward: false,
               headers: {
-                  "x-grunt-was-here": true
+                  'x-grunt-was-here': true
               }
           }
       ],
