@@ -1,6 +1,6 @@
 <ul ng-repeat="set in action.sets">
     <li>
-        <input ng-model="set.weight" type="number" size="4">
+        <input ng-model="set.weight" type="text" size="4">
         <span ng-hide="unitedit" ng-click="unitedit = true">{{ set.unit }}</span>
         <select ng-show="unitedit" ng-model="set.unit">
             <option value="kg">kg</option>

@@ -8,7 +8,7 @@ function drawChart() {
     // Ideally one would install a callback
     if (allDoneJs && jsonData) {
         var data = new window.google.visualization.DataTable(jsonData);
-        var options = {'hAxis':{'title':''},'vAxis':{'title':'','format':'# kg'},'width':900,'height':500,'interpolateNulls':'true','legend':{'position':'top','maxLines':5}};
+        var options = {'hAxis':{'title':''},'vAxis':{'title':'','format':'# kg'},'interpolateNulls':'true','legend':{'position':'top','maxLines':5}};
         var chart = new window.google.visualization.LineChart(document.getElementById('chart_div'));
         chart.draw(data, options);
     }
@@ -30,6 +30,8 @@ angular.module('clientApp')
 
         $scope.activeDate = new Date();
         $scope.workoutDates = [];
+        $scope.showChart = false;
+        $scope.itemsPerPage = 20;
 
         var userstream = this;
         userstream.data = [];
@@ -41,7 +43,7 @@ angular.module('clientApp')
 
             $scope.workoutDates = userstream.data.map(function(x){return new Date(x.date).setHours(0,0,0,0).valueOf();});
             $scope.activeDate = new Date($scope.workoutDates[0]);
-
+            $scope.showChart = true;
         });
 
         /*jshint unused: vars */
@@ -62,8 +64,8 @@ angular.module('clientApp')
                         action.name = aliases[action.name];
                     }
                     action.sets.map(function(set){
-                        set.reps = parseInt(set.reps);
-                        set.weight = parseFloat(set.weight);
+                        set.reps = +set.reps;
+                        set.weight = +set.weight;
                     });
                 });
                 return item;

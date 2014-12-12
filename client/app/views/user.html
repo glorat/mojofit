@@ -44,7 +44,7 @@
 
      <div class="col-md-8 col-md-pull-4">
 
-         <div id="chart_div">Loading...</div>
+         <div id="chart_div" style="width: 100%; height: 400px;" ng-show="showChart"><!-- TODO --></div>
          <p>
              <a href="/userraw/{{ userId }}">Download raw data (JSON)</a> - for a computer readable form, for backup, and for import to other sites (e.g. CrazyStrength)
          </p>
@@ -59,8 +59,9 @@
 
 
     <div>
-        There are {{user.data.length}} log entries...
-        <div ng-repeat="i in user.data" class="panel panel-default">
+        There are {{user.data.length}} log entries... On page {{currentPage}} with {{itemsPerPage}} items per page
+        <pagination total-items="user.data.length" items-per-page="itemsPerPage" ng-model="currentPage"></pagination>
+        <div ng-repeat="i in user.data | startFrom:(currentPage-1)*itemsPerPage | limitTo:itemsPerPage" class="panel panel-default">
             <header class="panel-heading">
                 {{ datestr(i.date) }}
                 <button type="button" class="btn btn-default" aria-label="Edit" ng-click="$parent.editWorkout=user.data[$index]">
