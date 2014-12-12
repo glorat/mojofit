@@ -77,6 +77,10 @@ angular.module('clientApp').config(['$routeProvider',
                 templateUrl: 'views/about.html',
                 controller: 'AboutCtrl'
             })
+            .when('/login', {
+                templateUrl: 'views/login.html',
+                controller: 'LoginCtrl'
+            })
             .otherwise({
                 templateUrl: 'views/slic.html'
             });
@@ -88,25 +92,35 @@ angular.module('clientApp')
     });
 
 angular.module('clientApp')
-    .service('MojoServer', function ($http, $scope) {
-        var getStatus = function() {
-            $http.get('/getUserStatus').success(function(data) {
-                $scope.userStatus = data;
+    .factory('MojoServer', function ($http) {
+        var ret = {
+            getStatus: function() {
+                $http.get('/getUserStatus').success(function(data) {
+                    this.userStatus = data;
 
-            });
+                });
+            },
+            login: function(email,pass) {
+                $http.post('/login', {email:email, password:pass}).success(function(data) {
+                    this.userStatus = data;
+                });
+            },
+            register: function(email, firstname, lastname) {
+                var msg = {email:email, firstname:firstname, lastname:lastname};
+                $http.post('/register', msg).success(function(data) {
+                    // What to do with data
+                    window.alert(data);
+                });
+            },
+            userStatus : {}
         };
-        var login = function(email,pass) {
-            $http.post('/login', {email:email, pass:pass}).success(function(data) {
-                $scope.userStatus = data;
-            });
-        };
+        return ret;
+    });
 
-        var register = function(email, firstname, lastname) {
-            var msg = {email:email, firstname:firstname, lastname:lastname};
-            $http.post('/register', msg).success(function(data) {
-               // What to do with data
-            });
-        };
-
-
+angular.module('clientApp')
+    .filter('startFrom', function(){
+       return function(input, start) {
+           start = +start;
+           return input.slice(start);
+       }
     });

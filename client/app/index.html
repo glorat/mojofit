@@ -2,7 +2,7 @@
 <html class="no-js">
   <head>
     <meta charset="utf-8">
-    <title></title>
+    <title>Kevin's workout log importer</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width">
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
@@ -25,9 +25,12 @@
       <div class="header">
         <ul class="nav nav-pills pull-right">
           <li class="active"><a ng-href="#">Home</a></li>
-          <li><a ng-href="#/about">About</a></li>
+          <li class=""><a ng-href="#/slic">SLIC Import</a></li>
+          <li class=""><a ng-href="#/user/KevinTam">Kevin's Log</a></li>
+          <li class=""><a ng-href="#/login">Login/Register</a></li>
+            <li><a ng-href="#/about">About</a></li>
         </ul>
-        <h3 class="text-muted">Glorat workout import/export</h3>
+        <h3 class="text-muted">Kevin's workout log importer</h3>
       </div>
 
       <div ng-view=""></div>
@@ -73,6 +76,7 @@
         <script src="scripts/app.js"></script>
         <script src="scripts/controllers/main.js"></script>
         <script src="scripts/controllers/user.js"></script>
+    <script src="scripts/controllers/login.js"></script>
         <!-- endbuild -->
 </body>
 </html>

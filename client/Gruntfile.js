@@ -74,7 +74,7 @@ module.exports = function (grunt) {
       proxies: [
           {
               // TODO: Move all server paths off static
-              context: ['/userjson','/userraw','/login','/register'],
+              context: ['/userjson','/userraw','/login','/register','/command'],
               host: 'localhost',
               port: 3000,
               https: false,
