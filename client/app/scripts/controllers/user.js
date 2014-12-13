@@ -53,7 +53,7 @@ angular.module('clientApp')
         });
 
         $scope.addWorkout = function() {
-            $scope.editWorkout = {date: $scope.newWorkout.date, items:[]};
+            $scope.editWorkout = {date: $scope.newWorkout.date, actions:[]};
             $scope.showAddWorkout = false;
         }
     });
