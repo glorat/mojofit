@@ -25,60 +25,17 @@ function drawChart() {
  * Controller of the clientApp
  */
 angular.module('clientApp')
-  .controller('UserCtrl', function ($scope, $http, $routeParams) {
+  .controller('UserCtrl', function ($scope, $http, $routeParams, UserState) {
         $scope.userId = $routeParams.userId;
-
-        $scope.activeDate = new Date();
-        $scope.workoutDates = [];
+        $scope.userState = UserState.getCurrentUser();
+        UserState.setCurrentUserId($scope.userId);
         $scope.showChart = false;
         $scope.itemsPerPage = 20;
+        $scope.currentPage = 1;
 
-        var userstream = this;
-        userstream.data = [];
-
-        $http.get('/userraw/'+$scope.userId).success(function(data) {
-            userstream.data = processData(data);
-            userstream.usedExercises = usedExercises(data);
-            userstream.repMax = genRepMax(data, userstream.usedExercises);
-
-            $scope.workoutDates = userstream.data.map(function(x){return new Date(x.date).setHours(0,0,0,0).valueOf();});
-            $scope.activeDate = new Date($scope.workoutDates[0]);
-            $scope.showChart = true;
-        });
-
-        /*jshint unused: vars */
-        function usedExercises(data) {
-            //var nameByUse = {};
-
-            return ['Barbell Squat', 'Barbell Bench Press', 'Barbell Deadlift', 'Standing Barbell Shoulder Press (OHP)'];
-        }
-
-        function processData(data) {
-            // And do some name mappings
-            var aliases = {'Bench Press':'Barbell Bench Press'};
-            // Too many strings in the data
-            data.map(function(item){
-                item.date = parseInt(item.date);
-                item.actions.map(function(action){
-                    if (aliases[action.name]) {
-                        action.name = aliases[action.name];
-                    }
-                    action.sets.map(function(set){
-                        set.reps = +set.reps;
-                        set.weight = +set.weight;
-                    });
-                });
-                return item;
-            });
-
-            data.sort(function(a,b) {
-               if (b.date < a.date) { return -1; }
-               if (b.date > a.date) { return 1; }
-               return 0;
-            });
-
-            return data;
-        }
+        $scope.showChart = function(){
+            return $scope.userState.data.length > 0;
+        };
 
         $scope.datestr = function(ts) {
             return new Date(ts).toDateString();
@@ -93,41 +50,6 @@ angular.module('clientApp')
                 drawChart();
             }
         });
-
-        function genRepMax(items, names) {
-            var MAX_REP = 5;
-            var repMaxByName = {};
-            names.forEach(function(name) {
-                var repMax = new Array(MAX_REP);
-                for (var k=0;k<MAX_REP;k++) {repMax[k] ={kg:0,date:0};}
-                repMaxByName[name] = repMax;
-            });
-
-            items.forEach(function(item){
-                item.actions.forEach(function(action) {
-                    if (repMaxByName[action.name]) {
-                        var repMax = repMaxByName[action.name];
-                        action.sets.forEach(function(aset){
-                            var reps = aset.reps-1;
-                            var kg = aset.weight; // FIXME: to kg
-                            if (reps >= MAX_REP) {reps = MAX_REP-1;}
-                            for (var i=0; i<=reps; i++) {
-                                if (repMax[i].kg < kg) {
-                                    repMax[i].kg = kg;
-                                    repMax[i].date = item.date;
-                                    repMax[i].reps = reps;
-                                }
-                            }
-                        });
-                    }
-                });
-
-            });
-            return names.map(function(name) {
-                return {name:name, repMax : repMaxByName[name]};
-            });
-
-        }
     });
 
 
@@ -214,3 +136,23 @@ angular.module('clientApp').directive('actionSetsEditor', function() {
         }
     };
 });
+
+
+angular.module('clientApp').directive('repMaxTable', function() {
+    return {
+        restrict: 'E',
+        scope: {userState:'=', width:'@'},
+        templateUrl: 'views/rep-max-table.html',
+        controller: function ($scope) {
+            if ($scope.width === undefined) {
+                $scope.width = 5;
+            }
+        }
+    };
+});
+
+angular.module('clientApp')
+    .controller('RepMaxController', function ($scope, UserState) {
+        $scope.width = 10; // That's how much we an fit in a full view
+        $scope.userState = UserState.getCurrentUser();
+    });

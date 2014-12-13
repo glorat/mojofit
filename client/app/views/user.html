@@ -17,38 +17,28 @@
 <div class="row">
     <!-- Right sidebar -->
     <div class="col-md-4 col-md-push-8">
+        <div class="panel panel-default">
+            <header class="panel-heading">Graph</header>
+            <div id="chart_div" style="width: 100%; height: 200px;" ng-show="showChart"><!-- TODO --></div>
+        </div>
         <div class="panel panel-default ">
             <header class="panel-heading">Workout Calendar</header>
             <div>
-               <datepicker ng-model="activeDate" multi-select="workoutDates"></datepicker>
+               <datepicker ng-model="userState.activeDate" multi-select="userState.workoutDates"></datepicker>
             </div>
          </div>
         <div class="panel panel-default">
-            <header class="panel-heading">Rep maxes</header>
-            <table class="table">
-                <tr>
-                    <th></th>
-                    <th ng-repeat="x in user.repMax[0].repMax">{{ $index+1 }}RM</th>
-                </tr>
-                <tr ng-repeat="repMax in user.repMax">
-                    <td>{{ repMax.name }}</td>
-                    <td ng-repeat="reps in repMax.repMax">
-                       {{ reps.kg }}
-                    </td>
-                </tr>
-            </table>
-
+            <header class="panel-heading">Rep maxes <a href="#/repMax"><span class="glyphicon glyphicon-resize-full"></span></a></header>
+            <rep-max-table user-state="userState" width="5"></rep-max-table>
         </div>
     </div>
 
 
      <div class="col-md-8 col-md-pull-4">
 
-         <div id="chart_div" style="width: 100%; height: 400px;" ng-show="showChart"><!-- TODO --></div>
          <p>
              <a href="/userraw/{{ userId }}">Download raw data (JSON)</a> - for a computer readable form, for backup, and for import to other sites (e.g. CrazyStrength)
          </p>
-
 
     <div class="panel panel-default" ng-show="editWorkout">
         <header class="panel-heading">Edit workout</header>
@@ -60,8 +50,8 @@
 
     <div>
         There are {{user.data.length}} log entries... On page {{currentPage}} with {{itemsPerPage}} items per page
-        <pagination total-items="user.data.length" items-per-page="itemsPerPage" ng-model="currentPage"></pagination>
-        <div ng-repeat="i in user.data | startFrom:(currentPage-1)*itemsPerPage | limitTo:itemsPerPage" class="panel panel-default">
+        <pagination total-items="userState.data.length" items-per-page="itemsPerPage" ng-model="currentPage"></pagination>
+        <div ng-repeat="i in userState.data | startFrom:(currentPage-1)*itemsPerPage | limitTo:itemsPerPage" class="panel panel-default">
             <header class="panel-heading">
                 {{ datestr(i.date) }}
                 <button type="button" class="btn btn-default" aria-label="Edit" ng-click="$parent.editWorkout=user.data[$index]">
