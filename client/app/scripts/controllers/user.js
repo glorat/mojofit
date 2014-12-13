@@ -56,6 +56,10 @@ angular.module('clientApp')
             $scope.editWorkout = {date: $scope.newWorkout.date, actions:[]};
             $scope.showAddWorkout = false;
         }
+
+        $scope.submitWorkout = function() {
+            alert('Sorry! Saving is not built yet. If you are interested in saving, let Kevin know');
+        }
     });
 
 
@@ -98,13 +102,15 @@ angular.module('clientApp').directive('workoutEditor', function() {
                $scope.opened = true;
            };
 
-           $scope.addNamedAction = function(newName) {;
-               $scope.workout.actions.push({name:newName, sets:[{}]});
+           $scope.addNamedAction = function(newName) {
+               var emptySet = {weight:undefined, unit:'kg'}; // TODO: Get unit
+               $scope.workout.actions.push({name:newName, sets:[emptySet]});
            };
 
            $scope.addAction = function(index) {
+               var emptySet = {weight:undefined, unit:'kg'}; // TODO: Get unit
                var newName = '';
-                $scope.workout.actions.splice(index+1,0, {name:newName, sets:[{}]});
+                $scope.workout.actions.splice(index+1,0, {name:newName, sets:[emptySet]});
            };
 
            $scope.removeAction = function(index) {

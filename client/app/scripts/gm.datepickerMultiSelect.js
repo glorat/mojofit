@@ -61,9 +61,6 @@ angular.module('gm.datepickerMultiSelect', ['ui.bootstrap'])
                         angular.forEach(scope.rows, function(row) {
                             angular.forEach(row, function(day) {
                                 var sel = selectedDates.indexOf(day.date.setHours(0, 0, 0, 0)) > -1;
-                                if (sel) {
-                                    console.log('selecting ' + day);
-                                }
                                 day.selected = sel;
                             });
                         });
