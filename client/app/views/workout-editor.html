@@ -8,8 +8,9 @@
     </p>
 
     <p>
-        Enter exercise <input type="text" name="newActionName" ng-model="newActionName" typeahead="name for name in user.usedExercises | filter:$viewValue | limitTo:8">
-        <button ng-click="addNamedAction(newActionName)">Add</button>
+        Enter exercise:
+        <input type="text" name="newActionName" ng-model="newActionName" typeahead="name for name in user.usedExercises | filter:$viewValue | limitTo:8">
+        <button ng-click="addNamedAction(newActionName);newActionName='';">Add</button>
     </p>
 
 <ul ng-repeat="action in workout.actions">
