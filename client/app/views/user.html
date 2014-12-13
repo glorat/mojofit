@@ -44,7 +44,7 @@
              <a href="" ng-click="showAddWorkout=true" ng-hide="showAddWorkout">Add workout...</a>
          </p>
 
-         <div class="panel panel-default" ng-show="showAddWorkout">
+         <div class="panel panel-default" collapse="!showAddWorkout">
              <header class="panel-heading">Add workout</header>
              <new-workout new-workout="newWorkout"></new-workout>
              <footer>
@@ -53,7 +53,7 @@
              </footer>
          </div>
 
-         <div class="panel panel-default" ng-show="editWorkout">
+         <div class="panel panel-default" collapse="!editWorkout">
             <header class="panel-heading">Edit workout</header>
             <workout-editor workout="editWorkout"></workout-editor>
             <footer>
@@ -62,10 +62,18 @@
             </footer>
         </div>
 
+    <div>
+        <form class="" role="search">
+            <div class="form-group">
+                <input type="text" class="form-control" placeholder="Search exercises" ng-model="exnameFilter">
+            </div>
+            <!-- <button type="submit" class="btn btn-default">Submit</button>  -->
+        </form>
+    </div>
 
 
     <div>
-        There are {{user.data.length}} log entries... On page {{currentPage}} with {{itemsPerPage}} items per page
+        There are {{userState.data.length}} log entries... On page {{currentPage}} with {{itemsPerPage}} items per page
         <pagination total-items="userState.data.length" items-per-page="itemsPerPage" ng-model="currentPage"></pagination>
         <div ng-repeat="i in userState.data | startFrom:(currentPage-1)*itemsPerPage | limitTo:itemsPerPage" class="panel panel-default">
             <header class="panel-heading">
@@ -74,13 +82,13 @@
                     <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
                 </button>
             </header>
-            <ul ng-repeat="action in i.actions">
+            <ul ng-repeat="action in i.actions | filter:exnameFilter">
                 <li>{{ action.name }}</li>
                 <ul ng-repeat="set in action.sets">
                     <li><set-text data="set"></set-text></li>
                 </ul>
             </ul>
-            <footer class="panel-footer" ng-show="i.notes.length">{{ i.notes }}</footer>
+            <footer class="panel-footer" ng-show="i.notes.length && !exnameFilter">{{ i.notes }}</footer>
         </div>
     </div>
 
