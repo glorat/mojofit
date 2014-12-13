@@ -32,6 +32,7 @@ angular.module('clientApp')
         $scope.showChart = false;
         $scope.itemsPerPage = 20;
         $scope.currentPage = 1;
+        $scope.newWorkout = {date:new Date()};
 
         $scope.showChart = function(){
             return $scope.userState.data.length > 0;
@@ -50,6 +51,11 @@ angular.module('clientApp')
                 drawChart();
             }
         });
+
+        $scope.addWorkout = function() {
+            $scope.editWorkout = {date: $scope.newWorkout.date, items:[]};
+            $scope.showAddWorkout = false;
+        }
     });
 
 
@@ -77,7 +83,8 @@ angular.module('clientApp').directive('workoutEditor', function() {
        restrict: 'E',
        scope: {workout:'='},
        templateUrl: 'views/workout-editor.html',
-       controller: function ($scope) {
+       controller: function ($scope, UserState) {
+           $scope.user = UserState.getCurrentUser(); //+ get from server?
 
            $scope.dateOptions = {
                formatYear: 'yy',
@@ -91,9 +98,13 @@ angular.module('clientApp').directive('workoutEditor', function() {
                $scope.opened = true;
            };
 
+           $scope.addNamedAction = function(newName) {;
+               $scope.workout.actions.push({name:newName, sets:[{}]});
+           };
+
            $scope.addAction = function(index) {
-               var newName = 'TODO';
-                $scope.workout.actions.splice(index+1,0, {name:newName, sets:[]});
+               var newName = '';
+                $scope.workout.actions.splice(index+1,0, {name:newName, sets:[{}]});
            };
 
            $scope.removeAction = function(index) {
@@ -114,6 +125,31 @@ angular.module('clientApp').directive('workoutEditor', function() {
            */
        }
    };
+});
+
+
+
+angular.module('clientApp').directive('newWorkout', function() {
+    return {
+        restrict: 'E',
+        scope: {newWorkout:'='},
+        templateUrl: 'views/new-workout.html',
+        controller: function ($scope) {
+
+            $scope.dateOptions = {
+                formatYear: 'yy',
+                startingDay: 1
+            };
+
+            $scope.open = function($event) {
+                $event.preventDefault();
+                $event.stopPropagation();
+
+                $scope.opened = true;
+            };
+
+        }
+    };
 });
 
 

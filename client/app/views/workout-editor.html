@@ -6,6 +6,12 @@
             <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
         </span>
     </p>
+
+    <p>
+        Enter exercise <input type="text" name="newActionName" ng-model="newActionName" typeahead="name for name in user.usedExercises | filter:$viewValue | limitTo:8">
+        <button ng-click="addNamedAction(newActionName)">Add</button>
+    </p>
+
 <ul ng-repeat="action in workout.actions">
     <!-- typeahead="name for name in states | filter:$viewValue | limitTo:8" -->
     <span>Name: <input type="text" ng-model="action.name" >
