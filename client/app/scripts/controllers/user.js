@@ -55,11 +55,11 @@ angular.module('clientApp')
         $scope.addWorkout = function() {
             $scope.editWorkout = {date: $scope.newWorkout.date, actions:[]};
             $scope.showAddWorkout = false;
-        }
+        };
 
         $scope.submitWorkout = function() {
-            alert('Sorry! Saving is not built yet. If you are interested in saving, let Kevin know');
-        }
+            window.alert('Sorry! Saving is not built yet. If you are interested in saving, let Kevin know');
+        };
     });
 
 
@@ -178,23 +178,3 @@ angular.module('clientApp').directive('actionSetsEditor', function() {
         }
     };
 });
-
-
-angular.module('clientApp').directive('repMaxTable', function() {
-    return {
-        restrict: 'E',
-        scope: {userState:'=', width:'@'},
-        templateUrl: 'views/rep-max-table.html',
-        controller: function ($scope) {
-            if ($scope.width === undefined) {
-                $scope.width = 5;
-            }
-        }
-    };
-});
-
-angular.module('clientApp')
-    .controller('RepMaxController', function ($scope, UserState) {
-        $scope.width = 10; // That's how much we an fit in a full view
-        $scope.userState = UserState.getCurrentUser();
-    });

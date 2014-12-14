@@ -160,42 +160,6 @@ angular.module('clientApp')
             return data;
         };
 
-
-        var genRepMax = function (items, names) {
-            var MAX_REP = 20;
-            var repMaxByName = {};
-            names.forEach(function(name) {
-                var repMax = new Array(MAX_REP);
-                for (var k=0;k<MAX_REP;k++) {repMax[k] ={kg:0,date:0};}
-                repMaxByName[name] = repMax;
-            });
-
-            items.forEach(function(item){
-                item.actions.forEach(function(action) {
-                    if (repMaxByName[action.name]) {
-                        var repMax = repMaxByName[action.name];
-                        action.sets.forEach(function(aset){
-                            var reps = aset.reps-1;
-                            var kg = aset.weight; // FIXME: to kg
-                            if (reps >= MAX_REP) {reps = MAX_REP-1;}
-                            for (var i=0; i<=reps; i++) {
-                                if (repMax[i].kg < kg) {
-                                    repMax[i].kg = kg;
-                                    repMax[i].date = item.date;
-                                    repMax[i].reps = reps;
-                                }
-                            }
-                        });
-                    }
-                });
-
-            });
-            return names.map(function(name) {
-                return {name:name, repMax : repMaxByName[name]};
-            });
-
-        };
-
         var loadUserInto = function(userId, userData) {
             if (userData === undefined || userId === undefined) {
                 userData = {data:[]}; // Return new
@@ -203,7 +167,6 @@ angular.module('clientApp')
             $http.get('/userraw/' + userId).success(function(data) {
                 userData.data = processData(data);
                 userData.usedExercises = usedExercises(data);
-                userData.repMax = genRepMax(data, userData.usedExercises);
                 userData.workoutDates = userData.data.map(function(x){return new Date(x.date).setHours(0,0,0,0).valueOf();});
                 userData.activeDate = new Date(userData.workoutDates[0]);
                 userData.showChart = true;
