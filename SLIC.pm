@@ -25,7 +25,7 @@ sub parse_text {
 	$text =~ m/\n([\S\ ]*?)'s? Log \-/s or die ("Can't find your name inside the text. Did you copy the ENTIRE page?");
 	my $name = $1;
 	$name =~ m/^\w[\w\ \d]+$/ or die ("Invalid name parsed $name"); #Whitelist name for file saving
-	my @posts = split(/Joined: \w+ \d+\s*(?:Follow)?\s*/, $text);
+	my @posts = split(/Joined: \w+ \d+\s*(?:Follow|Unfollow)?\s*/, $text);
 	shift @posts;
 	
 	my @items = map {parse_post($_, $name)} (@posts);
