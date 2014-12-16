@@ -6,7 +6,7 @@ var jsonData;
 function drawChart() {
     // There's a race condition here since google is being async loaded
     // Ideally one would install a callback
-    if (allDoneJs && jsonData) {
+    if (jsonData) {
         var data = new window.google.visualization.DataTable(jsonData);
         var options = {'hAxis':{'title':''},'vAxis':{'title':'','format':'# kg'},'interpolateNulls':'true','legend':{'position':'top','maxLines':5}};
         var chart = new window.google.visualization.LineChart(document.getElementById('chart_div'));
@@ -25,7 +25,7 @@ function drawChart() {
  * Controller of the clientApp
  */
 angular.module('clientApp')
-  .controller('UserCtrl', function ($scope, $http, $routeParams, UserState) {
+  .controller('UserCtrl', function ($scope, $http, $routeParams, UserState, googleChartApiPromise) {
         $scope.userId = $routeParams.userId;
         $scope.userState = UserState.getCurrentUser();
         UserState.setCurrentUserId($scope.userId);
@@ -48,7 +48,9 @@ angular.module('clientApp')
             async: true,
             /*jshint unused: vars */
             success: function(data, text, foo) {
-                drawChart();
+                googleChartApiPromise.then(function () {
+                    drawChart();
+                });
             }
         });
 
