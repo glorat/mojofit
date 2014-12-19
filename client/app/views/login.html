@@ -5,18 +5,11 @@
     Email: <input type="email" name="email" ng-model="reg.email">
     <input type="submit">
 </form>
-
-<form method="POST" action="/register">
-    First name<input type="text" name="firstname" ng-model="reg.firstname">
-    Last name:<input type="text" name="lastname" ng-model="reg.lastname">
-    Email: <input type="email" name="email" ng-model="reg.email">
-    <input type="submit">
-</form>
-
-
+<div class="alert" ng-class="'alert-' + registerStatus.level" role="alert" ng-show="registerStatus.message">{{ registerStatus.message }}</div>
 <h2>Login</h2>
 <form ng-submit="login()">
     <input type="email" name="email" ng-model="lgn.email">
     <input type="password" name="password" ng-model="lgn.password">
     <input type="submit">
 </form>
+<div class="alert" ng-class="'alert-' + loginStatus.level" role="alert" ng-show="loginStatus.message">{{ loginStatus.message }}</div>

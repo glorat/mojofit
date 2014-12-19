@@ -6,10 +6,16 @@ angular.module('clientApp')
         $scope.lgn = {};
 
         $scope.register = function() {
-            MojoServer.register($scope.reg.email, $scope.reg.firstname, $scope.reg.lastname) ;
+            $scope.registerStatus = MojoServer.register($scope.reg.email, $scope.reg.firstname, $scope.reg.lastname) ;
+
         };
 
         $scope.login = function() {
-            MojoServer.login($scope.lgn.email, $scope.lgn.password);
+            $scope.loginStatus = MojoServer.login($scope.lgn.email, $scope.lgn.password);
         };
+    });
+
+angular.module('clientApp')
+    .controller('UserStatusController', function ($scope, MojoServer) {
+        $scope.userStatus = MojoServer.getUserStatus();
     });

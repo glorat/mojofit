@@ -1,3 +1,6 @@
+'use strict';
+
+/* global google */
 var repmaxFile = function() {
 
     var genRepMax = function (items, names) {
@@ -50,7 +53,7 @@ var repmaxFile = function() {
             repMax[k] = 0;
         }
 
-        var byDate = _.groupBy(items, function(item){return new Date(item.date).setUTCHours(0,0,0,0).valueOf() });
+        var byDate = _.groupBy(items, function(item){return new Date(item.date).setUTCHours(0,0,0,0).valueOf(); });
         var allDates = _.keys(byDate).map(function(x){return +x;});
         var minDate = _.min(allDates);
         var maxDate = _.max(allDates);
@@ -62,7 +65,7 @@ var repmaxFile = function() {
             if (byDate[curDate]) {
                 var actions = byDate[curDate][0].actions;
                 actions.forEach(function(action) {
-                    if (action.name == name) {
+                    if (action.name === name) {
                         action.sets.forEach(function(aset) {
                             var reps = aset.reps;
                             var kg = aset.weight; // FIXME: to kg
@@ -81,7 +84,7 @@ var repmaxFile = function() {
                 });
             }
             curDateObj.setDate(curDateObj.getDate() + 1); // I hate mutable classes
-            curDate = curDateObj.valueOf();;
+            curDate = curDateObj.valueOf();
         }
         return history;
     };
@@ -100,7 +103,8 @@ var repmaxFile = function() {
         data.addRows(history);
         return data;
 
-    }
+    };
+
     angular.module('clientApp').directive('repMaxTable', function () {
 
         return {
