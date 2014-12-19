@@ -57,26 +57,48 @@ angular.module('clientApp')
 
 angular.module('clientApp')
     .factory('MojoServer', function ($http) {
+        var userStatus = {isLoggedIn:''};
+        var registerStatus = {message:'',level:'info'};
+        var loginStatus = {message:'', level:'info'};
         var ret = {
-            getStatus: function() {
-                $http.get('/getUserStatus').success(function(data) {
-                    this.userStatus = data;
-
+            getUserStatus: function() {
+                $http.get('/command/getUserStatus').success(function(data) {
+                    userStatus.isLoggedIn = data.isLoggedIn;
+                    userStatus.email = data.email;
                 });
+                return userStatus;
             },
             login: function(email,pass) {
-                $http.post('/login', {email:email, password:pass}).success(function(data) {
-                    this.userStatus = data;
-                });
+                loginStatus.message = 'Logging in...';
+                loginStatus.level = 'info';
+                $http.post('/command/login', {email:email, password:pass})
+                    .success(function(data) {
+                        userStatus = data.userStatus;
+                        loginStatus.message = data.message;
+                        loginStatus.level = data.level;
+                    })
+                    .error(function() {
+                        loginStatus.message = 'There was an error logging in. Please try again later';
+                        loginStatus.level = 'danger';
+                    });
+                return loginStatus;
             },
             register: function(email, firstname, lastname) {
+                registerStatus.message = 'Attempting registration...';
+                registerStatus.level = 'info';
                 var msg = {email:email, firstname:firstname, lastname:lastname};
-                $http.post('/register', msg).success(function(data) {
-                    // What to do with data
-                    window.alert(data);
-                });
-            },
-            userStatus : {}
+                $http.post('/command/register', msg)
+                    .success(function(data) {
+                        registerStatus.message = data.message;
+                        registerStatus.level = data.level;
+                    })
+                    .error(function(data, status) {
+                        registerStatus.message = 'There was an error sending the registration request. Please try again later';
+                        registerStatus.level = 'danger';
+                    });
+                return registerStatus;
+            }
+
         };
         return ret;
     });
