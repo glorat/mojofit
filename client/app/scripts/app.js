@@ -45,6 +45,10 @@ angular.module('clientApp').config(['$routeProvider',
                 templateUrl: 'views/rep-max-history.html',
                 controller: 'RepMaxHistoryController'
             })
+            .when('/track', {
+                templateUrl: 'views/track.html',
+                controller: 'TrackController'
+            })
             .otherwise({
                 templateUrl: 'views/slic.html'
             });

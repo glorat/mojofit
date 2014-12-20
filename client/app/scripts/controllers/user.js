@@ -25,7 +25,7 @@ function drawChart() {
  * Controller of the clientApp
  */
 angular.module('clientApp')
-  .controller('UserCtrl', function ($scope, $http, MojoServer, $routeParams, UserState, googleChartApiPromise) {
+  .controller('UserCtrl', function ($scope, $http, MojoServer, $routeParams, UserState, googleChartApiPromise, WorkoutState, $location) {
         $scope.userId = $routeParams.userId;
         $scope.userState = UserState.getCurrentUser();
         UserState.setCurrentUserId($scope.userId);
@@ -58,20 +58,13 @@ angular.module('clientApp')
         });
 
         $scope.addWorkout = function() {
-            $scope.editWorkout = {date: $scope.newWorkout.date, actions:[]};
-            $scope.showAddWorkout = false;
+            $scope.editWorkout({date: $scope.newWorkout.date, actions:[]});
         };
 
-        var submitCB = function() {
-            UserState.reloadCurrentUser();
-        }
-
-        $scope.submitWorkout = function() {
-            var item = $scope.editWorkout;
-            // Sanitise... date must be numeric
-            item.date = item.date.valueOf();
-            $scope.workoutStatus = MojoServer.submitWorkout([item], submitCB);
-       };
+        $scope.editWorkout = function(newW) {
+            WorkoutState.setWorkout(newW);
+            $location.path('/track');
+        };
 
 
     });
@@ -102,7 +95,7 @@ angular.module('clientApp').directive('workoutEditor', function() {
        scope: {workout:'='},
        templateUrl: 'views/workout-editor.html',
        controller: function ($scope, UserState) {
-           $scope.user = UserState.getCurrentUser(); //+ get from server?
+           $scope.user = UserState.getCurrentUser();
 
            $scope.dateOptions = {
                formatYear: 'yy',

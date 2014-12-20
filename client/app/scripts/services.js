@@ -11,18 +11,26 @@ angular.module('clientApp')
                 $http.get('/auth/getUserStatus').success(function(data) {
                     userStatus.isLoggedIn = data.isLoggedIn;
                     userStatus.email = data.email;
+                    userStatus.id = data.id;
+                    userStatus.username =data.username;
+                    // FIXME: Above lines are duped a few lines down
                 });
                 return userStatus;
             },
-            login: function(email,pass) {
+            login: function(email,pass, cb) {
                 loginStatus.message = 'Logging in...';
                 loginStatus.level = 'info';
                 $http.post('/auth/login', {email:email, password:pass})
                     .success(function(data) {
                         userStatus.isLoggedIn = data.userStatus.isLoggedIn;
                         userStatus.email = data.userStatus.email;
+                        userStatus.id = data.userStatus.id;
+                        userStatus.username = data.userStatus.username;
                         loginStatus.message = data.message;
                         loginStatus.level = data.level;
+                        if (cb) { // Learn some JS - check for fn?
+                            cb(userStatus);
+                        }
                     })
                     .error(function() {
                         loginStatus.message = 'There was an error logging in. Please try again later';
@@ -111,6 +119,7 @@ angular.module('clientApp')
             if (userData === undefined || userId === undefined) {
                 userData = {data:[]}; // Return new
             }
+            console.log('Loading user data form server for '+userId );
             $http.get('/userraw/' + userId).success(function(data) {
                 userData.data = processData(data);
                 userData.usedExercises = usedExercises(data);
@@ -138,6 +147,22 @@ angular.module('clientApp')
             getCurrentUser:function() {
                 return currentUser;
             }
+        };
+        return ret;
+    });
+
+angular.module('clientApp')
+    .factory('WorkoutState', function (MojoServer) {
+        var workout = {date:new Date().setHours(0,0,0,0).valueOf(), actions:[]};
+
+        var ret = {
+          getWorkout : function() {
+            return workout;
+          },
+          setWorkout : function(newW) {
+              workout.date = newW.date.valueOf();
+              workout.actions = angular.copy(newW.actions);
+          }
         };
         return ret;
     });
