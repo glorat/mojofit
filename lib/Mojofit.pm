@@ -2,8 +2,6 @@ package Mojofit;
 
 use Mojo::Base 'Mojolicious';
 
-use Mojofit::Model;
-
 use File::Util;
 use Data::Dumper;
 use Mojo::DOM;
@@ -13,14 +11,15 @@ use DateTime;
 use DateTime::Format::DateParse;
 use Data::Google::Visualization::DataTable;
 
-use Mojolicious::Lite;
-use Mojolicious::Plugin::Database;
-
 use JSON; 
 
 use SLIC;
 use Mojofit;
+use Mojofit::Model;
 use Fitstore;
+
+use Mojofit::DB;
+use Mojofit::Model::Users;
 
 our $DATA_DIR;
 # Util objects
@@ -29,158 +28,117 @@ our $f = File::Util->new();
 
 sub startup {
 	my $self = shift;
+	$self->log->warn('Starting up');
+	$self->helper(users => sub { state $users = Mojofit::Model::Users->new });
 
 	$self->moniker('mojofit');
-	$self->secrets(['Some randomly chosen secret passphrase for cookies!@£!@£££']);
-
-	my $r = $self->routes;
-
-
-	$self->helper(users => sub { state $users = Mojofit::Model::Users->new });
+	$self->secrets(['Some randomly chosen secret passphrase for cookies!@£!@££']);
 
 	$self->plugin('config');
 	my $dbconf = $self->config->{dbi};
 	$dbconf->{helper} = 'db';
-	$self->plugin(database => $self->config->{dbi});
 
-	# helper db => sub { state $db = Mango->new($uri) };
-
-
-	$r->any('/' => sub {
-	    shift->reply->static('index.html');
+	$self->helper(dbic => sub {
+		my $app = shift;
+		my $cfg = $app->config->{dbi};
+		return Mojofit::DB->connect($cfg->{dsn}, $cfg->{username}, $cfg->{password}, {mysql_auto_reconnect=>1});
 	});
+my $r = $self->routes;
 
-	$r->get('/getUserStatus'=> sub {
-		my $c = shift;
-		my $status = {};
-		eval {
-			if ($c->session('email')) {
-				# Logged in
-				my $user = $c->users($c->session('email'));
-				$user or $status->{error} = 'Unable to load you from database';
-				$status->{isLoggedIn} = 1;
-				$status->{userPrefs} = $user->{userPrefs};
-			}
-			else {
-				$status->{isLoggedIn} = 0;
-			}
-		};
+$r->any('/' => sub {
+    shift->reply->static('index.html');
+});
+
+# FIXME: this is vulnerable to to some XS attack. Change to POST or prefix the JSON
+$r->get('/query/getUserStatus')->to('query#getUserStatus');
+
+$r->post('/command/login')->to('command#login');
+
+$r->post('/command/register')->to('command#register');
+
+$r->get('/user/:username' => sub {
+	my $c = shift;
+
+	my $target = $c->param('username');
+	$target =~ m/^[A-Za-z0-9\-\.]+$/ or return $c->render(text => 'Invalid username');
 	
-		if ($!) {
-			$status->{error} = $_;
+	$c->redirect_to("/#/user/$target");
+});
+
+$r->get('/userraw/:username' => sub {
+	my $c = shift;
+	my $target = $c->param('username');
+	$target =~ m/^[A-Za-z0-9\-\.]+$/ or return $c->render(text => 'Invalid username');
+	
+	$f->can_read("$DATA_DIR/${target}.json") or return $c->render(json => 'Unknown username');
+	my $jsonStream=$f->load_file("$DATA_DIR/${target}.json");
+	# TODO: json
+	$c->render(text => $jsonStream, format=>'json');
+
+});
+
+$r->any('/userjson/:username/:minsets/:minreps/:period' => sub {userjson(@_)});
+
+$r->any('/userjson/:username' => => sub {userjson(@_)});
+
+$r->any('/uservolume/:username' => sub {
+	my $c = shift;
+	my $target = $c->param('username');
+	$target =~ m/^[A-Za-z0-9\-\.]+$/ or return $c->render(text => 'Invalid username');
+	my $stream = Mojofit::Stream::getStream($target);
+	
+	my $ret = '';
+	foreach my $item (@$stream) {
+		if ($item->maxFor('Barbell Squat')) {
+			$ret .= $item->{date} . ' ' . $item->maxFor('Barbell Squat') . ' '. $item->volumeFor('Barbell Squat')."\n";
 		}
-		$c->render(json => $status);
-	});
-
-
-	$r->post('/login' => sub {
-		my $c = shift;
-	    my $email = lc($c->param('email') || '');
-	    my $pass = $c->param('pass') || '';
- 
-	    # Check password and render "index.html.ep" if necessary
-	    return $c->render(json => {error=>'Failed to log in'}) unless $c->users->check($email, $pass);
-	 	my $user = $c->users->get($email);
+	}
+	$c->render(text => $ret);
 	
-	    # Store login in session
-	    $c->session(email => $email);
-		$c->session(expiration => 3600*24*30); # 30-days for now. Low security
-	
-		my $status = {isLoggedIn=>1, userPrefs=> $user->{userPrefs}};
-		$c->render(json=>$status);
-	
-	});
+});
 
-	$r->post('/register' => sub {
-		my $c = shift;
-	   	my $ip = $c->tx->remote_address;
-		my $reg = {}; 
-		$c->users->register($reg);	
-	});
+$r->any('/debug' => sub {
+    my $c = shift;
+	my @nms = $c->param;
+	my $str = $c->req->body;
+	$str .= "\n";
+	foreach (@nms) {
+		$str.="$_ : " . $c->param($_) ."\n";
+	}
+    $c->render(text => $str);
+});
 
+$r->get('/slic' => sub {
+	my $c = shift;
+	$c->redirect_to("/#/slic");
+});
 
-	$r->get('/user/:username' => sub {
-		my $c = shift;
-
-		my $target = $c->param('username');
-		$target =~ m/^[A-Za-z0-9\-\.]+$/ or return $c->render(text => 'Invalid username');
+$r->post('/slicparse' => sub {
+	my $c = shift;
+	my $text = $c->param('text');
 	
-		$c->redirect_to("/#/user/$target");
-	});
-
-	$r->get('/userraw/:username' => sub {
-		my $c = shift;
-		my $target = $c->param('username');
-		$target =~ m/^[A-Za-z0-9\-\.]+$/ or return $c->render(text => 'Invalid username');
+	open OUT, ">$DATA_DIR/prev.txt";
+	print OUT $text;
+	close OUT;
 	
-		$f->can_read("$DATA_DIR/${target}.json") or return $c->render(json => 'Unknown username');
-		my $jsonStream=$f->load_file("$DATA_DIR/${target}.json");
-		# TODO: json
-		$c->render(text => $jsonStream, format=>'json');
-
-	});
-
-	$r->any('/userjson/:username/:minsets/:minreps/:period' => sub {userjson(@_)});
-
-	$r->any('/userjson/:username' => => sub {userjson(@_)});
-
-	$r->any('/uservolume/:username' => sub {
-		my $c = shift;
-		my $target = $c->param('username');
-		$target =~ m/^[A-Za-z0-9\-\.]+$/ or return $c->render(text => 'Invalid username');
-		my $stream = Mojofit::Stream::getStream($target);
+	my ($name, $items, $warns) = SLIC::parse_text($text);
+	foreach (@$warns) { 
+		$c->app->log->warn($_);
+	}
+	#$name =~ s/ //g;
+	$name =~ s/\W//g; # Kill non-word chars for now. Be safe
 	
-		my $ret = '';
-		foreach my $item (@$stream) {
-			if ($item->maxFor('Barbell Squat')) {
-				$ret .= $item->{date} . ' ' . $item->maxFor('Barbell Squat') . ' '. $item->volumeFor('Barbell Squat')."\n";
-			}
-		}
-		$c->render(text => $ret);
+	# Put in event store
+	my $store = Fitstore->new($name);
+	$store->submit_workouts($items);
 	
-	});
-
-	$r->any('/debug' => sub {
-	    my $c = shift;
-		my @nms = $c->param;
-		my $str = $c->req->body;
-		$str .= "\n";
-		foreach (@nms) {
-			$str.="$_ : " . $c->param($_) ."\n";
-		}
-	    $c->render(text => $str);
-	});
-
-	$r->get('/slic' => sub {
-		my $c = shift;
-		$c->redirect_to("/#/slic");
-	});
-
-	$r->post ('/slicparse' => sub {
-		my $c = shift;
-		my $text = $c->param('text');
+	my $view = Fitstore::MainView->new($name);
+	$view->write_by_date();
 	
-		open OUT, ">$DATA_DIR/prev.txt";
-		print OUT $text;
-		close OUT;
+	$c = $c->redirect_to("/user/$name");
 	
-		my ($name, $items, $warns) = SLIC::parse_text($text);
-		foreach (@$warns) { 
-			$c->app->log->warn($_);
-		}
-		#$name =~ s/ //g;
-		$name =~ s/\W//g; # Kill non-word chars for now. Be safe
-	
-		# Put in event store
-		my $store = Fitstore->new($name);
-		$store->submit_workouts($items);
-	
-		my $view = Fitstore::MainView->new($name);
-		$view->write_by_date();
-	
-		$c = $c->redirect_to("/user/$name");
-	
-	});
+});
+# end startup
 }
 
 
