@@ -176,8 +176,12 @@ sub handle_item_submitted {
 		$_;
 		
 	} (@{$item->{actions}})];
+	# Perform a merge in!
+	foreach my $key (keys %$item) {
+		$self->{bydate}->{$item->{date}}->{$key} = $item->{$key};
+	}
 	
-	$self->{bydate}->{$item->{date}} = $item;
+	# $self->{bydate}->{$item->{date}} = $item;
 }
 
 sub write_by_date {
