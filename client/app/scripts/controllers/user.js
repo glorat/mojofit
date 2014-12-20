@@ -62,10 +62,18 @@ angular.module('clientApp')
             $scope.showAddWorkout = false;
         };
 
+        var submitCB = function() {
+            UserState.reloadCurrentUser();
+        }
+
         $scope.submitWorkout = function() {
             var item = $scope.editWorkout;
-            $scope.workoutStatus = MojoServer.submitWorkout([item]);
+            // Sanitise... date must be numeric
+            item.date = item.date.valueOf();
+            $scope.workoutStatus = MojoServer.submitWorkout([item], submitCB);
        };
+
+
     });
 
 
