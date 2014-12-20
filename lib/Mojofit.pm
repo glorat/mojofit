@@ -57,11 +57,11 @@ $r->any('/' => sub {
 });
 
 # FIXME: this is vulnerable to to some XS attack. Change to POST or prefix the JSON
-$r->get('/query/getUserStatus')->to('query#getUserStatus');
+$r->get('/auth/getUserStatus')->to('auth#getUserStatus');
 
-$r->post('/command/login')->to('command#login');
+$r->post('/auth/login')->to('auth#login');
 
-$r->post('/command/register')->to('command#register');
+$r->post('/auth/register')->to('auth#register');
 
 $r->post('/command/submitWorkouts')->to('command#submit_workouts');
 
@@ -81,7 +81,6 @@ $r->get('/userraw/:username' => sub {
 	
 	$f->can_read("$DATA_DIR/${target}.json") or return $c->render(json => 'Unknown username');
 	my $jsonStream=$f->load_file("$DATA_DIR/${target}.json");
-	# TODO: json
 	$c->render(text => $jsonStream, format=>'json');
 
 });
