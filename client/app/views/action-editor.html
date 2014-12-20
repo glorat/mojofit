@@ -1,6 +1,5 @@
-<ul ng-repeat="set in action.sets">
-    <li>
-        <input ng-model="set.weight" type="text" size="4" placeholder="{{ set.unit }}">
+<div ng-repeat="set in action.sets">
+        <input class="col-xs-offset-3" ng-model="set.weight" type="text" size="4" placeholder="{{ set.unit }}">
         <span ng-hide="unitedit" ng-click="unitedit = true">{{ set.unit }}</span>
         <select ng-show="unitedit" ng-model="set.unit">
             <option value="kg">kg</option>
@@ -11,5 +10,4 @@
             <button type="button" class="btn btn-default" ng-click="addSet($index)"><span class="glyphicon glyphicon-plus"></span></button>
             <button type="button" class="btn btn-default" ng-click="removeSet($index)"><span class="glyphicon glyphicon-minus"></span></button>
         </div>
-    </li>
-</ul>
+</div>

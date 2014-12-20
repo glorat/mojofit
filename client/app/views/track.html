@@ -1,0 +1,10 @@
+<h2>Track workout</h2>
+<workout-editor workout="editWorkout"></workout-editor>
+<div>
+    <button class="btn btn-default" ng-click="submitWorkout()">Submit</button>
+    <button class="btn btn-default" ng-click="editWorkout=null">Cancel</button>
+</div>
+
+<div class="alert" ng-class="'alert-' + workoutStatus.level" role="alert" ng-show="workoutStatus.message">
+    {{ workoutStatus.message }}
+</div>
