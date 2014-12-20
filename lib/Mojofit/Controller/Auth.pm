@@ -19,10 +19,11 @@ $c->app->log->debug("Trying to log in $email");
 	    return $c->render(json => {message=>'Failed to log in', level=>'warning', userStatus=>{} }) unless my $user = $c->users->check($c, $email, $pass);
 
 	    # Store login in session
-	    $c->session(email => $user->email, id=>$user->id);
+	    $c->session(email => $user->email, id=>$user->id, username=>$user->username);
 		$c->session(expiration => 3600*24*30); # 30-days for now. Low security
 	
-		my $status = {isLoggedIn=>1, userPrefs=> undef}; #$user->{userPrefs}
+	    # This should match what went into the session above!
+		my $status = {isLoggedIn=>1, userPrefs=> undef, id=>$user->id, email=>$user->email, username=>$user->username}; #$user->{userPrefs}
 		$c->app->log->debug("Logged in $email");
 		$c->render(json=>{userStatus=>$status, level=>'success', message=>'Logged In!'});
 	};
@@ -66,6 +67,8 @@ sub getUserStatus {
 			my $email = $c->session('email');
 			$status->{isLoggedIn} = 1;
 			$status->{email} = $email;
+			$status->{username} = $c->session('username');
+			$status->{id} = $c->session('id');
 			#$status->{userPrefs} = $user->{userPrefs};
 		}
 		else {
@@ -78,5 +81,6 @@ sub getUserStatus {
 	}
 	$c->render(json => $status);
 };
+
 
 1;

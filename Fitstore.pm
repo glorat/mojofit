@@ -47,19 +47,36 @@ sub submit_workouts {
 # Inplace sanitisation
 sub _sanitise_item {
 	my ($item) = @_;
-	$item->{date} += 0; # Force numeric
 	
-	# Handle case where json passes in milli
-	if ($item->{date} > 10000000000) {
-		$item->{date} /= 1000; # We are storing *seconds* since epoch in event store
-	}
-	if ($item->{date} > $MAX_DATE) {
-		die "Invalid date $item->{date}\n";
-	}
-	elsif ($item->{date} < $MIN_DATE) {
-		die "Invalid date in the past $item->{date}\n";
-	}
+	$item->{date} = _sanitise_date($item->{date});
+	
 	return $item;
+}
+
+sub _sanitise_date {
+	my ($date) = @_;
+	my $origdate = $date;
+	$date +=0 ;
+	
+	if ($date> 10000000000) {
+		$date/= 1000; # We are storing *seconds* since epoch in event store
+	}
+	if ($date > $MAX_DATE) {
+		die "Invalid date $origdate\n";
+	}
+	elsif ($date< $MIN_DATE) {
+		die "Invalid date in the past $origdate\n";
+	}
+	
+	my $dt = DateTime->from_epoch( epoch => $date );
+	
+	$dt = DateTime->new( year => $dt->year, month => $dt->month, day => $dt->day, time_zone => 'UTC' );
+	my $epoch_time = $dt->epoch;
+	if ($epoch_time != $date) {
+		my $diff = $epoch_time - $date;
+		die ("Supplied date mismatches UTC by $diff seconds. Bug in submission\n");
+	}
+	return $epoch_time;
 }
 
 sub load_from_stream {
