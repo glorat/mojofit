@@ -17,10 +17,6 @@ sub parse_text {
 	$text =~ s/\r/\n/g; # Enforce \n only
 	$text =~ s/\n\ +/\n/g; #Trim leading space
 	
-	open OUT, ">prev.txt";
-	print OUT $text;
-	close OUT;
-	
 	@WARNS = ();
 	$text =~ m/\n([\S\ ]*?)'s? Log \-/s or die ("Can't find your name inside the text. Did you copy the ENTIRE page?");
 	my $name = $1;

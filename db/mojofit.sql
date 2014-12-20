@@ -22,6 +22,7 @@ CREATE TABLE `audit_log` (
 DROP TABLE IF EXISTS `member`;
 CREATE TABLE `member` (
   `id` int(11) NOT NULL auto_increment,
+  `username` varchar(100) NOT NULL default '',
   `name` varchar(100) NOT NULL default '',
   `password` varchar(32) NOT NULL default '',
   `email` varchar(50) default NULL,
@@ -30,7 +31,8 @@ CREATE TABLE `member` (
   `changepass` varchar(10) NOT NULL default '',
   PRIMARY KEY  (`id`),
   KEY `name` (`name`),
-  KEY `email` (`email`)
+  UNIQUE KEY `email` (`email`),
+  UNIQUE KEY `username` (`username`)
 ) ENGINE=InnoDB ;
 
 
