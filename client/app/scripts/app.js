@@ -63,7 +63,7 @@ angular.module('clientApp')
         var workoutStatus = {level:'info', message:''};
         var ret = {
             getUserStatus: function() {
-                $http.get('/query/getUserStatus').success(function(data) {
+                $http.get('/auth/getUserStatus').success(function(data) {
                     userStatus.isLoggedIn = data.isLoggedIn;
                     userStatus.email = data.email;
                 });
@@ -72,7 +72,7 @@ angular.module('clientApp')
             login: function(email,pass) {
                 loginStatus.message = 'Logging in...';
                 loginStatus.level = 'info';
-                $http.post('/command/login', {email:email, password:pass})
+                $http.post('/auth/login', {email:email, password:pass})
                     .success(function(data) {
                         userStatus.isLoggedIn = data.userStatus.isLoggedIn;
                         userStatus.email = data.userStatus.email;
@@ -89,7 +89,7 @@ angular.module('clientApp')
                 registerStatus.message = 'Attempting registration...';
                 registerStatus.level = 'info';
                 var msg = {email:email, firstname:firstname, lastname:lastname};
-                $http.post('/command/register', msg)
+                $http.post('/auth/register', msg)
                     .success(function(data) {
                         registerStatus.message = data.message;
                         registerStatus.level = data.level;

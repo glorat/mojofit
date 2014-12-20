@@ -64,13 +64,8 @@ angular.module('clientApp')
 
         $scope.submitWorkout = function() {
             var item = $scope.editWorkout;
-            var submit = {items:[item]};
-
             $scope.workoutStatus = MojoServer.submitWorkout([item]);
-            //$scope.workoutStatus.message = 'Sorry! Saving is not built yet. If you are interested in saving, let Kevin know';
-            //$scope.workoutStatus.level = 'warning'
-            //window.alert('Sorry! Saving is not built yet. If you are interested in saving, let Kevin know');
-        };
+       };
     });
 
 
