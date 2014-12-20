@@ -5,10 +5,13 @@ package Fitstore;
 
 use JSON;
 
-our $DATA_DIR = '.';
+our $DATA_DIR;
 
 sub new {
 	my ($class, $id) = @_;
+	
+	$DATA_DIR or die 'Fitstore::DATA_DIR has not been inited. Code bug';
+	
 	# Sanitise $id
 	my $self = {id=>$id, index=>0, data=>{}};
 	bless $self, $class;
@@ -26,11 +29,22 @@ sub submit_workouts {
 	foreach my $item (@$items) {
 		$item->{date} or die ("Item has not date");
 		$item->{actions} or die ("Item has no actions");
+		_sanitise_item($item);
 	}
 	# No other validation for now!
 	my @events = map { {action=>'item_submitted', item=>$_}} (@$items);
 	$self->commit_append(\@events);
 	
+}
+
+
+# Inplace sanitisation
+sub _sanitise_item {
+	my ($item) = @_;
+	if ($item->{date} > 10000000000) {
+		$item->{date} /= 1000; # We are storing *seconds* since epoch in event store
+	}
+	return $item;
 }
 
 sub load_from_stream {
@@ -47,6 +61,9 @@ sub load_from_stream {
 
 sub commit_append {
 	my ($self, $event) = @_;
+	
+	print STDERR "commit_append on Fitstore::$self->{id}\n";
+	
 	my $file = "$DATA_DIR/$self->{id}.dat";
 	# Open for r/w and lock!
 	open FH, "+>>$file" or die ("Can't open $file for write-append: $!");
@@ -60,6 +77,9 @@ sub commit_append {
 		$event = [$event];
 	}
 	if ('ARRAY' eq ref($event)) {
+		
+		print STDERR "There are ".scalar(@$event)." events to persist\n";
+		
 		foreach (@$event) {
 			$_->{'time'} = time; # Stamp it
 			print FH encode_json($_);

@@ -25,12 +25,11 @@ sub check {
 
   if (!$rec) {
 	  $c->app->log->warn("Failed lookup for $email");
-	  
-	  return $rec;
+	  return undef;
   }
   elsif ($rec->changepass eq $pass) {
 	  $c->app->log->warn("Successful insecure login for $email");
-	  return 1;
+	  return $rec;
   }
   else {
 	  # Fail

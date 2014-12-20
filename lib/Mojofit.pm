@@ -20,8 +20,12 @@ use Fitstore;
 
 use Mojofit::DB;
 use Mojofit::Model::Users;
+use FindBin;
 
-our $DATA_DIR;
+our $DATA_DIR = "$FindBin::Bin/data";
+
+
+
 # Util objects
 our $f = File::Util->new();
 
@@ -29,6 +33,9 @@ our $f = File::Util->new();
 sub startup {
 	my $self = shift;
 	$self->log->warn('Starting up');
+	
+	$Fitstore::DATA_DIR = $DATA_DIR;
+	
 	$self->helper(users => sub { state $users = Mojofit::Model::Users->new });
 
 	$self->moniker('mojofit');
@@ -55,6 +62,8 @@ $r->get('/query/getUserStatus')->to('query#getUserStatus');
 $r->post('/command/login')->to('command#login');
 
 $r->post('/command/register')->to('command#register');
+
+$r->post('/command/submitWorkouts')->to('command#submit_workouts');
 
 $r->get('/user/:username' => sub {
 	my $c = shift;
