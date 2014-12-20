@@ -25,7 +25,7 @@ function drawChart() {
  * Controller of the clientApp
  */
 angular.module('clientApp')
-  .controller('UserCtrl', function ($scope, $http, $routeParams, UserState, googleChartApiPromise) {
+  .controller('UserCtrl', function ($scope, $http, MojoServer, $routeParams, UserState, googleChartApiPromise) {
         $scope.userId = $routeParams.userId;
         $scope.userState = UserState.getCurrentUser();
         UserState.setCurrentUserId($scope.userId);
@@ -33,6 +33,7 @@ angular.module('clientApp')
         $scope.itemsPerPage = 20;
         $scope.currentPage = 1;
         $scope.newWorkout = {date:new Date()};
+        $scope.workoutStatus = {level:'info', message:''};
 
         $scope.showChart = function(){
             return $scope.userState.data.length > 0;
@@ -42,6 +43,8 @@ angular.module('clientApp')
             return new Date(ts).toDateString();
         };
 
+
+        // This ajax currently fills in jusonData
         $.ajax({
             url: '/userjson/' + $scope.userId,
             dataType:'script',
@@ -60,7 +63,13 @@ angular.module('clientApp')
         };
 
         $scope.submitWorkout = function() {
-            window.alert('Sorry! Saving is not built yet. If you are interested in saving, let Kevin know');
+            var item = $scope.editWorkout;
+            var submit = {items:[item]};
+
+            $scope.workoutStatus = MojoServer.submitWorkout([item]);
+            //$scope.workoutStatus.message = 'Sorry! Saving is not built yet. If you are interested in saving, let Kevin know';
+            //$scope.workoutStatus.level = 'warning'
+            //window.alert('Sorry! Saving is not built yet. If you are interested in saving, let Kevin know');
         };
     });
 

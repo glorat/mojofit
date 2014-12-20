@@ -60,6 +60,7 @@ angular.module('clientApp')
         var userStatus = {isLoggedIn:''};
         var registerStatus = {message:'',level:'info'};
         var loginStatus = {message:'', level:'info'};
+        var workoutStatus = {level:'info', message:''};
         var ret = {
             getUserStatus: function() {
                 $http.get('/query/getUserStatus').success(function(data) {
@@ -98,6 +99,21 @@ angular.module('clientApp')
                         registerStatus.level = 'danger';
                     });
                 return registerStatus;
+            },
+            submitWorkout: function(items) {
+                workoutStatus.message = 'Submitting workout...';
+                workoutStatus.level = 'info';
+                var msg = {items:items};
+                $http.post('/command/submitWorkouts', msg)
+                    .success(function(data) {
+                        workoutStatus.message = data.message;
+                        workoutStatus.level = data.level;
+                    })
+                    .error(function(data, status) {
+                        workoutStatus.message = 'There was an error sending the registration request. Please try again later';
+                        workoutStatus.level = 'danger';
+                    });
+                return workoutStatus;
             }
 
         };

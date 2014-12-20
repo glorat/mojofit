@@ -65,6 +65,7 @@
                 <button class="btn btn-default" ng-click="editWorkout=null">Cancel</button>
             </footer>
         </div>
+         <div class="alert" ng-class="'alert-' + workoutStatus.level" role="alert" ng-show="workoutStatus.message">{{ workoutStatus.message }}</div>
 
     <div>
         <form class="" role="search">
