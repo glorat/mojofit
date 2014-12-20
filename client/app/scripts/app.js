@@ -100,7 +100,7 @@ angular.module('clientApp')
                     });
                 return registerStatus;
             },
-            submitWorkout: function(items) {
+            submitWorkout: function(items, cb) {
                 workoutStatus.message = 'Submitting workout...';
                 workoutStatus.level = 'info';
                 var msg = {items:items};
@@ -108,6 +108,9 @@ angular.module('clientApp')
                     .success(function(data) {
                         workoutStatus.message = data.message;
                         workoutStatus.level = data.level;
+                        if (cb) { // Learn some JS - check for fn?
+                            cb();
+                        }
                     })
                     .error(function(data, status) {
                         workoutStatus.message = 'There was an error sending the registration request. Please try again later';

@@ -60,6 +60,11 @@ sub register {
 	return $res;
 }
 
+sub get {
+	my ($self, $db, $id) = @_;
+	return $db->resultset('Member')->search({id=>$id})->first;
+}
+
 
 package Mojofit::Model::User;
 sub new {

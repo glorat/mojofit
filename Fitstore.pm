@@ -4,8 +4,14 @@ use warnings;
 package Fitstore;
 
 use JSON;
+use DateTime;
+use DateTime::Format::DateParse;
 
 our $DATA_DIR;
+
+our $MAX_DATE = DateTime::Format::DateParse->parse_datetime('2020-01-01')->epoch; # 2020 bug :)
+our $MIN_DATE = 60*60*24*265; # Go on... log all the way back to epoch + 1yr (to mitigate silly parsing bugs)
+
 
 sub new {
 	my ($class, $id) = @_;
@@ -41,8 +47,17 @@ sub submit_workouts {
 # Inplace sanitisation
 sub _sanitise_item {
 	my ($item) = @_;
+	$item->{date} += 0; # Force numeric
+	
+	# Handle case where json passes in milli
 	if ($item->{date} > 10000000000) {
 		$item->{date} /= 1000; # We are storing *seconds* since epoch in event store
+	}
+	if ($item->{date} > $MAX_DATE) {
+		die "Invalid date $item->{date}\n";
+	}
+	elsif ($item->{date} < $MIN_DATE) {
+		die "Invalid date in the past $item->{date}\n";
 	}
 	return $item;
 }
@@ -62,7 +77,7 @@ sub load_from_stream {
 sub commit_append {
 	my ($self, $event) = @_;
 	
-	print STDERR "commit_append on Fitstore::$self->{id}\n";
+	#print STDERR "commit_append on Fitstore::$self->{id}\n";
 	
 	my $file = "$DATA_DIR/$self->{id}.dat";
 	# Open for r/w and lock!
@@ -78,7 +93,7 @@ sub commit_append {
 	}
 	if ('ARRAY' eq ref($event)) {
 		
-		print STDERR "There are ".scalar(@$event)." events to persist\n";
+		#print STDERR "There are ".scalar(@$event)." events to persist\n";
 		
 		foreach (@$event) {
 			$_->{'time'} = time; # Stamp it
