@@ -73,7 +73,7 @@ module.exports = function (grunt) {
       },
       proxies: [
           {
-              context: ['/userjson','/userraw','/query','/command', '/auth'],
+              context: ['/userjson','/userraw','/query','/command', '/auth', '/slicparse'],
               host: 'localhost',
               port: 3000,
               https: false,
