@@ -5,7 +5,7 @@
             <option value="kg">kg</option>
             <option value="lb">lb</option>
         </select>
-        <input ng-model="set.reps" type="text" size="2" placeholder="rp">
+        <input ng-model="set.reps" type="text" size="2" placeholder="rp" ng-keypress="($event.which === 13)?addSet($index):0">
         <div class="btn-group btn-group-xs" role="group">
             <button type="button" class="btn btn-default" ng-click="addSet($index)"><span class="glyphicon glyphicon-plus"></span></button>
             <button type="button" class="btn btn-default" ng-click="removeSet($index)"><span class="glyphicon glyphicon-minus"></span></button>
