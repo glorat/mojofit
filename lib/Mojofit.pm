@@ -143,7 +143,7 @@ $r->post('/slicparse' => sub {
 	my $view = Fitstore::MainView->new($name);
 	$view->write_by_date();
 	
-	$c = $c->redirect_to("/user/$name");
+	$c = $c->redirect_to("/#/user/$name");
 	
 });
 # end startup
