@@ -36,7 +36,7 @@ sub parse_post {
 	if ($post =~ m/(.*?)\n\s*?\n(.*)\nNotes\s(.*)${name}, /s) {
 		my ($datetxt, $workout, $notes) = ($1,$2,$3);
 		#$datetxt =~ s/^\w+//; # Trim the DOW
-			my $date = DateTime::Format::DateParse->parse_datetime($datetxt);
+			my $date = DateTime::Format::DateParse->parse_datetime($datetxt, 'UTC');
 		$date or die ("$datetxt is not a date in $_");
 		# push @$streamItem, {actions=>\@actions, date=>$date->epoch}; push @actions, {name=> $name, sets=>\@sets} ; 
 		# push @sets, parseSetText($setText); reps text kg
