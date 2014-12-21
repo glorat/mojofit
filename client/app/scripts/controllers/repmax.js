@@ -3,6 +3,19 @@
 /* global google */
 var repmaxFile = function() {
 
+    var set_kg = function(s) {
+        if (!s.unit) {
+            return 0;
+        }
+        else if (s.unit === 'kg') {
+            return s.weight;
+        }
+        else if (s.unit == 'lb')
+        {
+            return s.weight / 2.2;
+        }
+    }
+
     var genRepMax = function (items, names) {
         if (names === undefined) {
             return [];
@@ -24,7 +37,7 @@ var repmaxFile = function() {
                     var repMax = repMaxByName[action.name];
                     action.sets.forEach(function (aset) {
                         var reps = aset.reps - 1;
-                        var kg = aset.weight; // FIXME: to kg
+                        var kg = set_kg(aset);
                         if (reps >= MAX_REP) {
                             reps = MAX_REP - 1;
                         }
@@ -68,7 +81,7 @@ var repmaxFile = function() {
                     if (action.name === name) {
                         action.sets.forEach(function(aset) {
                             var reps = aset.reps;
-                            var kg = aset.weight; // FIXME: to kg
+                            var kg = set_kg(aset);
                             if (reps >= MAX_REP) {
                                 reps = MAX_REP;
                             }
