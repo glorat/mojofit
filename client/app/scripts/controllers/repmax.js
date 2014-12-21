@@ -17,7 +17,7 @@ var repmaxFile = function() {
     }
 
     var genRepMax = function (items, names) {
-        if (names === undefined) {
+        if (names === undefined || items === undefined) {
             return [];
         }
 
@@ -122,18 +122,21 @@ var repmaxFile = function() {
 
         return {
             restrict: 'E',
-            scope: {userState: '=', width: '@'},
+            scope: {data: '=', exercises: '=', width: '@'},
             templateUrl: 'views/rep-max-table.html',
             controller: function ($scope, $attrs) {
                 if ($scope.width === undefined) {
                     $scope.width = 5;
                 }
+                //$scope.repMax = genRepMax($scope.data, $scope.exercises);
 
-                $scope.$watch($attrs.userState, function (newVal, oldVal) {
-                    console.log('user changed for repmax from' + oldVal + ' to ' + newVal);
-                    $scope.repMax = genRepMax(newVal.data, newVal.usedExercises);
+                $scope.$watchCollection('[data, exercises]', function (newVals, oldVals) {
+                    console.log('user changed for repmax from' + oldVals[1] + ' to ' + newVals[1]);
+                    var used = ['Barbell Squat'];
+                    // userState.usedExercises
+                    $scope.repMax = genRepMax(newVals[0], newVals[1]);
                     // genRepMaxHistoryTable(newVal.data, 'Barbell Squat');
-                }, true);
+                }, false);
             }
         };
     });
