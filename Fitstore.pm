@@ -74,7 +74,7 @@ sub _sanitise_date {
 	my $epoch_time = $dt->epoch;
 	if ($epoch_time != $date) {
 		my $diff = $epoch_time - $date;
-		die ("Supplied date mismatches UTC by $diff seconds. Bug in submission\n");
+		die ("Supplied date $origdate mismatches UTC by $diff seconds. Bug in submission\n");
 	}
 	return $epoch_time;
 }

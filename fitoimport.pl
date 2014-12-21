@@ -21,7 +21,7 @@ our $mojouser = '1';
 our $stream_increment = 15; # How much does fito show in one hit
 our $STREAM_LIMIT = 2400; # That's plenty
 #our $STREAM_LIMIT = 30; # That's good for testing
-our $STASH_DIR = "$FindBin::Bin/../fitodata";
+our $STASH_DIR = "$FindBin::Bin/fitodata";
 
 
 getFromStash();
@@ -63,31 +63,38 @@ sub processStream {
 	
 	$dom->find('div.stream_item')->each(sub {
 		my $sitem = shift;
-		my $date = DateTime::Format::DateParse->parse_datetime($sitem->at('a.action_time')->text);
-		$date or next; # Today will break it 
+		my $dt = DateTime::Format::DateParse->parse_datetime($sitem->at('a.action_time')->text);
+		$dt or next; # Today will break it 
+		# Lose the time portion for now
+		my $date = DateTime->new( year => $dt->year, month => $dt->month, day => $dt->day, time_zone => 'UTC' );
+		
 		my @actions;
 		foreach my $actEl ($sitem->find('ul.action_detail li')->each) {
 			my $nameEl = $actEl->at('div.action_prompt');
 			if ($nameEl) {
 				print $date->ymd . " " . $nameEl->text . "\n";
 				my @sets;
+				my $action_comment = '';
 				foreach my $setEl ($actEl->at('ul')->find('li')->each) {
 					#if ($setEl->children('span[class="action_prompt_points"]')->first) {
 						# Only point worthy items are sets
 						my $setText = $setEl->text;
 						print STDERR "  ".$setEl->text."\n";
 					#	print STDERR "***\n";
+					if (my $weight_rep = parseSetText($setText)) {
 						push @sets, parseSetText($setText);
-					#}
-					#else {
-					#	print STDERR "Commentary: ". $setEl->text;
-					#	print STDERR "\n";
-					#}
+					}
+					else {
+						$action_comment .= $setText;
+						print STDERR "Commentary: setText\n";
+					}
 				}
 				#print "\n";
 				my $name = $nameEl->text;
 				$name =~ s/:$//;
-				push @actions, {name=> $name, sets=>\@sets} ;
+				my $action = {name=> $name, sets=>\@sets};
+				$action->{notes} = $action_comment if $action_comment ne '';
+				push @actions, $action;
 			}
 		}
 		if (scalar (@actions)) {
@@ -107,13 +114,15 @@ sub parseSetText {
 	elsif ($setText =~ m/([\d\.]+) lb/) {
 		$setData{unit} = 'lb';
 		$setData{weight} = $1;
-		#$setData{kg} = sprintf('%.1f', $1 / 2.20462262185); # Fito rounding...
 	}# else??
 	
 	if ($setText =~ m/([\d\.]+) reps/) {
 		$setData{reps} = $1;
 	}
-	$setData{text} = $setText;
+	else {
+		return undef;
+	}
+	#$setData{text} = $setText;
 	return \%setData;
 }
 
