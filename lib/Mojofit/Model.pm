@@ -30,7 +30,10 @@ sub new {
 
 sub kg {
 	my $self = shift;
-	if ($self->{unit} eq 'kg') {
+	if (!$self->{unit}) {
+		return 0;
+	}
+	elsif ($self->{unit} eq 'kg') {
 		return $self->{weight}
 	}
 	elsif ($self->{unit} eq 'lb') {
