@@ -65,6 +65,8 @@ $r->post('/auth/register')->to('auth#register');
 
 $r->post('/command/submitWorkouts')->to('command#submit_workouts');
 
+$r->post('/command/deleteWorkout')->to('command#delete_workout');
+
 $r->get('/user/:username' => sub {
 	my $c = shift;
 
@@ -143,7 +145,7 @@ $r->post('/slicparse' => sub {
 	my $view = Fitstore::MainView->new($name);
 	$view->write_by_date();
 	
-	$c = $c->redirect_to("/#/user/$name");
+	$c = $c->redirect_to("/user/$name");
 	
 });
 # end startup

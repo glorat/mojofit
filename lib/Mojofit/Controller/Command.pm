@@ -17,10 +17,36 @@ sub jsonAuthenticated {
 	}
 }
 
+sub delete_workout {
+	my $c = shift;
+	eval {
+		# TODO: Put this in "under"
+		my $json = $c->req->json;
+		my $id = $c->session->{id};
+		$id or die "Not logged in \n";
+		my $user = $c->users->get($c->dbic, $id);
+		$user or die "Login no longer valid!!\n";
+		
+		# Main handle here
+		my $date = $json->{date};
+		my $store = Fitstore->new($id);
+		$store->delete_workout($date);
+		
+		# Generate JSON view immediately
+		my $view = Fitstore::MainView->new($id);
+		$view->write_by_date();
+		
+		$c->render(json=>{level=>'success', message=>'Deleted succesfully!', redirect_to=>"/#/user/$id"});
+	};
+	if ($@) {
+		$c->render(json=>{level=>'danger', message=>$@});
+	}
+}
 
 sub submit_workouts {
 	my $c = shift;
 	eval {
+		# TODO: Put this in "under"
 		my $json = $c->req->json;
 		my $id = $c->session->{id};
 		$id or die "Not logged in \n";
@@ -50,7 +76,6 @@ sub submit_workouts {
 			symlink("$Mojofit::DATA_DIR/$id.json", "$Mojofit::DATA_DIR/$username.json");
 		}
 	
-		# TODO: Run a view to give some feedback :)
 		$c->render(json=>{level=>'success', message=>'Submitted successfully!', redirect_to=>"/#/user/$id"});
 	};
 	if ($@) {

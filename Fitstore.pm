@@ -19,14 +19,20 @@ sub new {
 	$DATA_DIR or die 'Fitstore::DATA_DIR has not been inited. Code bug';
 	
 	# Sanitise $id
-	my $self = {id=>$id, index=>0, data=>{}};
+	my $self = {id=>$id, index=>0, data=>{}, dates=>{}};
 	bless $self, $class;
 	$self->load_from_stream;
 	return $self;
 }
 
 sub handle_item_submitted {
-	# Nothing doing for validation
+	my ($self, $ev) = @_;
+	$self->{dates}->{$ev->{item}->{date}} = 1;
+}
+
+sub handle_item_deleted {
+	my ($self, $ev) = @_;
+	delete $self->{dates}->{$ev->{date}};
 }
 
 sub submit_workouts {
@@ -43,6 +49,16 @@ sub submit_workouts {
 	
 }
 
+sub delete_workout {
+	my ($self, $origdate) = @_;
+	my $date = _sanitise_date($origdate);
+	if (!$self->{dates}->{$date}) {
+		die ("Entry for date $date does not exist currently");
+	}
+	my $event = {action=>'item_deleted', date=>$date};
+	$self->commit_append($event);
+	
+}
 
 # Inplace sanitisation
 sub _sanitise_item {
@@ -53,7 +69,21 @@ sub _sanitise_item {
 	return $item;
 }
 
+# Ensure UTC ness
 sub _sanitise_date {
+	my ($date) = @_;
+	my $origdate = $date;
+	my $epoch_time = _sanitise_date_unsafe($date);
+
+	if ($epoch_time != $date) {
+		my $diff = $epoch_time - $date;
+		die ("Supplied date $origdate mismatches UTC by $diff seconds. Bug in submission\n");
+	}
+	return $epoch_time;
+}
+
+# Don't die if UTC is out
+sub _sanitise_date_unsafe {
 	my ($date) = @_;
 	my $origdate = $date;
 	$date +=0 ;
@@ -72,10 +102,6 @@ sub _sanitise_date {
 	
 	$dt = DateTime->new( year => $dt->year, month => $dt->month, day => $dt->day, time_zone => 'UTC' );
 	my $epoch_time = $dt->epoch;
-	if ($epoch_time != $date) {
-		my $diff = $epoch_time - $date;
-		die ("Supplied date $origdate mismatches UTC by $diff seconds. Bug in submission\n");
-	}
 	return $epoch_time;
 }
 
@@ -147,7 +173,7 @@ our @ISA = qw'Fitstore';
 sub new {
 	my ($class, $id) = @_;
 	# Sanitise $id
-	my $self = {id=>$id, index=>0, by_date=>{}};
+	my $self = {id=>$id, index=>0, bydate=>{}};
 	bless $self, $class;
 	$self->load_from_stream;
 	return $self;
@@ -156,6 +182,7 @@ sub new {
 sub handle_item_submitted {
 	my ($self, $event) = @_;
 	my $item = $event->{item};
+	$item->{date} = Fitstore::_sanitise_date_unsafe($item->{date});
 	$item->{date} *= 1000; # JS likes millis
 	$item->{actions} = [map {
 		$_->{sets} = [map {
@@ -182,6 +209,19 @@ sub handle_item_submitted {
 	}
 	
 	# $self->{bydate}->{$item->{date}} = $item;
+}
+
+
+sub handle_item_deleted {
+	my ($self, $ev) = @_;
+	my $dt = $ev->{date}*1000;
+	if ($self->{bydate}->{$dt}) {
+		delete $self->{bydate}->{$dt};	
+	}
+	else {
+		# This is a serious bug to get here
+		print STDERR "Nothing deleting at $ev->{date}\n";
+	}
 }
 
 sub write_by_date {
