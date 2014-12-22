@@ -65,6 +65,10 @@ sub get {
 	return $db->resultset('Member')->search({id=>$id})->first;
 }
 
+sub get_by {
+	my ($self, $db, $where) = @_;
+	return $db->resultset('Member')->search($where)->first;
+}
 
 package Mojofit::Model::User;
 sub new {

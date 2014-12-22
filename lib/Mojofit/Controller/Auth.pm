@@ -3,7 +3,7 @@ use strict;
 use warnings;
 
 use Mojo::Base 'Mojolicious::Controller';
-
+use Mail::Sendmail;
 
 sub login {
 	my $c = shift;
@@ -39,14 +39,58 @@ sub register {
 		my $param = $c->req->json;
 		my $email = $param->{'email'}; # FIXME: detaint
 		my $name = lc($param->{'firstname'}).' '.lc($param->{'lastname'}); # FIXME: detaint
-		my $reg = {name=>$name, email=>$email, username=>$email}; # TODO:
+		
 		$c->dbic or die ("The database is down");
+		
+		if (my $user = $c->users->get_by($c->dbic, {name=>$name, email=>$email})) {
+			# User supplies matching namd and email... sufficient weak auth
+			if ($user->changepass) {
+				# Password not changed, resend
+				_send_password_email($c, $user);
+				$c->render(json=>{level=>'success', message=>"Registration previously successful. Resending password to your email"});
+				return;
+			}
+		}
+		
+		my $reg = {name=>$name, email=>$email, username=>$email}; # TODO:
 		my $user = $c->users->register($c->dbic, $reg);
 		my $pass = $user->changepass;
+		_send_password_email($c, $user);
 		$c->render(json=>{level=>'success', message=>"Registration successful. Your password is $pass"});
 	};
 	if ($@) {
 		$c->render(json=>{level=>'danger', message=>$@});
+	}
+}
+
+sub _send_password_email {
+	my ($c, $user) = @_;
+	my $dispname = $user->name;
+	my $email = $user->email;
+	my $msg=<<END;
+Here are your login details.
+
+Username: [% username %]
+Password: [% password %]
+
+The website is still in pre-alpha stage. At some point, you'll be able to change the password to something more memorable.
+
+Thanks,
+
+Kevin
+END
+	# FIXME: Injection attack possible here??
+	my %mail = ( To      =>  qq("$dispname" <$email>),
+		     Bcc     => 'kevin@glorat.net',
+		     From    => 'Kevin Tam <kevin@glorat.net>',
+		     Subject => 'Training log password retrieval',
+		     Message => $msg,
+		     );
+	
+	if (!sendmail (%mail)) {
+	    my $msg = "Could not send email: $Mail::Sendmail::error;";
+	    $c->app->log->warn($msg);
+	    die ("$msg\n");
 	}
 }
 
