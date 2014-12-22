@@ -61,12 +61,29 @@ angular.module('clientApp')
                     .success(function(data) {
                         workoutStatus.message = data.message;
                         workoutStatus.level = data.level;
-                        if (cb) { // Learn some JS - check for fn?
+                        if (cb && workoutStatus.level === 'success') { // Learn some JS - check for fn?
                             cb();
                         }
                     })
                     .error(function(data, status) {
                         workoutStatus.message = 'There was an error sending the registration request. Please try again later';
+                        workoutStatus.level = 'danger';
+                    });
+                return workoutStatus;
+            },
+            deleteWorkout: function(date, cb) {
+                workoutStatus.message = 'Deleting workout...';
+                workoutStatus.level = 'info';
+                $http.post('/command/deleteWorkout', {date : date})
+                    .success(function(data) {
+                        workoutStatus.message = data.message;
+                        workoutStatus.level = data.level;
+                        if (cb && workoutStatus.level === 'success') { // Learn some JS - check for fn?
+                            cb();
+                        }
+                    })
+                    .error(function(data, status) {
+                        workoutStatus.message = 'There was an error deleting the workout. Please try again later';
                         workoutStatus.level = 'danger';
                     });
                 return workoutStatus;
