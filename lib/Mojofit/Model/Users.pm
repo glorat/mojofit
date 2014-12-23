@@ -57,6 +57,14 @@ sub register {
 
 	#my $collection = $self->db->collection('visitors');
 	my $res = $db->resultset('Member')->create($rec);
+	my $dname = mk_username($rec->{name});
+	eval {
+		$res->update({username => $dname});	
+	};
+	if ($@) {
+		$res->update({username=> $dname.'.'.$res->id});
+	} 
+	
 	return $res;
 }
 
@@ -69,6 +77,15 @@ sub get_by {
 	my ($self, $db, $where) = @_;
 	return $db->resultset('Member')->search($where)->first;
 }
+
+sub mk_username
+{
+    my $s = shift;
+    $s =~ s/(\w+)/\u\L$1/g;
+	$s =~ s/\w//g;
+    return $s;
+}
+
 
 package Mojofit::Model::User;
 sub new {

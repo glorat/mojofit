@@ -6,6 +6,7 @@ package Fitstore;
 use JSON;
 use DateTime;
 use DateTime::Format::DateParse;
+use File::Copy qw(copy);
 
 our $DATA_DIR;
 
@@ -23,6 +24,14 @@ sub new {
 	bless $self, $class;
 	$self->load_from_stream;
 	return $self;
+}
+
+sub clone {
+	$DATA_DIR or die 'Fitstore::DATA_DIR has not been inited. Code bug';
+	my ($from, $to) = @_;
+	copy("$DATA_DIR/$from.dat", "$DATA_DIR/$to.dat");
+	# Do the view for now too... but maybe not in future
+	copy("$DATA_DIR/$from.json", "$DATA_DIR/$to.json");
 }
 
 sub handle_item_submitted {
@@ -73,11 +82,14 @@ sub _sanitise_item {
 sub _sanitise_date {
 	my ($date) = @_;
 	my $origdate = $date;
+	if ($date> 10000000000) {
+		$date/= 1000; # We are storing *seconds* since epoch in event store
+	}
 	my $epoch_time = _sanitise_date_unsafe($date);
 
 	if ($epoch_time != $date) {
 		my $diff = $epoch_time - $date;
-		die ("Supplied date $origdate mismatches UTC by $diff seconds. Bug in submission\n");
+		die ("Supplied date $origdate mismatches UTC midnight. Bug in submission\n");
 	}
 	return $epoch_time;
 }

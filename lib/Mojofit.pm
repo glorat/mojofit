@@ -39,7 +39,7 @@ sub startup {
 	$self->helper(users => sub { state $users = Mojofit::Model::Users->new });
 
 	$self->moniker('mojofit');
-	$self->secrets(['Some randomly chosen secret passphrase for cookies!@£!@££']);
+	$self->secrets(['Some randomly chosen secret passphrase for cookies!@£!@£!£']);
 
 	$self->plugin('config');
 	my $dbconf = $self->config->{dbi};
@@ -60,6 +60,8 @@ $r->any('/' => sub {
 $r->get('/auth/getUserStatus')->to('auth#getUserStatus');
 
 $r->post('/auth/login')->to('auth#login');
+
+$r->post('/auth/logout')->to('auth#logout');
 
 $r->post('/auth/register')->to('auth#register');
 

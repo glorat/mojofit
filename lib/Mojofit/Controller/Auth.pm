@@ -4,6 +4,7 @@ use warnings;
 
 use Mojo::Base 'Mojolicious::Controller';
 use Mail::Sendmail;
+use Data::UUID;
 
 sub login {
 	my $c = shift;
@@ -32,6 +33,13 @@ $c->app->log->debug("Trying to log in $email");
 	}
 }
 
+sub logout {
+	my $c = shift;
+	$c->session(expires => 1);	
+	my $status = {isLoggedIn=>0, userPrefs=> undef, id=>'', email=>'', username=>''}; #$user->{userPrefs}
+	$c->render(json=>{userStatus=>$status, level=>'success', message=>'Logged out!'});
+}
+
 sub register {
 	my $c = shift;
 	eval {
@@ -54,9 +62,14 @@ sub register {
 		
 		my $reg = {name=>$name, email=>$email, username=>$email}; # TODO:
 		my $user = $c->users->register($c->dbic, $reg);
+		if ($c->session('id')) {
+			# Clone into proper user
+			Fitstore::clone($c->session('id'), $user->id);
+		}
+		
 		my $pass = $user->changepass;
 		_send_password_email($c, $user);
-		$c->render(json=>{level=>'success', message=>"Registration successful. Your password is $pass"});
+		$c->render(json=>{level=>'success', message=>"Registration successful. Any logs you made are imported. Your password is $pass."});
 	};
 	if ($@) {
 		$c->render(json=>{level=>'danger', message=>$@});
@@ -106,7 +119,14 @@ sub getUserStatus {
 	my $c = shift;
 	my $status = {};
 	eval {
-		if ($c->session('email')) {
+		if (!$c->session('id')) {
+			my $id = genId();
+		    $c->session(id=>$id, username=>$id);
+			$c->session(expiration => 3600*24*30); # 30-days for now
+		}
+		
+		my $id = $c->session('id');
+		if ($id =~ m/^\d+$/) {
 			# Logged in
 			my $email = $c->session('email');
 			$status->{isLoggedIn} = 1;
@@ -117,14 +137,23 @@ sub getUserStatus {
 		}
 		else {
 			$status->{isLoggedIn} = 0;
+			$status->{id} = $id;
+			$status->{username} = $id;
+		    
 		}
 	};
 	
-	if ($!) {
-		$status->{error} = $_;
+	if ($@) {
+		$status->{error} = $@;
 	}
 	$c->render(json => $status);
 };
+
+sub genId {
+	my $ug = new Data::UUID;
+	my $uuid = $ug->create();
+	return lc($ug->to_string( $uuid ));
+}
 
 
 1;
