@@ -2,10 +2,23 @@
 
 angular.module('clientApp')
     .factory('MojoServer', function ($http) {
-        var userStatus = {isLoggedIn:''};
+        var userStatus = {isLoggedIn:'', id:'', username:''};
         var registerStatus = {message:'',level:'info'};
         var loginStatus = {message:'', level:'info'};
         var workoutStatus = {level:'info', message:''};
+
+        function handleStatus(data, cb) {
+            userStatus.isLoggedIn = data.userStatus.isLoggedIn;
+            userStatus.email = data.userStatus.email;
+            userStatus.id = data.userStatus.id;
+            userStatus.username = data.userStatus.username;
+            loginStatus.message = data.message;
+            loginStatus.level = data.level;
+            if (cb) { // Learn some JS - check for fn?
+                cb(userStatus);
+            }
+        }
+
         var ret = {
             getUserStatus: function() {
                 $http.get('/auth/getUserStatus').success(function(data) {
@@ -22,15 +35,20 @@ angular.module('clientApp')
                 loginStatus.level = 'info';
                 $http.post('/auth/login', {email:email, password:pass})
                     .success(function(data) {
-                        userStatus.isLoggedIn = data.userStatus.isLoggedIn;
-                        userStatus.email = data.userStatus.email;
-                        userStatus.id = data.userStatus.id;
-                        userStatus.username = data.userStatus.username;
-                        loginStatus.message = data.message;
-                        loginStatus.level = data.level;
-                        if (cb) { // Learn some JS - check for fn?
-                            cb(userStatus);
-                        }
+                        handleStatus(data, cb);
+                    })
+                    .error(function() {
+                        loginStatus.message = 'There was an error logging in. Please try again later';
+                        loginStatus.level = 'danger';
+                    });
+                return loginStatus;
+            },
+            logout: function(email,pass, cb) {
+                loginStatus.message = 'Logging out...';
+                loginStatus.level = 'info';
+                $http.post('/auth/logout', {})
+                    .success(function(data) {
+                        handleStatus(data, cb);
                     })
                     .error(function() {
                         loginStatus.message = 'There was an error logging in. Please try again later';
@@ -47,6 +65,7 @@ angular.module('clientApp')
                         registerStatus.message = data.message;
                         registerStatus.level = data.level;
                     })
+                    /*jshint unused: vars */
                     .error(function(data, status) {
                         registerStatus.message = 'There was an error sending the registration request. Please try again later';
                         registerStatus.level = 'danger';
@@ -65,6 +84,7 @@ angular.module('clientApp')
                             cb();
                         }
                     })
+                    /*jshint unused: vars */
                     .error(function(data, status) {
                         workoutStatus.message = 'There was an error sending the registration request. Please try again later';
                         workoutStatus.level = 'danger';
@@ -82,6 +102,7 @@ angular.module('clientApp')
                             cb();
                         }
                     })
+                    /*jshint unused: vars */
                     .error(function(data, status) {
                         workoutStatus.message = 'There was an error deleting the workout. Please try again later';
                         workoutStatus.level = 'danger';
@@ -96,7 +117,7 @@ angular.module('clientApp')
 angular.module('clientApp')
     .factory('UserState', function ($http) {
 
-        var currentUser = {userId:undefined, data:[]};
+        var currentUser = {userId:undefined, data:[], usedExercises:[]};
 
         /*jshint unused: vars */
         var usedExercises = function (data) {
@@ -169,7 +190,7 @@ angular.module('clientApp')
     });
 
 angular.module('clientApp')
-    .factory('WorkoutState', function (MojoServer) {
+    .factory('WorkoutState', function () {
         var workout = {date:new Date().setHours(0,0,0,0).valueOf(), actions:[]};
 
         var ret = {
