@@ -25,6 +25,5 @@ angular.module('clientApp')
 
         $scope.logout = function() {
             $scope.userStatus = MojoServer.logout();
-
-        }
+        };
     });

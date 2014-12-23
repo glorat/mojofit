@@ -34,6 +34,7 @@ angular.module('clientApp')
         $scope.currentPage = 1;
         $scope.newWorkout = {date:new Date()};
         $scope.workoutStatus = {level:'info', message:''};
+        $scope.userStatus = MojoServer.getCachedUserStatus();
 
         $scope.showChart = function(){
             return $scope.userState.data.length > 0;
@@ -43,6 +44,9 @@ angular.module('clientApp')
             return new Date(ts).toDateString();
         };
 
+        $scope.canEdit = function() {
+            return $scope.userState.userId === $scope.userStatus.id;
+        };
 
         // This ajax currently fills in jusonData
         $.ajax({
