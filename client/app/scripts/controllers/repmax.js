@@ -3,18 +3,18 @@
 /* global google */
 var repmaxFile = function() {
 
-    var set_kg = function(s) {
+    var setKg = function(s) {
         if (!s.unit) {
             return 0;
         }
         else if (s.unit === 'kg') {
             return s.weight;
         }
-        else if (s.unit == 'lb')
+        else if (s.unit === 'lb')
         {
             return s.weight / 2.2;
         }
-    }
+    };
 
     var genRepMax = function (items, names) {
         if (names === undefined || items === undefined) {
@@ -37,7 +37,7 @@ var repmaxFile = function() {
                     var repMax = repMaxByName[action.name];
                     action.sets.forEach(function (aset) {
                         var reps = aset.reps - 1;
-                        var kg = set_kg(aset);
+                        var kg = setKg(aset);
                         if (reps >= MAX_REP) {
                             reps = MAX_REP - 1;
                         }
@@ -58,6 +58,20 @@ var repmaxFile = function() {
         });
 
     };
+
+    function repMaxFromSet(aset, MAX_REP, repMax, curDate) {
+        var reps = aset.reps;
+        var kg = setKg(aset);
+        if (reps >= MAX_REP) {
+            reps = MAX_REP;
+        }
+        repMax[0] = new Date(curDate);
+        for (var i = 1; i <= reps; i++) {
+            if (repMax[i] < kg) {
+                repMax[i] = kg;
+            }
+        }
+    }
 
     var genRepMaxHistory = function(items, name) {
         var MAX_REP = 8;
@@ -80,17 +94,7 @@ var repmaxFile = function() {
                 actions.forEach(function(action) {
                     if (action.name === name) {
                         action.sets.forEach(function(aset) {
-                            var reps = aset.reps;
-                            var kg = set_kg(aset);
-                            if (reps >= MAX_REP) {
-                                reps = MAX_REP;
-                            }
-                            repMax[0] = new Date(curDate);
-                            for (var i = 1; i <= reps; i++) {
-                                if (repMax[i] < kg) {
-                                    repMax[i] = kg;
-                                }
-                            }
+                            repMaxFromSet(aset, MAX_REP, repMax, curDate);
                             history.push(angular.copy(repMax));
                         });
                     }
@@ -124,18 +128,14 @@ var repmaxFile = function() {
             restrict: 'E',
             scope: {data: '=', exercises: '=', width: '@'},
             templateUrl: 'views/rep-max-table.html',
-            controller: function ($scope, $attrs) {
+            controller: function ($scope) {
                 if ($scope.width === undefined) {
                     $scope.width = 5;
                 }
                 //$scope.repMax = genRepMax($scope.data, $scope.exercises);
 
-                $scope.$watchCollection('[data, exercises]', function (newVals, oldVals) {
-                    console.log('user changed for repmax from' + oldVals[1] + ' to ' + newVals[1]);
-                    var used = ['Barbell Squat'];
-                    // userState.usedExercises
+                $scope.$watchCollection('[data, exercises]', function (newVals) {
                     $scope.repMax = genRepMax(newVals[0], newVals[1]);
-                    // genRepMaxHistoryTable(newVal.data, 'Barbell Squat');
                 }, false);
             }
         };

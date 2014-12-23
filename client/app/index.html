@@ -28,12 +28,14 @@
         <ul class="nav nav-pills">
           <li class="active"><a ng-href="#">Home</a></li>
           <li class=""><a ng-href="#/slic">SLIC Import</a></li>
+          <li class=""><a ng-href="#/user/{{ userStatus.username}}" ng-show="userStatus.username">My Log</a></li>
           <li class=""><a ng-href="#/user/KevinTam">Kevin's Log</a></li>
           <li><a ng-href="#/login" ng-hide="userStatus.isLoggedIn">Login</a></li>
+          <li><a ng-click="logout()" ng-show="userStatus.isLoggedIn">Logout</a></li>
           <li><a ng-href="#/about">About</a></li>
         </ul>
             <div class="" >
-                <span ng-show="userStatus.isLoggedIn">Welcome {{ userStatus.email}}</span>
+                <span ng-show="userStatus.username">Welcome {{ userStatus.username}}</span>
              </div>
         </div>
 

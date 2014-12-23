@@ -22,4 +22,9 @@ angular.module('clientApp')
 angular.module('clientApp')
     .controller('UserStatusController', function ($scope, MojoServer) {
         $scope.userStatus = MojoServer.getUserStatus();
+
+        $scope.logout = function() {
+            $scope.userStatus = MojoServer.logout();
+
+        }
     });
