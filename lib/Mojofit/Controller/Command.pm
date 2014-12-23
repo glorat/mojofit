@@ -24,9 +24,11 @@ sub delete_workout {
 		my $json = $c->req->json;
 		my $id = $c->session->{id};
 		$id or die "Not logged in \n";
-		my $user = $c->users->get($c->dbic, $id);
-		$user or die "Login no longer valid!!\n";
-		
+		if ($id =~ m/^\d+$/) {
+			# Tighter check for real users
+			my $user = $c->users->get($c->dbic, $id);
+			$user or die "Login no longer valid!!\n";
+		}
 		# Main handle here
 		my $date = $json->{date};
 		my $store = Fitstore->new($id);
@@ -50,8 +52,11 @@ sub submit_workouts {
 		my $json = $c->req->json;
 		my $id = $c->session->{id};
 		$id or die "Not logged in \n";
-		my $user = $c->users->get($c->dbic, $id);
-		$user or die "Login no longer valid!!\n";
+		if ($id =~ m/^\d+$/) {
+			# Tighter check for real users
+			my $user = $c->users->get($c->dbic, $id);
+			$user or die "Login no longer valid!!\n";
+		}
 		
 		my $items = $json->{items};
 		# Put in event store
@@ -64,7 +69,7 @@ sub submit_workouts {
 		$view->write_by_date();
 		
 		# Generate symlink
-		my $username = $user->username;
+		my $username = $c->session->{'username'};
 		if (-f "$Mojofit::DATA_DIR/$username.json") {
 			$c->app->log->warn("User $id $username cannot use link because blocked by existing file");
 		}
