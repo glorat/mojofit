@@ -30,6 +30,9 @@ angular.module('clientApp')
                 });
                 return userStatus;
             },
+            getCachedUserStatus: function() {
+                return userStatus;
+            },
             login: function(email,pass, cb) {
                 loginStatus.message = 'Logging in...';
                 loginStatus.level = 'info';
@@ -117,13 +120,15 @@ angular.module('clientApp')
 angular.module('clientApp')
     .factory('UserState', function ($http) {
 
-        var currentUser = {userId:undefined, data:[], usedExercises:[]};
+        var defaultExercises =  ['Barbell Squat', 'Barbell Bench Press', 'Barbell Deadlift', 'Standing Barbell Shoulder Press (OHP)'];
+
+        var currentUser = {userId:undefined, data:[], usedExercises:defaultExercises};
 
         /*jshint unused: vars */
         var usedExercises = function (data) {
             //var nameByUse = {};
 
-            return ['Barbell Squat', 'Barbell Bench Press', 'Barbell Deadlift', 'Standing Barbell Shoulder Press (OHP)'];
+            return defaultExercises;
         };
 
         var processData = function (data) {
