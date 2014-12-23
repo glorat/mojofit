@@ -59,7 +59,8 @@ var repmaxFile = function() {
 
     };
 
-    function repMaxFromSet(aset, MAX_REP, repMax, curDate) {
+    function repMaxFromSet(aset, MAX_REP, origRepMax, curDate) {
+        var repMax = origRepMax;
         var reps = aset.reps;
         var kg = setKg(aset);
         if (reps >= MAX_REP) {
@@ -71,6 +72,7 @@ var repmaxFile = function() {
                 repMax[i] = kg;
             }
         }
+        return repMax;
     }
 
     var genRepMaxHistory = function(items, name) {
@@ -88,17 +90,21 @@ var repmaxFile = function() {
         var curDate = curDateObj.valueOf();
         var history = [];// allDates.map(function(d) {return {date:d, repMax: angular.copy(repMax)};});
 
+        var accRepMax = function(aset, history) {
+            repMax = repMaxFromSet(aset, MAX_REP, repMax, curDate);
+            history.push(repMax);
+        };
+
+        var processAction = function(action) {
+            if (action.name === name) {
+                action.sets.forEach(accRepMax);
+            }
+        };
+
         while (curDate<maxDate) {
             if (byDate[curDate]) {
                 var actions = byDate[curDate][0].actions;
-                actions.forEach(function(action) {
-                    if (action.name === name) {
-                        action.sets.forEach(function(aset) {
-                            repMaxFromSet(aset, MAX_REP, repMax, curDate);
-                            history.push(angular.copy(repMax));
-                        });
-                    }
-                });
+                actions.forEach(processAction);
             }
             curDateObj.setDate(curDateObj.getDate() + 1); // I hate mutable classes
             curDate = curDateObj.valueOf();
