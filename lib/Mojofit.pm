@@ -50,6 +50,14 @@ sub startup {
 		my $cfg = $app->config->{dbi};
 		return Mojofit::DB->connect($cfg->{dsn}, $cfg->{username}, $cfg->{password}, {mysql_auto_reconnect=>1});
 	});
+	
+	$self->helper(mg => sub {
+		my $app = shift;
+		my $cfg = $app->config->{mg};
+		my $mg = WWW::Mailgun->new($cfg);
+		return $mg;
+	});
+	
 my $r = $self->routes;
 
 $r->any('/' => sub {

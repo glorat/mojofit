@@ -3,7 +3,7 @@ use strict;
 use warnings;
 
 use Mojo::Base 'Mojolicious::Controller';
-use Mail::Sendmail;
+use WWW::Mailgun;
 use Data::UUID;
 
 sub login {
@@ -78,13 +78,16 @@ sub register {
 
 sub _send_password_email {
 	my ($c, $user) = @_;
-	my $dispname = $user->name;
+	my $dispname = $user->dispname;
 	my $email = $user->email;
+	my $pass = $user->changepass;
 	my $msg=<<END;
+Dear $dispname,
+	
 Here are your login details.
 
-Username: [% username %]
-Password: [% password %]
+Email: $email
+Password: $pass
 
 The website is still in pre-alpha stage. At some point, you'll be able to change the password to something more memorable.
 
@@ -92,19 +95,17 @@ Thanks,
 
 Kevin
 END
+
 	# FIXME: Injection attack possible here??
-	my %mail = ( To      =>  qq("$dispname" <$email>),
-		     Bcc     => 'kevin@glorat.net',
-		     From    => 'Kevin Tam <kevin@glorat.net>',
-		     Subject => 'Training log password retrieval',
-		     Message => $msg,
+	my %mail = ( to      =>  qq("$dispname" <$email>),
+		     bcc     => 'kevin@glorat.net',
+		     from    => 'Kevin Tam <kevin@glorat.net>',
+		     subject => 'Training log password retrieval',
+		     text => $msg,
 		     );
-	
-	if (!sendmail (%mail)) {
-	    my $msg = "Could not send email: $Mail::Sendmail::error;";
-	    $c->app->log->warn($msg);
-	    die ("$msg\n");
-	}
+			 # This will die on failure
+	$c->mg->send(\%mail);
+		
 }
 
 sub nameToUsername {
