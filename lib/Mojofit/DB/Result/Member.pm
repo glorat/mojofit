@@ -138,6 +138,20 @@ __PACKAGE__->add_unique_constraint("username", ["username"]);
 
 # Created by DBIx::Class::Schema::Loader v0.07042 @ 2014-12-19 14:34:21
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Nc3QUyy/NoKwDm7xO6zaDg
+sub dispname {
+    my $self = shift;
+    my $s = $self->name;
+    $s =~ s/(\w+)/\u\L$1/g;
+    return $s;
+}
+
+sub wikiname {
+    my $self = shift;
+    my $nm = $self->name;
+    $nm =~ s/\s+(\w+)/\u$1/g;
+    $nm =~ s/^(\w)/\u$1/g;
+    return $nm;
+}
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
