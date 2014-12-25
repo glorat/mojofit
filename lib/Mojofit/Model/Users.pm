@@ -31,6 +31,10 @@ sub check {
 	  $c->app->log->warn("Successful insecure login for $email");
 	  return $rec;
   }
+  elsif ($pbkdf2->validate($rec->password, $pass)) {
+	  $c->app->log->info("Successful login for $email");
+	  return $rec;
+  }
   else {
 	  # Fail
 	  $c->app->log->warn("Failed password for $email $pass");
@@ -65,6 +69,33 @@ sub register {
 	} 
 	
 	return $res;
+}
+
+sub changepass {
+	my ($self, $c, $id, $oldpass, $newpass) = @_;
+	# Assumes, we are already logged in correctly
+	my $user = $self->get($c->dbic, $id);
+	$user or die ("User $id not found for changepass\n");
+	if ($user->changepass eq $oldpass) {
+		$c->app->log->info("User $id is resetting his insecure password for a secure one");
+		my $hash = $pbkdf2->generate($newpass);
+		$user->update({changepass=>'', password=>$hash});
+		return $user;
+	}
+	elsif ($user->changepass) {
+		my $act = $user->changepass;
+		$c->app->log->warn("User could not change insecure password. Supplied: $oldpass Expected: $act");
+		die ("Incorrect password. Please check your email again\n");
+	}
+	elsif ($pbkdf2->validate($user->password, $oldpass)) {
+		$c->app->log->info("User $id is changing his secure password");
+		my $hash = $pbkdf2->generate($newpass);
+		$user->update({changepass=>'', password=>$hash});
+		return $user;
+	}
+	else {
+		die ("Incorrect password. Please try again");
+	}
 }
 
 sub get {

@@ -73,6 +73,8 @@ $r->post('/auth/logout')->to('auth#logout');
 
 $r->post('/auth/register')->to('auth#register');
 
+$r->post('/auth/changepass')->to('auth#changepass');
+
 $r->post('/command/submitWorkouts')->to('command#submit_workouts');
 
 $r->post('/command/deleteWorkout')->to('command#delete_workout');
