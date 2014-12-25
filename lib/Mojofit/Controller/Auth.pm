@@ -69,7 +69,7 @@ sub register {
 		
 		my $pass = $user->changepass;
 		_send_password_email($c, $user);
-		$c->render(json=>{level=>'success', message=>"Registration successful. Any logs you made are imported. Your password is $pass."});
+		$c->render(json=>{level=>'success', message=>"Registration successful. Any logs you made are imported. Your password is being emailed to you."});
 	};
 	if ($@) {
 		$c->render(json=>{level=>'danger', message=>$@});
@@ -96,6 +96,7 @@ Thanks,
 Kevin
 END
 
+# FIXME: This can be slow. Do it in background, or async etc.
 	# FIXME: Injection attack possible here??
 	my %mail = ( to      =>  qq("$dispname" <$email>),
 		     bcc     => 'kevin@glorat.net',

@@ -67,3 +67,21 @@ angular.module('clientApp')
            return input.slice(start);
        };
     });
+
+
+
+angular.module('clientApp')
+    .directive('enterTab', function(){
+      return {
+        restrict: 'A',
+          link: function($scope,elem) {
+              elem.bind('keydown', function(e) {
+                 var code = e.keyCode || e.which;
+                  if (code === 13) {
+                      e.preventDefault();
+                      elem.nextAll('input').focus();
+                  }
+              });
+          }
+      };
+    });
