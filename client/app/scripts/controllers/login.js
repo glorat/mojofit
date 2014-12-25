@@ -4,9 +4,12 @@ angular.module('clientApp')
     .controller('LoginCtrl', function ($scope, $location, MojoServer) {
         $scope.reg = {};
         $scope.lgn = {};
+        $scope.userStatus = MojoServer.getUserStatus();
 
         var onLogin = function(user) {
-            $location.path('/user/' + user.username);
+            if (user.isLoggedIn) {
+                $location.path('/user/' + user.username);
+            }
         };
 
         $scope.register = function() {

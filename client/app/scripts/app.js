@@ -50,7 +50,8 @@ angular.module('clientApp').config(['$routeProvider',
                 controller: 'TrackController'
             })
             .otherwise({
-                templateUrl: 'views/slic.html'
+                templateUrl: 'views/main.html',
+                controller: 'MainController'
             });
     }]);
 

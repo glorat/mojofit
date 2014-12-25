@@ -8,7 +8,7 @@
  * Controller of the clientApp
  */
 angular.module('clientApp')
-  .controller('MainCtrl', function ($scope) {
-    $scope.username = 'KevinTam';
+  .controller('MainController', function ($scope, MojoServer) {
+    $scope.userStatus = MojoServer.getUserStatus();
 
   });

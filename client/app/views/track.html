@@ -8,6 +8,7 @@
 <div class="alert" ng-class="'alert-' + workoutStatus.level" role="alert" ng-show="workoutStatus.message">
     {{ workoutStatus.message }}
 </div>
-<div>
+<a ng-click="moreOptions=1" href="" ng-hide="moreOptions">More options...</a>
+<div ng-show="moreOptions">
     <button class="btn btn-danger" ng-click="deleteWorkout()">Delete Workrout</button>
 </div>
