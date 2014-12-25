@@ -13,7 +13,8 @@ function drawChart() {
         chart.draw(data, options);
     }
     else {
-        console.log('Not ready to drawChart');
+        // Can't have this in IE9
+        // console.log('Not ready to drawChart');
     }
 }
 
@@ -45,7 +46,7 @@ angular.module('clientApp')
         };
 
         $scope.canEdit = function() {
-            return $scope.userState.userId === $scope.userStatus.id;
+            return ($scope.userState.userId === $scope.userStatus.id) || ($scope.userState.userId === $scope.userStatus.username);
         };
 
         // This ajax currently fills in jusonData
@@ -129,17 +130,7 @@ angular.module('clientApp').directive('workoutEditor', function() {
                    $scope.workout.actions.splice(index,1);
                }
            };
-           /*
-                      $scope.data = {
-                          date: function (d) {
-                          if (angular.isDefined(d)) {
-                              $scope.workout.date = (d.getTime() - d.getMilliseconds()) / 1000;
-                          }
-                          console.log("date upda");
-                          return new Date($scope.workout.date * 1000);
-                      }
-                      };
-           */
+
        }
    };
 });
@@ -186,6 +177,14 @@ angular.module('clientApp').directive('actionSetsEditor', function() {
                     $scope.action.sets.splice(index,1);
                 }
             };
+            $scope.onLastInputEnter = function(e, index) {
+                var code = e.keyCode || e.which;
+                if (code === 13) {
+                    e.preventDefault();
+                    $scope.addSet(index)
+                    // elem.nextAll('input').focus();
+                }
+            }
         }
     };
 });

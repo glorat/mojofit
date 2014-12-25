@@ -118,17 +118,25 @@ angular.module('clientApp')
     });
 
 angular.module('clientApp')
-    .factory('UserState', function ($http) {
+    .factory('UserState', function ($http, $log) {
 
         var defaultExercises =  ['Barbell Squat', 'Barbell Bench Press', 'Barbell Deadlift', 'Standing Barbell Shoulder Press (OHP)'];
 
         var currentUser = {userId:undefined, data:[], usedExercises:defaultExercises};
 
-        /*jshint unused: vars */
+
         var usedExercises = function (data) {
             //var nameByUse = {};
-
-            return defaultExercises;
+            var x = _.chain(data)
+                .map(function(d){return d.actions;})
+                .flatten()
+                .countBy(function(d){return d.name;})
+                .pairs()
+                .sortBy(function (d){return -d[1];})
+                .filter(function(d){return d[1]>1;})
+                .map(function(d){return d[0];})
+                .value();
+            return x;
         };
 
         var processData = function (data) {
@@ -162,7 +170,7 @@ angular.module('clientApp')
             if (userData === undefined || userId === undefined) {
                 userData = {data:[]}; // Return new
             }
-            console.log('Loading user data form server for '+userId );
+            $log.info('Loading user data form server for '+userId );
             $http.get('/userraw/' + userId).success(function(data) {
                 userData.data = processData(data);
                 userData.usedExercises = usedExercises(data);
