@@ -120,7 +120,7 @@ angular.module('clientApp')
 angular.module('clientApp')
     .factory('UserState', function ($http, $log) {
 
-        var defaultExercises =  ['Barbell Squat', 'Barbell Bench Press', 'Barbell Deadlift', 'Standing Barbell Shoulder Press (OHP)'];
+        var defaultExercises = ["Barbell Squat", "Standing Barbell Shoulder Press (OHP)", "Barbell Bench Press", "Barbell Deadlift", "Pendlay Row", "Power Clean", "Pull-Up", "Front Barbell Squat", "Standing Dumbbell Shoulder Press", "Barbell Curl", "Cable External Rotation", "Hang Clean", "Clean and Jerk", "Lat Pulldown", "Hang Power Clean", "Clean", "Dips - Triceps Version", "Face Pull", "Dumbbell Bicep Curl", "Plank", "Goblet Squat (dumbbell)", "Bent Over Barbell Row", "Body Weight Glute Hamstring Raise", "Front Squat", "Power Snatch", "Dumbbell Bulgarian Split Squat", "Push-Up", "Dumbbell Side Lateral Raise", "Farmer's Walk", "Abductor Machine", "Overhead Barbell Squat", "Bent-Over Rear Delt Raise", "Front Dumbbell Raise", "One-Arm Dumbbell Row", "Barbell Shrug", "Seated Bent-Over Rear Delt Raise", "Seated Cable Row", "Chin-Up", "Snatch"]
 
         var currentUser = {userId:undefined, data:[], usedExercises:defaultExercises};
 
@@ -136,12 +136,15 @@ angular.module('clientApp')
                 .filter(function(d){return d[1]>1;})
                 .map(function(d){return d[0];})
                 .value();
-            return x;
+            var other = _.without(defaultExercises, x);
+            return _.union(x, other);
+            // return x;
         };
 
         var processData = function (data) {
             // And do some name mappings
-            var aliases = {'Bench Press':'Barbell Bench Press'};
+            // TODO: Make this a user pref
+            var aliases = {'Bench Press':'Barbell Bench Press', 'Row':'Pendlay Row'};
             // Too many strings in the data
             data.map(function(item){
                 item.date = parseInt(item.date);
