@@ -86,12 +86,12 @@ $r->get('/user/:username' => sub {
 	$c->redirect_to("/#/user/$target");
 });
 
-$r->get('/userraw/:username' => sub {
+$r->get('/userraw/#username' => sub {
 	my $c = shift;
 	my $target = $c->param('username');
 	$target =~ m/^[A-Za-z0-9\-\.]+$/ or return $c->render(text => 'Invalid username');
 	
-	$f->can_read("$DATA_DIR/${target}.json") or return $c->render(json => 'Unknown username');
+	$f->can_read("$DATA_DIR/${target}.json") or return $c->render(json => "Unknown username $target");
 	my $jsonStream=$f->load_file("$DATA_DIR/${target}.json");
 	$c->render(text => $jsonStream, format=>'json');
 

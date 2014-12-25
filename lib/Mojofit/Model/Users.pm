@@ -42,7 +42,6 @@ sub check {
 sub register {
 	my ($self, $db, $rec) = @_;
 	
-	$rec->{email} or die Dumper($rec);
 	$rec->{email} or die "email must not be blank\n";
 	$rec->{name} or die "name must not be blank\n";
 	$rec->{name} =~ m/^\w[\w\ ]+\w$/ or die "name contains invalid characters\n";
@@ -82,7 +81,7 @@ sub mk_username
 {
     my $s = shift;
     $s =~ s/(\w+)/\u\L$1/g;
-	$s =~ s/\w//g;
+	$s =~ s/\s//g;
     return $s;
 }
 

@@ -2,12 +2,12 @@
 
 angular.module('clientApp')
     .factory('MojoServer', function ($http) {
-        var userStatus = {isLoggedIn:'', id:'', username:''};
+        var userStatus = {isLoggedIn:undefined, id:'', username:''};
         var registerStatus = {message:'',level:'info'};
         var loginStatus = {message:'', level:'info'};
         var workoutStatus = {level:'info', message:''};
 
-        function handleStatus(data, cb) {
+        var handleStatus = function (data, cb) {
             userStatus.isLoggedIn = data.userStatus.isLoggedIn;
             userStatus.email = data.userStatus.email;
             userStatus.id = data.userStatus.id;
@@ -17,17 +17,27 @@ angular.module('clientApp')
             if (cb) { // Learn some JS - check for fn?
                 cb(userStatus);
             }
-        }
+        };
+
+        var refreshUserStatus = function() {
+            $http.get('/auth/getUserStatus').success(function(data) {
+                userStatus.isLoggedIn = data.isLoggedIn;
+                userStatus.email = data.email;
+                userStatus.id = data.id;
+                userStatus.username =data.username;
+                // FIXME: Above lines are duped a few lines down
+            });
+        };
 
         var ret = {
             getUserStatus: function() {
-                $http.get('/auth/getUserStatus').success(function(data) {
-                    userStatus.isLoggedIn = data.isLoggedIn;
-                    userStatus.email = data.email;
-                    userStatus.id = data.id;
-                    userStatus.username =data.username;
-                    // FIXME: Above lines are duped a few lines down
-                });
+                if (userStatus.isLoggedIn === undefined) {
+                    refreshUserStatus();
+                }
+                return userStatus;
+            },
+            refreshUserStatus: function() {
+                refreshUserStatus();
                 return userStatus;
             },
             getCachedUserStatus: function() {

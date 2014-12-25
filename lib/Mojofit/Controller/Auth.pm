@@ -63,8 +63,12 @@ sub register {
 		my $reg = {name=>$name, email=>$email, username=>$email}; # TODO:
 		my $user = $c->users->register($c->dbic, $reg);
 		if ($c->session('id')) {
+			my $newid = $user->id;
+			my $username = $user->username;
 			# Clone into proper user
-			Fitstore::clone($c->session('id'), $user->id);
+			Fitstore::clone($c->session('id'), $newid);
+			# Set up symlink
+			symlink("$Mojofit::DATA_DIR/$newid.json", "$Mojofit::DATA_DIR/$username.json");
 		}
 		
 		my $pass = $user->changepass;

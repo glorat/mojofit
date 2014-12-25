@@ -132,7 +132,7 @@ var repmaxFile = function() {
 
         return {
             restrict: 'E',
-            scope: {data: '=', exercises: '=', width: '@'},
+            scope: {data: '=', exercises: '=', width: '@', limitTo:'@'},
             templateUrl: 'views/rep-max-table.html',
             controller: function ($scope) {
                 if ($scope.width === undefined) {
@@ -141,7 +141,8 @@ var repmaxFile = function() {
                 //$scope.repMax = genRepMax($scope.data, $scope.exercises);
 
                 $scope.$watchCollection('[data, exercises]', function (newVals) {
-                    $scope.repMax = genRepMax(newVals[0], newVals[1]);
+                    var exs = _.first(newVals[1], $scope.limitTo);
+                    $scope.repMax = genRepMax(newVals[0], exs);
                 }, false);
             }
         };
