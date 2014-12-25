@@ -80,6 +80,31 @@ sub register {
 	}
 }
 
+sub changepass {
+	my ($c) = @_;
+	eval {
+		my $json = $c->req->json;
+		
+	    my $oldpass = $json->{'oldpass'} || '';
+		$oldpass or die ('No old password supplied, unless it was really blank');
+	    my $newpass = $json->{'newpass'} || '';
+		$oldpass or die ('No new password supplied, unless it was really blank');
+ 
+		my $id = $c->session->{id};
+		$id or die "Not logged in \n";
+		if ($id !~ m/^\d+$/) {
+			die ("Not logged in as registered user\n");
+		}
+
+		my $user = $c->users->changepass($c, $id, $oldpass, $newpass);
+		$c->app->log->debug("User $id changed his password");
+		$c->render(json=>{level=>'success', message=>'Password changed as requested!'});
+	};
+	if ($@) {
+		$c->render(json=>{level=>'danger', message=>$@});
+	}
+}
+
 sub _send_password_email {
 	my ($c, $user) = @_;
 	my $dispname = $user->dispname;

@@ -8,13 +8,15 @@ angular.module('clientApp')
         var workoutStatus = {level:'info', message:''};
 
         var handleStatus = function (data, cb) {
-            userStatus.isLoggedIn = data.userStatus.isLoggedIn;
-            userStatus.email = data.userStatus.email;
-            userStatus.id = data.userStatus.id;
-            userStatus.username = data.userStatus.username;
+            if (data.userStatus) {
+                userStatus.isLoggedIn = data.userStatus.isLoggedIn;
+                userStatus.email = data.userStatus.email;
+                userStatus.id = data.userStatus.id;
+                userStatus.username = data.userStatus.username;
+            }
             loginStatus.message = data.message;
             loginStatus.level = data.level;
-            if (cb) { // Learn some JS - check for fn?
+            if (cb && data.userStatus) { // Learn some JS - check for fn?
                 cb(userStatus);
             }
         };
@@ -52,6 +54,24 @@ angular.module('clientApp')
                     })
                     .error(function() {
                         loginStatus.message = 'There was an error logging in. Please try again later';
+                        loginStatus.level = 'danger';
+                    });
+                return loginStatus;
+            },
+            changepass: function(oldpass, newpass) {
+                var action = 'changing password';
+                var msg = {oldpass:oldpass, newpass:newpass};
+                var method = 'changepass';
+                var cb = undefined;
+
+                loginStatus.message = action + '...';
+                loginStatus.level = 'info';
+                $http.post('/auth/' + method, msg)
+                    .success(function(data) {
+                        handleStatus(data, cb);
+                    })
+                    .error(function() {
+                        loginStatus.message = 'There was an error '+action+'. Please try again later';
                         loginStatus.level = 'danger';
                     });
                 return loginStatus;

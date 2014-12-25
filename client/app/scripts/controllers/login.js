@@ -20,6 +20,10 @@ angular.module('clientApp')
         $scope.login = function() {
             $scope.loginStatus = MojoServer.login($scope.lgn.email, $scope.lgn.password, onLogin);
         };
+
+        $scope.changepass = function() {
+            $scope.loginStatus = MojoServer.changepass($scope.cp.oldpass, $scope.cp.newpass);
+        }
     });
 
 angular.module('clientApp')
