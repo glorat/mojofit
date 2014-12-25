@@ -24,7 +24,7 @@ CREATE TABLE `member` (
   `id` int(11) NOT NULL auto_increment,
   `username` varchar(100) NOT NULL default '',
   `name` varchar(100) NOT NULL default '',
-  `password` varchar(32) NOT NULL default '',
+  `password` varchar(255) NOT NULL default '',
   `email` varchar(50) default NULL,
   `dob` date default NULL,
   `gender` char(1) NOT NULL default '',
