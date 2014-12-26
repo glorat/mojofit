@@ -23,7 +23,7 @@ sub check {
   my ($self, $c, $email, $pass) = @_;
   my $rec = $c->dbic->resultset('Member')->find({email=>$email});
 
-  if (!$rec) {
+  if (!defined($rec)) {
 	  $c->app->log->warn("Failed lookup for $email");
 	  return undef;
   }
@@ -31,7 +31,7 @@ sub check {
 	  $c->app->log->warn("Successful insecure login for $email");
 	  return $rec;
   }
-  elsif ($pbkdf2->validate($rec->password, $pass)) {
+  elsif ($rec->password && $pbkdf2->validate($rec->password, $pass)) {
 	  $c->app->log->info("Successful login for $email");
 	  return $rec;
   }

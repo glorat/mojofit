@@ -46,6 +46,8 @@ sub register {
 		my $ip = $c->tx->remote_address;
 		my $param = $c->req->json;
 		my $email = $param->{'email'}; # FIXME: detaint
+		$param->{'lastname'} or die ("No lastname supplied\n");
+		$param->{'firstname'} or die ("No firstname supplied\n");
 		my $name = lc($param->{'firstname'}).' '.lc($param->{'lastname'}); # FIXME: detaint
 		
 		$c->dbic or die ("The database is down");
@@ -134,7 +136,13 @@ END
 		     text => $msg,
 		     );
 			 # This will die on failure
-	$c->mg->send(\%mail);
+			 if ($c->app->mode eq 'test') {
+				 $c->app->log->warn('NOT sending an email because in a test');
+			 }
+			 else {
+				 $c->mg->send(\%mail);
+			 }
+
 		
 }
 
