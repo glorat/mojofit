@@ -65,7 +65,7 @@ $r->any('/' => sub {
 });
 
 # FIXME: this is vulnerable to to some XS attack. Change to POST or prefix the JSON
-$r->get('/auth/getUserStatus')->to('auth#getUserStatus');
+$r->any('/auth/getUserStatus')->to('auth#getUserStatus');
 
 $r->post('/auth/login')->to('auth#login');
 
