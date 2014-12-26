@@ -142,22 +142,34 @@ $r->post('/slicparse' => sub {
 	open OUT, ">$DATA_DIR/prev.txt";
 	print OUT $text;
 	close OUT;
+	my $id;
 	
-	my ($name, $items, $warns) = SLIC::parse_text($text);
-	foreach (@$warns) { 
-		$c->app->log->warn($_);
+	eval {
+		my ($name, $items, $warns) = SLIC::parse_text($text);
+		foreach (@$warns) { 
+			$c->app->log->warn($_);
+		}
+		#$name =~ s/ //g;
+		$name =~ s/\W//g; # Kill non-word chars for now. Be safe
+	
+		$id = $c->session('id');
+		$id ||= $name; # FIXME: This is a backdoor! Need a way to call genID first
+	
+		# Put in event store
+		my $store = Fitstore->new($id);
+		$store->submit_workouts($items);
+	
+		my $view = Fitstore::MainView->new($id);
+		$view->write_by_date();
+	};
+	if ($@) {
+		$c->render(text=>$@);
 	}
-	#$name =~ s/ //g;
-	$name =~ s/\W//g; # Kill non-word chars for now. Be safe
+	else {
+		$c = $c->redirect_to("/#/user/$id");
+	}
 	
-	# Put in event store
-	my $store = Fitstore->new($name);
-	$store->submit_workouts($items);
 	
-	my $view = Fitstore::MainView->new($name);
-	$view->write_by_date();
-	
-	$c = $c->redirect_to("/user/$name");
 	
 });
 # end startup

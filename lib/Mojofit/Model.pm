@@ -74,7 +74,7 @@ sub filterMaxWeight {
 	my @kgs = map {$_->kg} (@sets);
 	@kgs or return $action;
 	my $max = max (@kgs);
-	$max or Carp::confess Dumper(\@sets);
+	$max ||= 0;
 	my @maxsets = grep {$_->kg == $max} (@{$action->{sets}});
 	$action->{sets} = \@maxsets;
 	return $action;
