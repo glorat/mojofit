@@ -60,7 +60,7 @@ our %LIFT_ALIAS = (
 
 sub filterSetReps {
 	my ($action, $sets, $reps) = @_;
-	my @goodsets = grep {$_->{reps} >= $reps} (@{$action->{sets}});
+	my @goodsets = grep {$_->{reps} && $_->{reps} >= $reps} (@{$action->{sets}});
 	my $kg = getMaxFromSets(\@goodsets, $sets);
 	#print "$sets x $reps max of $kg    @goodsets\n";
 	$action->{max} = $kg;
