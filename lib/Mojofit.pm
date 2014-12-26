@@ -153,7 +153,7 @@ $r->post('/slicparse' => sub {
 		$name =~ s/\W//g; # Kill non-word chars for now. Be safe
 	
 		$id = $c->session('id');
-		$id ||= $name; # FIXME: This is a backdoor! Need a way to call genID first
+		$id or die ("Please return to the home page and then come back and try again\n");
 	
 		# Put in event store
 		my $store = Fitstore->new($id);
