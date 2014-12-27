@@ -23,7 +23,7 @@ angular.module('clientApp')
 
         $scope.changepass = function() {
             $scope.loginStatus = MojoServer.changepass($scope.cp.oldpass, $scope.cp.newpass);
-        }
+        };
     });
 
 angular.module('clientApp')

@@ -3,20 +3,26 @@
 /* global google */
 var repmaxFile = function() {
 
-    var setKg = function(s) {
+    var setUnited = function(s, unit) {
         if (!s.unit) {
             return 0;
         }
-        else if (s.unit === 'kg') {
+        else if (s.unit === unit) {
             return s.weight;
         }
-        else if (s.unit === 'lb')
-        {
+        else if (s.unit === 'kg' && unit === 'lb') {
+            return s.weight * 2.2;
+        }
+        else if (s.unit === 'lb' && unit === 'kg') {
             return s.weight / 2.2;
+        }
+        else {
+            // Oops - warn?
+            return 0;
         }
     };
 
-    var genRepMax = function (items, names) {
+    var genRepMax = function (items, names, unit) {
         if (names === undefined || items === undefined) {
             return [];
         }
@@ -37,7 +43,7 @@ var repmaxFile = function() {
                     var repMax = repMaxByName[action.name];
                     action.sets.forEach(function (aset) {
                         var reps = aset.reps - 1;
-                        var kg = setKg(aset);
+                        var kg = setUnited(aset, unit);
                         if (reps >= MAX_REP) {
                             reps = MAX_REP - 1;
                         }
@@ -59,10 +65,10 @@ var repmaxFile = function() {
 
     };
 
-    function repMaxFromSet(aset, MAX_REP, origRepMax, curDate) {
+    function repMaxFromSet(aset, MAX_REP, origRepMax, curDate, unit) {
         var repMax = origRepMax;
         var reps = aset.reps;
-        var kg = setKg(aset);
+        var kg = setUnited(aset, unit);
         if (reps >= MAX_REP) {
             reps = MAX_REP;
         }
@@ -75,7 +81,7 @@ var repmaxFile = function() {
         return repMax;
     }
 
-    var genRepMaxHistory = function(items, name) {
+    var genRepMaxHistory = function(items, name, unit) {
         var MAX_REP = 8;
         var repMax = new Array(MAX_REP);
         for (var k = 0; k < MAX_REP+1; k++) {
@@ -91,7 +97,7 @@ var repmaxFile = function() {
         var history = [];// allDates.map(function(d) {return {date:d, repMax: angular.copy(repMax)};});
 
         var accRepMax = function(aset, history) {
-            repMax = repMaxFromSet(aset, MAX_REP, repMax, curDate);
+            repMax = repMaxFromSet(aset, MAX_REP, repMax, curDate, unit);
             history.push(repMax);
         };
 
@@ -112,11 +118,11 @@ var repmaxFile = function() {
         return history;
     };
 
-    var genRepMaxHistoryTable = function(items, name) {
+    var genRepMaxHistoryTable = function(items, name, unit) {
         if (!items.length) {
             return undefined;
         }
-        var history = genRepMaxHistory(items,name);
+        var history = genRepMaxHistory(items,name, unit);
         var data = new google.visualization.DataTable();
         data.addColumn('date', 'Date');
         for (var i=1; i<history[0].length; i++) {
@@ -128,7 +134,8 @@ var repmaxFile = function() {
 
     };
 
-    angular.module('clientApp').directive('repMaxTable', function () {
+    angular.module('clientApp').directive('repMaxTable', function (MojoServer) {
+        var userPrefs = MojoServer.getUserStatus().userPrefs;
 
         return {
             restrict: 'E',
@@ -142,7 +149,7 @@ var repmaxFile = function() {
 
                 $scope.$watchCollection('[data, exercises]', function (newVals) {
                     var exs = _.first(newVals[1], $scope.limitTo);
-                    $scope.repMax = genRepMax(newVals[0], exs);
+                    $scope.repMax = genRepMax(newVals[0], exs, userPrefs.unit);
                 }, false);
             }
         };
@@ -152,7 +159,7 @@ var repmaxFile = function() {
         .controller('RepMaxController', function ($scope, UserState) {
             $scope.width = 10; // That's how much we an fit in a full view
             var curr = UserState.getCurrentUser();
-            $scope.repMax = genRepMax(curr.data, curr.usedExercises);
+            $scope.repMax = genRepMax(curr.data, curr.usedExercises, 'kg');
             //UserState.getCurrentUser().repMax;
         });
 
@@ -163,7 +170,7 @@ var repmaxFile = function() {
 
             //UserState.getCurrentUser().repMax;
             googleChartApiPromise.then(function() {
-                var data = genRepMaxHistoryTable(curr.data, 'Barbell Squat');
+                var data = genRepMaxHistoryTable(curr.data, 'Barbell Squat', 'kg');
                 var options = {'hAxis':{'title':''},'vAxis':{'title':'','format':'# kg'},'interpolateNulls':'true','legend':{'position':'top','maxLines':5}};
                 var chart = new window.google.visualization.LineChart(document.getElementById('rep-max-history-dev'));
                 chart.draw(data, options);

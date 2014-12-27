@@ -75,22 +75,23 @@ angular.module('clientApp')
     });
 
 
-angular.module('clientApp').directive('setText', function () {
+angular.module('clientApp').directive('setText', function (MojoServer, UnitConverter) {
+    var userPrefs = MojoServer.getUserStatus().userPrefs;
+    var dispUnit = userPrefs.unit; // This is a non-reactive var
+
     return {
         restrict: 'E',
         scope: {data : '=', unit:'@'},
         controller: function ($scope) {
-            $scope.storedUnit = function() {
-                if ( $scope.data.lbs) {return 'lbs';}
-                else {return 'kg';}
-            };
-            $scope.value = function() {
-                var myUnit = $scope.storedUnit();
-                return $scope.data[myUnit];
-            };
-
+            if (dispUnit !== $scope.data.unit) {
+                var dispValue = UnitConverter.convert($scope.data.weight, $scope.data.unit, dispUnit);
+                if (dispValue) {
+                    $scope.dispValue = dispValue;
+                    $scope.dispUnit = dispUnit;
+                }
+            }
         },
-        template: '{{ data.reps }} x {{ data.weight }} {{ data.unit }}'
+        template: '{{ data.reps }} x {{ data.weight }} {{ data.unit }} <span ng-show="dispValue">({{ dispValue | number : 1}} {{dispUnit}})</span>'
     };
 });
 
@@ -99,7 +100,8 @@ angular.module('clientApp').directive('workoutEditor', function() {
        restrict: 'E',
        scope: {workout:'='},
        templateUrl: 'views/workout-editor.html',
-       controller: function ($scope, UserState) {
+       controller: function ($scope, UserState, MojoServer) {
+           var userPrefs = MojoServer.getUserPrefs();
            $scope.user = UserState.getCurrentUser();
 
            $scope.dateOptions = {
@@ -115,12 +117,12 @@ angular.module('clientApp').directive('workoutEditor', function() {
            };
 
            $scope.addNamedAction = function(newName) {
-               var emptySet = {weight:undefined, unit:'kg'}; // TODO: Get unit
+               var emptySet = {weight:undefined, unit:userPrefs.unit};
                $scope.workout.actions.push({name:newName, sets:[emptySet]});
            };
 
            $scope.addAction = function(index) {
-               var emptySet = {weight:undefined, unit:'kg'}; // TODO: Get unit
+               var emptySet = {weight:undefined, unit:userPrefs.unit};
                var newName = '';
                 $scope.workout.actions.splice(index+1,0, {name:newName, sets:[emptySet]});
            };
@@ -181,10 +183,10 @@ angular.module('clientApp').directive('actionSetsEditor', function() {
                 var code = e.keyCode || e.which;
                 if (code === 13) {
                     e.preventDefault();
-                    $scope.addSet(index)
+                    $scope.addSet(index);
                     // elem.nextAll('input').focus();
                 }
-            }
+            };
         }
     };
 });

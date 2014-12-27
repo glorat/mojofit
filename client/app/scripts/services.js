@@ -2,7 +2,7 @@
 
 angular.module('clientApp')
     .factory('MojoServer', function ($http) {
-        var userStatus = {isLoggedIn:undefined, id:'', username:''};
+        var userStatus = {isLoggedIn:undefined, id:'', username:'', userPrefs:{unit:'lb'}};
         var registerStatus = {message:'',level:'info'};
         var loginStatus = {message:'', level:'info'};
         var workoutStatus = {level:'info', message:''};
@@ -38,6 +38,9 @@ angular.module('clientApp')
                 }
                 return userStatus;
             },
+            getUserPrefs: function() {
+                return userStatus.userPrefs;
+            },
             refreshUserStatus: function() {
                 refreshUserStatus();
                 return userStatus;
@@ -62,7 +65,7 @@ angular.module('clientApp')
                 var action = 'changing password';
                 var msg = {oldpass:oldpass, newpass:newpass};
                 var method = 'changepass';
-                var cb = undefined;
+                var cb;
 
                 loginStatus.message = action + '...';
                 loginStatus.level = 'info';
@@ -147,10 +150,11 @@ angular.module('clientApp')
         return ret;
     });
 
+
 angular.module('clientApp')
     .factory('UserState', function ($http, $log) {
 
-        var defaultExercises = ["Barbell Squat", "Standing Barbell Shoulder Press (OHP)", "Barbell Bench Press", "Barbell Deadlift", "Pendlay Row", "Power Clean", "Pull-Up", "Front Barbell Squat", "Standing Dumbbell Shoulder Press", "Barbell Curl", "Cable External Rotation", "Hang Clean", "Clean and Jerk", "Lat Pulldown", "Hang Power Clean", "Clean", "Dips - Triceps Version", "Face Pull", "Dumbbell Bicep Curl", "Plank", "Goblet Squat (dumbbell)", "Bent Over Barbell Row", "Body Weight Glute Hamstring Raise", "Front Squat", "Power Snatch", "Dumbbell Bulgarian Split Squat", "Push-Up", "Dumbbell Side Lateral Raise", "Farmer's Walk", "Abductor Machine", "Overhead Barbell Squat", "Bent-Over Rear Delt Raise", "Front Dumbbell Raise", "One-Arm Dumbbell Row", "Barbell Shrug", "Seated Bent-Over Rear Delt Raise", "Seated Cable Row", "Chin-Up", "Snatch"]
+        var defaultExercises = ['Barbell Squat', 'Standing Barbell Shoulder Press (OHP)', 'Barbell Bench Press', 'Barbell Deadlift', 'Pendlay Row', 'Power Clean', 'Pull-Up', 'Front Barbell Squat', 'Standing Dumbbell Shoulder Press', 'Barbell Curl', 'Cable External Rotation', 'Hang Clean', 'Clean and Jerk', 'Lat Pulldown', 'Hang Power Clean', 'Clean', 'Dips - Triceps Version', 'Face Pull', 'Dumbbell Bicep Curl', 'Plank', 'Goblet Squat (dumbbell)', 'Bent Over Barbell Row', 'Body Weight Glute Hamstring Raise', 'Front Squat', 'Power Snatch', 'Dumbbell Bulgarian Split Squat', 'Push-Up', 'Dumbbell Side Lateral Raise', 'Farmer\'s Walk', 'Abductor Machine', 'Overhead Barbell Squat', 'Bent-Over Rear Delt Raise', 'Front Dumbbell Raise', 'One-Arm Dumbbell Row', 'Barbell Shrug', 'Seated Bent-Over Rear Delt Raise', 'Seated Cable Row', 'Chin-Up', 'Snatch'];
 
         var currentUser = {userId:undefined, data:[], usedExercises:defaultExercises};
 
@@ -247,6 +251,29 @@ angular.module('clientApp')
               workout.date = newW.date.valueOf();
               workout.actions = angular.copy(newW.actions);
           }
+        };
+        return ret;
+    });
+
+angular.module('clientApp')
+    .factory('UnitConverter', function () {
+        var data = {
+            'kg' : [1,'kg'],
+            'lb' : [1/2.2, 'kg']
+        };
+
+        var ret = {
+            convert : function(from, fromUnit, toUnit) {
+                if (fromUnit === toUnit) {
+                    return from;
+                }
+                else if (data[fromUnit] && data[toUnit] && data[fromUnit][1]===data[toUnit][1]) {
+                    return from * data[fromUnit][0] / data[toUnit][0];
+                }
+                else {
+                    return 0;
+                }
+            }
         };
         return ret;
     });
