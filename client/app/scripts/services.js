@@ -2,7 +2,7 @@
 
 angular.module('clientApp')
     .factory('MojoServer', function ($http) {
-        var userStatus = {isLoggedIn:undefined, id:'', username:'', userPrefs:{unit:'lb'}};
+        var userStatus = {isLoggedIn:undefined, id:'', username:'', userPrefs:{unit:'kg'}};
         var registerStatus = {message:'',level:'info'};
         var loginStatus = {message:'', level:'info'};
         var workoutStatus = {level:'info', message:''};
