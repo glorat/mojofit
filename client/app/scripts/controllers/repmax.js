@@ -32,7 +32,7 @@ var repmaxFile = function() {
         names.forEach(function (name) {
             var repMax = new Array(MAX_REP);
             for (var k = 0; k < MAX_REP; k++) {
-                repMax[k] = {kg: 0, date: 0};
+                repMax[k] = {weight: 0, date: 0};
             }
             repMaxByName[name] = repMax;
         });
@@ -43,15 +43,16 @@ var repmaxFile = function() {
                     var repMax = repMaxByName[action.name];
                     action.sets.forEach(function (aset) {
                         var reps = aset.reps - 1;
-                        var kg = setUnited(aset, unit);
+                        var weight = setUnited(aset, unit);
                         if (reps >= MAX_REP) {
                             reps = MAX_REP - 1;
                         }
                         for (var i = 0; i <= reps; i++) {
-                            if (repMax[i].kg < kg) {
-                                repMax[i].kg = kg;
+                            if (repMax[i].weight < weight) {
+                                repMax[i].weight = weight;
                                 repMax[i].date = item.date;
                                 repMax[i].reps = reps;
+                                // repMax[i].est1rm = est1rm(reps, weight);
                             }
                         }
                     });
