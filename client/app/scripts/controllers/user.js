@@ -117,8 +117,10 @@ angular.module('clientApp').directive('workoutEditor', function() {
            };
 
            $scope.addNamedAction = function(newName) {
-               var emptySet = {weight:undefined, unit:userPrefs.unit};
-               $scope.workout.actions.push({name:newName, sets:[emptySet]});
+               if (newName) {
+                   var emptySet = {weight:undefined, unit:userPrefs.unit};
+                   $scope.workout.actions.push({name:newName, sets:[emptySet]});
+               }
            };
 
            $scope.addAction = function(index) {
@@ -128,8 +130,13 @@ angular.module('clientApp').directive('workoutEditor', function() {
            };
 
            $scope.removeAction = function(index) {
+               var actToGo = $scope.workout.actions[index];
                if ($scope.workout.actions.length > 1) {
-                   $scope.workout.actions.splice(index,1);
+                   var setsRemoving = actToGo.sets.length;
+
+                   if (setsRemoving < 2 || window.confirm('Really remove these '+setsRemoving + ' ' + actToGo.name +  ' entries ??')) {
+                       $scope.workout.actions.splice(index,1);
+                   }
                }
            };
 
@@ -180,11 +187,13 @@ angular.module('clientApp').directive('actionSetsEditor', function() {
                 }
             };
             $scope.onLastInputEnter = function(e, index) {
-                var code = e.keyCode || e.which;
-                if (code === 13) {
-                    e.preventDefault();
-                    $scope.addSet(index);
-                    // elem.nextAll('input').focus();
+                if (index === $scope.action.sets.length - 1) {
+                    var code = e.keyCode || e.which;
+                    if (code === 13) {
+                        e.preventDefault();
+                        $scope.addSet(index);
+                        // elem.nextAll('input').focus();
+                    }
                 }
             };
         }

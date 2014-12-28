@@ -22,7 +22,15 @@ var repmaxFile = function() {
         }
     };
 
+    var est1rm = function(weight, reps) {
+        var capreps = (reps>5) ? 5 : reps;
+        var x1 = weight;
+        var x2 = weight * (capreps-1) * 0.03;
+        return x1 + x2;
+    };
+
     var genRepMax = function (items, names, unit) {
+
         if (names === undefined || items === undefined) {
             return [];
         }
@@ -42,17 +50,17 @@ var repmaxFile = function() {
                 if (repMaxByName[action.name]) {
                     var repMax = repMaxByName[action.name];
                     action.sets.forEach(function (aset) {
-                        var reps = aset.reps - 1;
+                        var reps = aset.reps;
                         var weight = setUnited(aset, unit);
                         if (reps >= MAX_REP) {
-                            reps = MAX_REP - 1;
+                            reps = MAX_REP;
                         }
-                        for (var i = 0; i <= reps; i++) {
+                        for (var i = 0; i <= reps-1; i++) {
                             if (repMax[i].weight < weight) {
                                 repMax[i].weight = weight;
                                 repMax[i].date = item.date;
-                                repMax[i].reps = reps;
-                                // repMax[i].est1rm = est1rm(reps, weight);
+                                repMax[i].reps = i+1;
+                                repMax[i].est1rm = est1rm(weight, i+1);
                             }
                         }
                     });
@@ -61,7 +69,16 @@ var repmaxFile = function() {
 
         });
         return names.map(function (name) {
-            return {name: name, repMax: repMaxByName[name]};
+            var repMax = repMaxByName[name];
+            if (repMax[1].weight>0) {
+                var estRepMax = _.chain(repMax)
+                    .filter(function(x) {return x.reps<=5;})
+                    .map(function(x) {return x.est1rm;})
+                    .max()
+                    .value();
+                repMax.unshift({weight:estRepMax, reps:'Est 1'});
+            }
+            return {name: name, repMax: repMax};
         });
 
     };
