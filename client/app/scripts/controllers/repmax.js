@@ -24,9 +24,7 @@ var repmaxFile = function() {
 
     var est1rm = function(weight, reps) {
         var capreps = (reps>5) ? 5 : reps;
-        var x1 = weight;
-        var x2 = weight * (capreps-1) * 0.03;
-        return x1 + x2;
+        return weight / (1.0278-0.0278*capreps);
     };
 
     var genRepMax = function (items, names, unit) {
@@ -114,7 +112,7 @@ var repmaxFile = function() {
         var curDate = curDateObj.valueOf();
         var history = [];// allDates.map(function(d) {return {date:d, repMax: angular.copy(repMax)};});
 
-        var accRepMax = function(aset, history) {
+        var accRepMax = function(aset) {
             repMax = repMaxFromSet(aset, MAX_REP, repMax, curDate, unit);
             history.push(repMax);
         };
