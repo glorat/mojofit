@@ -1,9 +1,9 @@
 <!doctype html>
-<html class="no-js">
+<html class="no-js" ng-app="clientApp">
   <head>
     <meta charset="utf-8">
-    <title>Kevin's workout log importer and analyser</title>
-    <meta name="description" content="">
+    <title ng-bind-template="Gainstrack - {{viewTitle}}">Gainstrack - Track your gains</title>
+    <meta name="description" content="Gainstrack - Track your gains - workout log">
     <meta name="viewport" content="width=device-width">
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
     <!-- build:css(.) styles/vendor.css -->
@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="styles/main.css">
     <!-- endbuild -->
   </head>
-  <body ng-app="clientApp">
+  <body>
     <!--[if lt IE 7]>
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
@@ -39,7 +39,7 @@
              </div>
         </div>
 
-        <h3 class="text-muted">Kevin's workout log importer and analyser</h3>
+        <h3 class="text-muted">Gainstrack - Track your gains</h3>
       </div>
 
       <div ng-view=""></div>
@@ -82,9 +82,10 @@
     <!-- endbuild -->
 
     <!-- build:js({.tmp,app}) scripts/scripts.js -->
-    <script src="scripts/ng-google-chart.js"></script>
-    <script src="scripts/gm.datepickerMultiSelect.js"></script>
-    <script src="scripts/angular-local-storage.js"></script>
+    <script src="scripts/modules/ng-google-chart.js"></script>
+    <script src="scripts/modules/gm.datepickerMultiSelect.js"></script>
+    <script src="scripts/modules/angular-local-storage.js"></script>
+    <script src="scripts/modules/angular-viewhead.js"></script>
     <script src="scripts/app.js"></script>
     <script src="scripts/services.js"></script>
     <script src="scripts/controllers/main.js"></script>
