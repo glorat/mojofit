@@ -39,9 +39,16 @@
                 <input type="text" class="form-control" ng-show="nameedit" ng-model="action.name" >
             </div>
             <div class="col-xs-4">
-                <div class="btn-group btn-group-xs" role="group">
-                    <!-- <button type="button" class="btn btn-default" ng-click="addAction($index)"><span class="glyphicon glyphicon-plus"></span></button> -->
-                    <button type="button" class="btn btn-default" ng-click="removeAction($index)"><span class="glyphicon glyphicon-minus"></span></button>
+
+                <div class="btn-group">
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                        Action <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="" ng-click="removeAction($index)">Delete...</a></li>
+                        <li class="divider"></li>
+                        <li><a href="" ng-click="cloneLastTime($index)">Clone last time</a></li>
+                    </ul>
                 </div>
             </div>
         </div>

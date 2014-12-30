@@ -9,8 +9,12 @@ function drawChart() {
     if (jsonData) {
         var data = new window.google.visualization.DataTable(jsonData);
         var options = {'hAxis':{'title':''},'vAxis':{'title':'','format':'# kg'},'interpolateNulls':'true','legend':{'position':'top','maxLines':5}};
-        var chart = new window.google.visualization.LineChart(document.getElementById('chart_div'));
-        chart.draw(data, options);
+        var target = document.getElementById('chart_div');
+        if (target) {
+            var chart = new window.google.visualization.LineChart(target);
+            chart.draw(data, options);
+        }
+        // Else the container must have went away
     }
     else {
         // Can't have this in IE9
@@ -140,6 +144,25 @@ angular.module('clientApp').directive('workoutEditor', function() {
                }
            };
 
+           var reallyCloneLastTime = function(act) {
+               var lastAct = _.chain($scope.user.data)
+                   .map(function(x){return x.actions;})
+                   .flatten()
+                   .find(function(x){return x.name === act.name;})
+                   .value();
+               if (lastAct) {
+                   act.sets = angular.copy(lastAct.sets);
+               }
+           };
+
+           $scope.cloneLastTime = function(index) {
+               var act = $scope.workout.actions[index];
+               var setsReplacing = act.sets.length;
+               if (setsReplacing < 2 || window.confirm('Really replace these existing '+setsReplacing + ' ' + act.name +  ' entries?')) {
+                   reallyCloneLastTime(act);
+               }
+           };
+
        }
    };
 });
@@ -176,6 +199,7 @@ angular.module('clientApp').directive('actionSetsEditor', function() {
         scope: {action:'='},
         templateUrl: 'views/action-editor.html',
         controller: function ($scope) {
+
             $scope.addSet = function(index) {
                 var newSet = angular.copy($scope.action.sets[index]);
                 $scope.action.sets.splice(index+1,0, newSet);
