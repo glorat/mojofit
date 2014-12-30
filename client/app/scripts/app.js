@@ -15,7 +15,8 @@ angular
     'ui.bootstrap',
         'gm.datepickerMultiSelect',
         'googlechart',
-        'LocalStorageModule'
+        'LocalStorageModule',
+        'viewhead'
     ]);
 
 
