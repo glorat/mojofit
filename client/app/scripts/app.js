@@ -14,7 +14,8 @@ angular
     'ngRoute',
     'ui.bootstrap',
         'gm.datepickerMultiSelect',
-        'googlechart'
+        'googlechart',
+        'LocalStorageModule'
     ]);
 
 
