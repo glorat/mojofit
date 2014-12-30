@@ -8,6 +8,7 @@ angular.module('clientApp').directive('workoutEditor', function() {
         templateUrl: 'views/workout-editor.html',
         controller: function ($scope, UserState, MojoServer) {
             var userPrefs = MojoServer.getUserPrefs();
+            // This is just for usedExercises.. can do better?
             $scope.user = UserState.getCurrentUser();
 
             $scope.dateOptions = {
