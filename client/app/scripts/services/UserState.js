@@ -1,15 +1,10 @@
 'use strict';
 
-
 angular.module('clientApp')
-    .factory('UserState', function ($http, $log, MojoServer, localStorageService) {
-
-        var userStatus = MojoServer.getUserStatus();
-
+    .factory('UserStateLoader', function ($http, $log, $rootScope, MojoServer, localStorageService) {
         var defaultExercises = ['Barbell Squat', 'Standing Barbell Shoulder Press (OHP)', 'Barbell Bench Press', 'Barbell Deadlift', 'Pendlay Row', 'Power Clean', 'Pull-Up', 'Front Barbell Squat', 'Standing Dumbbell Shoulder Press', 'Barbell Curl', 'Cable External Rotation', 'Hang Clean', 'Clean and Jerk', 'Lat Pulldown', 'Hang Power Clean', 'Clean', 'Dips - Triceps Version', 'Face Pull', 'Dumbbell Bicep Curl', 'Plank', 'Goblet Squat (dumbbell)', 'Bent Over Barbell Row', 'Body Weight Glute Hamstring Raise', 'Front Squat', 'Power Snatch', 'Dumbbell Bulgarian Split Squat', 'Push-Up', 'Dumbbell Side Lateral Raise', 'Farmer\'s Walk', 'Abductor Machine', 'Overhead Barbell Squat', 'Bent-Over Rear Delt Raise', 'Front Dumbbell Raise', 'One-Arm Dumbbell Row', 'Barbell Shrug', 'Seated Bent-Over Rear Delt Raise', 'Seated Cable Row', 'Chin-Up', 'Snatch'];
 
-        var currentUser = {userId:undefined, data:[], usedExercises:defaultExercises};
-
+        var userStatus = MojoServer.getUserStatus();
 
         var usedExercises = function (data) {
             //var nameByUse = {};
@@ -55,7 +50,9 @@ angular.module('clientApp')
             return data;
         };
 
-        var handleUserData = function(data, userData) {
+        var handleUserData = function(dataObj, userData) {
+            var data = dataObj.items;
+            userData.revision = +dataObj.revision;
             userData.data = processData(data);
             userData.usedExercises = usedExercises(data);
             userData.workoutDates = userData.data.map(function(x){return new Date(x.date).setHours(0,0,0,0).valueOf();});
@@ -68,18 +65,28 @@ angular.module('clientApp')
                 userData = {data:[]}; // Return new
             }
 
-            if (userId === userStatus.username && localStorageService.isSupported) {
+            if (localStorageService.isSupported) {
                 var data = localStorageService.get('mydata');
-                if (data) {
+                if (data && data.items && data.userId === userId) {
                     $log.info('Loading your '+userId+'data from local storage');
                     handleUserData(data, userData);
-                    // TODO: If we determine it is up to date, no need to load from server!
-                }
+                    // If we determine it is up to date, no need to load from server!
+                    if (userStatus.username === userId && userStatus.revision > data.revision) {
+                        $log.info('but will async update from server');
 
+                    }
+                    else {
+                        $log.debug('Assume we do not need server refresh yet');
+                        return userData;
+                    }
+                }
             }
 
-            $log.info('Loading user data form server for '+userId );
+            $log.info('Loading user data from server for '+userId );
             $http.get('/userraw/' + userId).success(function(data) {
+                // Due to aliasing, server may have stored userId
+                // and we don't want to gen it at runtime server currently
+                data.userId = userId;
                 handleUserData(data, userData);
 
                 if (userId === userStatus.username && localStorageService.isSupported) {
@@ -90,22 +97,59 @@ angular.module('clientApp')
             return userData; // Will get filled async
         };
 
+        return {
+            loadUserInto : loadUserInto,
+            defaultExercises: defaultExercises
+        };
+    });
+
+angular.module('clientApp')
+    .factory('UserState', function ($http, $log, $rootScope, MojoServer, localStorageService, UserStateLoader) {
+
+        var currentUser = {userId:undefined, data:[], usedExercises:UserStateLoader.defaultExercises, revision:0};
+
+        var myUser = {userId:undefined, data:[], usedExercises:UserStateLoader.defaultExercises, revision:0};
+
+        // Listen for userId changes so we can manage just ourself
+        /*jshint unused: vars */
+        $rootScope.$on('MojoServer:userStatus', function(event,data) {
+            //userStatus === data; // Require
+            $log.info('UserState detected change in userStatus - Preloading state');
+            var userId = data.username;
+            UserStateLoader.loadUserInto(userId, myUser);
+
+            if (currentUser.userId === userId) {
+                // FIXME: Need a proper cache inside UserStateLoader
+                $log.info('Dual loading state for currentUser');
+                UserStateLoader.loadUserInto(userId, currentUser);
+            }
+        });
+
+
         var ret = {
             loadUser : function(userId, userData) {
-                return loadUserInto(userId, userData);
+                $log.warn('UserState.loadUser deprecated');
+                return UserStateLoader.loadUserInto(userId, userData);
             },
             setCurrentUserId: function(newUserId) {
                 if (currentUser.userId !== newUserId) {
                     currentUser.userId = newUserId;
                     currentUser.data = [];
-                    loadUserInto(newUserId, currentUser);
+                    UserStateLoader.loadUserInto(newUserId, currentUser);
                 }
             },
             reloadCurrentUser: function() {
-                loadUserInto(currentUser.userId, currentUser);
+                UserStateLoader.loadUserInto(currentUser.userId, currentUser);
             },
             getCurrentUser:function() {
                 return currentUser;
+            },
+            getMyState: function() {
+                return myUser;
+            },
+            reloadMyState: function() {
+                // Get latest revision number, to trigger new state load
+                MojoServer.refreshUserStatus();
             }
         };
         return ret;

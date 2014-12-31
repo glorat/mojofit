@@ -1,11 +1,13 @@
 'use strict';
 
 angular.module('clientApp')
-    .factory('MojoServer', function ($http) {
+    .factory('MojoServer', function ($http, $rootScope) {
         var userStatus = {isLoggedIn:undefined, id:'', username:'', userPrefs:{unit:'kg'}};
         var registerStatus = {message:'',level:'info'};
         var loginStatus = {message:'', level:'info'};
         var workoutStatus = {level:'info', message:''};
+
+        var userStatusReqStatus; // enums? FSM
 
         var handleStatus = function (data, cb) {
             if (data.userStatus) {
@@ -13,27 +15,30 @@ angular.module('clientApp')
                 userStatus.email = data.userStatus.email;
                 userStatus.id = data.userStatus.id;
                 userStatus.username = data.userStatus.username;
+                userStatus.revision = data.userStatus.revision;
             }
             loginStatus.message = data.message;
             loginStatus.level = data.level;
+
+            userStatusReqStatus = 'done';
+
+            $rootScope.$broadcast('MojoServer:userStatus',userStatus);
+
             if (cb && data.userStatus) { // Learn some JS - check for fn?
                 cb(userStatus);
             }
         };
 
         var refreshUserStatus = function() {
+            userStatusReqStatus = 'requesting';
             $http.get('/auth/getUserStatus').success(function(data) {
-                userStatus.isLoggedIn = data.isLoggedIn;
-                userStatus.email = data.email;
-                userStatus.id = data.id;
-                userStatus.username =data.username;
-                // FIXME: Above lines are duped a few lines down
+                handleStatus(data);
             });
         };
 
         var ret = {
             getUserStatus: function() {
-                if (userStatus.isLoggedIn === undefined) {
+                if (userStatus.isLoggedIn === undefined && userStatusReqStatus !== 'requesting') {
                     refreshUserStatus();
                 }
                 return userStatus;

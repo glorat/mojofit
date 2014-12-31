@@ -67,11 +67,14 @@ angular.module('clientApp')
         });
 
         $scope.addWorkout = function() {
-            $scope.editWorkout({date: $scope.newWorkout.date, actions:[]});
+            var d = new Date($scope.newWorkout.date);
+            var utcDate = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate());
+            $scope.editWorkout({date:  utcDate});
         };
 
         $scope.editWorkout = function(newW) {
-            WorkoutState.setWorkout(newW);
+            // WorkoutState.setWorkout(newW);
+            WorkoutState.setDate(newW.date);
             $location.path('/track');
         };
 

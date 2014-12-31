@@ -182,6 +182,7 @@ use JSON;
 use Mojofit;
 
 our @ISA = qw'Fitstore';
+our $f = File::Util->new();
 
 sub new {
 	my ($class, $id) = @_;
@@ -242,8 +243,20 @@ sub write_by_date {
 	my @keys = sort keys %{$self->{bydate}};
 	my @items = map {$self->{bydate}->{$_}} (@keys);
 	open OUT, ">$Fitstore::DATA_DIR/$self->{id}.json";
-	print OUT encode_json(\@items);
+	print OUT encode_json({revision=>$self->{index}, items=>\@items, id=>$self->{id}});
 	close OUT; 
+	open OUT, ">$Fitstore::DATA_DIR/$self->{id}.revision";
+	print OUT $self->{index};
+	close OUT;
+}
+
+# Static
+sub get_revision {
+	my ($target) = @_;
+	return 0 unless $f->can_read("$Mojofit::DATA_DIR/${target}.json");
+	# Auto string to int
+	my $rev = $f->load_file("$Mojofit::DATA_DIR/${target}.revision");
+	return 0 + $rev;
 }
 
 1
