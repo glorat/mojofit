@@ -5,6 +5,7 @@ use warnings;
 use Mojo::Base 'Mojolicious::Controller';
 use WWW::Mailgun;
 use Data::UUID;
+use Fitstore;
 
 sub login {
 	my $c = shift;
@@ -157,6 +158,7 @@ sub nameToUsername {
 sub getUserStatus {
 	my $c = shift;
 	my $status = {};
+	my $msg = {level=>'Success', message=>'', userStatus=>$status};
 	eval {
 		if (!$c->session('id')) {
 			my $id = genId();
@@ -180,12 +182,15 @@ sub getUserStatus {
 			$status->{username} = $id;
 		    
 		}
+		# How many log entries do we have?
+		$status->{revision} = Fitstore::MainView::get_revision($id) || 0;
 	};
 	
 	if ($@) {
-		$status->{error} = $@;
+		$status->{level} = 'warning';
+		$status->{message} = $@;
 	}
-	$c->render(json => $status);
+	$c->render(json => $msg);
 };
 
 sub genId {

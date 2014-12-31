@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('clientApp')
-    .factory('WorkoutState', function () {
+    .factory('WorkoutState', function (UserState) {
         var workout = {date:new Date().setHours(0,0,0,0).valueOf(), actions:[]};
 
         var ret = {
@@ -11,7 +11,14 @@ angular.module('clientApp')
           setWorkout : function(newW) {
               workout.date = newW.date.valueOf();
               workout.actions = angular.copy(newW.actions);
-          }
+          },
+            setDate: function(newDate) {
+                workout.date = newDate.valueOf();
+                var myState = UserState.getMyState();
+                var edit = _.find(myState.data, function(x) {return x.date === workout.date;});
+                var acts = edit ? angular.copy(edit.actions) : [];
+                workout.actions = acts;
+            }
         };
         return ret;
     });

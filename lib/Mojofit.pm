@@ -93,10 +93,16 @@ $r->get('/userraw/#username' => sub {
 	my $target = $c->param('username');
 	$target =~ m/^[A-Za-z0-9\-\.]+$/ or return $c->render(text => 'Invalid username');
 	
-	$f->can_read("$DATA_DIR/${target}.json") or return $c->render(json => "Unknown username $target");
-	my $jsonStream=$f->load_file("$DATA_DIR/${target}.json");
-	$c->render(text => $jsonStream, format=>'json');
-
+	if ($f->can_read("$DATA_DIR/${target}.json")) {
+		my $jsonStream=$f->load_file("$DATA_DIR/${target}.json");
+		$c->render(text => $jsonStream, format=>'json');
+	}
+	else {
+		#my $tgtuser = $c->dbic->ResultSet('Member')->find({username=>$target});
+		#my $restarget = $tgtuser->id;
+		$c->res->code(404);
+		return $c->render(json => "Unknown username $target");
+	}
 });
 
 $r->any('/userjson/:username/:minsets/:minreps/:period' => sub {userjson(@_)});

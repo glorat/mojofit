@@ -3,13 +3,12 @@
 
 angular.module('clientApp')
     .controller('TrackController', function ($scope, $location, WorkoutState, UserState, MojoServer) {
-        // $scope.userStatus = MojoServer.getUserStatus();
         $scope.editWorkout = WorkoutState.getWorkout();
-        $scope.user = UserState.getCurrentUser(); //+ get from server?
+        $scope.user = UserState.getMyState();
         $scope.userStatus = MojoServer.getUserStatus();
 
         var submitCB = function() {
-            UserState.reloadCurrentUser();
+            UserState.reloadMyState();
             var id = $scope.userStatus.username;
             if (id) {
                 $location.path('/user/' + id);

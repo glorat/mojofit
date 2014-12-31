@@ -172,7 +172,8 @@ sub getStream {
 	my ($target) = @_;
 	return [] unless $f->can_read("$Mojofit::DATA_DIR/${target}.json");
 	my $jsonStream=$f->load_file("$Mojofit::DATA_DIR/${target}.json");
-	my $stream = decode_json($jsonStream);
+	my $data = decode_json($jsonStream);
+	my $stream = $data->{items};
 
 	bless $stream, "Mojofit::Stream";
 	foreach my $item (@$stream) {
