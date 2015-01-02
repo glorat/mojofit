@@ -27,8 +27,9 @@ $t->get_ok('/')
   
   $t->post_ok('/auth/getUserStatus')
   ->status_is(200)
-  ->json_is('/isLoggedIn' => 0)
-  ->json_has('/id');
+  ->json_is('/level' => 'Success')
+  ->json_is('/userStatus/isLoggedIn' => 0)
+  ->json_has('/userStatus/id');
   my $id = $t->tx->res->json->{id};
 
   $t->post_ok('/auth/register' => form => $reg)
@@ -69,8 +70,9 @@ $t->get_ok('/')
 
   $t->get_ok('/auth/getUserStatus')
   ->status_is(200)
-  ->json_is('/isLoggedIn' => 1)
-  ->json_is('/username' => 'KevinTam')
-  ->json_like('/id', qr'^\d+$');
+  ->json_is('/level' => 'Success')
+  ->json_is('/userStatus/isLoggedIn' => 1)
+  ->json_is('/userStatus/username' => 'KevinTam')
+  ->json_like('/userStatus/id', qr'^\d+$');
   my $regid = $t->tx->res->json->{id};
 done_testing();
