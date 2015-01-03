@@ -1,0 +1,14 @@
+<div ng-controller="PlateCalculatorController as pc">
+<h2>Plate calculator</h2>
+    <input type="number" ng-model="pc.weight" ng-change="pc.refresh()">
+    <input type="text" ng-model="pc.unit">
+    <div ng-repeat="plate in pc.plates">
+        <input type="number" style="width:6em" ng-model="plate[0]">
+        <input type="text" ng-model="plate[1]">
+        <input type="text" ng-model="plate[2]">
+    </div>
+    <button type="submit" ng-click="pc.solve()">Submit</button>
+    <div ng-repeat="sol in pc.solution">
+        {{ sol }}
+    </div>
+</div>

@@ -51,6 +51,9 @@ angular.module('clientApp').config(['$routeProvider',
                 templateUrl: 'views/track.html',
                 controller: 'TrackController'
             })
+            .when('/plates', {
+                templateUrl: 'views/plates.html'
+            })
             .otherwise({
                 templateUrl: 'views/main.html',
                 controller: 'MainController'
