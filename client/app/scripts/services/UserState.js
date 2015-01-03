@@ -149,7 +149,7 @@ angular.module('clientApp')
         /*jshint unused: vars */
         $rootScope.$on('MojoServer:userStatus', function(event,data) {
             //userStatus === data; // Require
-            $log.info('UserState detected change in userStatus - Preloading state ' + data.username + ":" + data.revision);
+            $log.info('UserState detected change in userStatus - Preloading state ' + data.username + ':' + data.revision);
             var userId = data.username;
             cloneInto(defaultUser(userId), myUser);
             UserStateLoader.loadUser(userId);
