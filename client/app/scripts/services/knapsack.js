@@ -61,25 +61,44 @@ angular.module('clientApp')
 
 // Stateful module
 angular.module('clientApp')
-    .factory('PlateCalculator', function (KnapSack, UnitConverter, $log) {
+    .factory('PlateCalculator', function (KnapSack, UnitConverter, localStorageService, $log) {
 
         // Maintain state here
-        var myPlates = [[20,6,'kg'],[15,6,'kg'],[10,6,'kg'],[5,6,'kg'],[2.5,6,'kg'],[1.25,1,'kg']];
-        var myTable = [];
+        var defaultPlates = [[25,0,'kg'],[20,6,'kg'],[15,6,'kg'],[10,6,'kg'],[5,6,'kg'],[2.5,6,'kg'],[1.25,1,'kg']];
 
-        var totalPlates = function() {
-            return myPlates.map(function(x){return x[2];}).sum();
+        var initPlates = function() {
+            var ls = localStorageService.get('plates');
+            if (ls) {
+                return ls;
+            }
+            else {
+                return angular.copy(defaultPlates);
+            }
         };
-
         var toKgPlates = function() {
             return myPlates.map(function (x) {return [UnitConverter.convert(x[0],x[2],'kg'), x[1]];});
         };
+
+        var myPlates = initPlates();
+        var myTable = KnapSack.solve(toKgPlates(myPlates));
+
+        var totalPlates = function() {
+            var sum = 0;
+            _.chain(myPlates)
+                .map(function(x){return x[1];})
+                .each(function(x){sum+=x;})
+                .value();
+            return sum;
+        };
+
+
 
         var doSolve = function() {
             if (totalPlates() > 40) {
                 $log.error('Tried to solve for too many plates!');
             }
             else {
+                localStorageService.set('plates',myPlates);
                 myTable = KnapSack.solve(toKgPlates(myPlates));
             }
 
@@ -87,39 +106,7 @@ angular.module('clientApp')
 
         var getSolutionFor = function(weight, unit) {
             var kg = UnitConverter.convert(weight, unit, 'kg');
-            return KnapSack.getSolutionForUnit(myTable, kg);
-        };
-
-        return {
-            getPlates : function() {return myPlates;},
-            solve : doSolve,
-            getSolutionFor : getSolutionFor
-        };
-    });
-
-
-// Stateful module
-angular.module('clientApp')
-    .factory('PlateCalculator', function (KnapSack, UnitConverter) {
-
-        // Maintain state here
-        var myPlates = [[20,6,'kg'],[15,6,'kg'],[10,6,'kg'],[5,6,'kg'],[2.5,6,'kg'],[1,1.25,'kg']];
-        var myTable = [];
-        var barbell = {weight:20, unit:'kg'};
-
-        var toKgPlates = function() {
-            return myPlates.map(function (x) {return [UnitConverter.convert(x[0],x[2],'kg'), x[1]];});
-        };
-
-        var doSolve = function() {
-            myTable = KnapSack.solve(toKgPlates(myPlates));
-        };
-
-        var getSolutionFor = function(weight, unit) {
-            var targetKg = UnitConverter.convert(weight, unit, 'kg');
-            var barbellKg = UnitConverter.convert(barbell.weight, barbell.unit, 'kg');
-            var toSolve = (targetKg - barbellKg) / 2.0; // Plates on 2 sides!
-            return KnapSack.getSolutionFor(myTable, toSolve);
+            return KnapSack.getSolutionFor(myTable, kg);
         };
 
         return {
@@ -136,6 +123,7 @@ angular.module('clientApp')
         this.weight = 120;
         this.unit = 'kg';
         this.solution = [];
+        this.solutionTotal = 0;
         var refresh = function() {
             self.solution = PlateCalculator.getSolutionFor(self.weight, self.unit);
         };
@@ -146,4 +134,5 @@ angular.module('clientApp')
         // On weight/unit change
         this.refresh = refresh;
 
+        refresh();
     });

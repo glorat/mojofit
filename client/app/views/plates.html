@@ -1,14 +1,30 @@
 <div ng-controller="PlateCalculatorController as pc">
 <h2>Plate calculator</h2>
-    <input type="number" ng-model="pc.weight" ng-change="pc.refresh()">
-    <input type="text" ng-model="pc.unit">
+
+    <h3>Step 1: Set up weights</h3>
+    <p>Enter the number of <strong>pairs</strong> you have for each plate</p>
     <div ng-repeat="plate in pc.plates">
+        <input type="number" style="width:6em" ng-model="plate[1]">
+        x
         <input type="number" style="width:6em" ng-model="plate[0]">
-        <input type="text" ng-model="plate[1]">
-        <input type="text" ng-model="plate[2]">
+
+        <div class="btn-group">
+            <label class="btn btn-sm btn-default" ng-model="plate[2]" btn-radio="'kg'">kg</label>
+            <label class="btn btn-sm btn-default" ng-model="plate[2]" btn-radio="'lb'">lb</label>
+        </div>
     </div>
-    <button type="submit" ng-click="pc.solve()">Submit</button>
+    <button type="submit" ng-click="pc.solve()">Apply</button>
+    <h3>Step 2: Enter target weight</h3>
+    <input type="number" ng-model="pc.weight" ng-change="pc.refresh()">
+    <div class="btn-group">
+        <label class="btn btn-default" ng-model="pc.unit" btn-radio="'kg'">kg</label>
+        <label class="btn btn-default" ng-model="pc.unit" btn-radio="'lb'">lb</label>
+    </div>
+
+    <h3>Solution</h3>
     <div ng-repeat="sol in pc.solution">
         {{ sol }}
     </div>
+
+
 </div>
