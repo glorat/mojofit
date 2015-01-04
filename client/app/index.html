@@ -30,8 +30,18 @@
           <li class=""><a ng-href="#/slic">SLIC Import</a></li>
           <li class=""><a ng-href="#/user/{{ userStatus.username}}" ng-show="userStatus.username">My Log</a></li>
           <li class=""><a ng-href="#/user/KevinTam">Kevin's Log</a></li>
-          <li><a ng-href="#/login" ng-hide="userStatus.isLoggedIn">Login</a></li>
-          <li><a ng-click="logout()" ng-show="userStatus.isLoggedIn">Logout</a></li>
+
+
+            <li role="presentation" class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">
+                    Tools <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu" role="menu">
+                    <li><a href="#/plates/">Plate calculator</a></li>
+                </ul>
+            </li>
+
+          <li><a ng-href="#/login" ng-bind-template="{{ userStatus.isLoggedIn ? 'Account' : 'Login' }}">Login</a></li>
           <li><a ng-href="#/about">About</a></li>
         </ul>
             <div class="" >
