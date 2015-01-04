@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <title ng-bind-template="Gainstrack - {{viewTitle}}">Gainstrack - Track your gains</title>
     <meta name="description" content="Gainstrack - Track your gains - workout log">
+    <base href="/">
     <meta name="viewport" content="width=device-width">
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
     <!-- build:css(.) styles/vendor.css -->
@@ -27,9 +28,9 @@
 
         <ul class="nav nav-pills">
           <li class="active"><a ng-href="#">Home</a></li>
-          <li class=""><a ng-href="#/slic">SLIC Import</a></li>
-          <li class=""><a ng-href="#/user/{{ userStatus.username}}" ng-show="userStatus.username">My Log</a></li>
-          <li class=""><a ng-href="#/user/KevinTam">Kevin's Log</a></li>
+          <li class=""><a ng-href="/slic">SLIC Import</a></li>
+          <li class=""><a ng-href="/user/{{ userStatus.username}}" ng-show="userStatus.username">My Log</a></li>
+          <li class=""><a ng-href="/user/KevinTam">Kevin's Log</a></li>
 
 
             <li role="presentation" class="dropdown">
@@ -37,12 +38,12 @@
                     Tools <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu" role="menu">
-                    <li><a href="#/plates/">Plate calculator</a></li>
+                    <li><a href="/plates">Plate calculator</a></li>
                 </ul>
             </li>
 
-          <li><a ng-href="#/login" ng-bind-template="{{ userStatus.isLoggedIn ? 'Account' : 'Login' }}">Login</a></li>
-          <li><a ng-href="#/about">About</a></li>
+          <li><a ng-href="/login" ng-bind-template="{{ userStatus.isLoggedIn ? 'Account' : 'Login' }}">Login</a></li>
+          <li><a ng-href="/about">About</a></li>
         </ul>
             <div class="" >
                 <span ng-show="userStatus.username">Welcome {{ userStatus.username}}</span>

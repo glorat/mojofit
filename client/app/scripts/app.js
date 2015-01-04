@@ -20,8 +20,8 @@ angular
     ]);
 
 
-angular.module('clientApp').config(['$routeProvider',
-    function($routeProvider) {
+angular.module('clientApp').config(['$routeProvider','$locationProvider',
+    function($routeProvider, $locationProvider) {
         $routeProvider.
             when('/user/:userId', {
                 templateUrl: 'views/user.html',
@@ -58,6 +58,8 @@ angular.module('clientApp').config(['$routeProvider',
                 templateUrl: 'views/main.html',
                 controller: 'MainController'
             });
+        // use the HTML5 History API
+        $locationProvider.html5Mode(true);
     }]);
 
 angular.module('clientApp')
