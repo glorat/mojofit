@@ -73,8 +73,8 @@ angular.module('clientApp')
 
         var initPlates = function() {
             var ls = localStorageService.get('plates');
-            myPlates = ls.plates ? ls.plates :  angular.copy(defaultPlates);
-            barbell = ls.barbell ? ls.barbell : angular.copy(defaultBarbell);
+            myPlates = (ls && ls.plates) ? ls.plates :  angular.copy(defaultPlates);
+            barbell = (ls && ls.barbell) ? ls.barbell : angular.copy(defaultBarbell);
         };
         var toKgPlates = function() {
             return myPlates.map(function (x) {return [UnitConverter.convert(x[0],x[2],'kg'), x[1],x[0] + x[2]];});
