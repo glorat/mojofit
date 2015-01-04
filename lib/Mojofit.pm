@@ -178,6 +178,14 @@ $r->post('/slicparse' => sub {
 	
 	
 });
+
+$r->get('/*whatever' => {whatever => ''} => sub {
+  my $c        = shift;
+  my $whatever = $c->param('whatever');
+  
+  $c->reply->static('index.html');
+});
+
 # end startup
 }
 
