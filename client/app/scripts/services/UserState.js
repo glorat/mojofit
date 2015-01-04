@@ -65,7 +65,7 @@ angular.module('clientApp')
         var loadUser = function(userId) {
             var userData = {userId:userId}; // Brand new. TODO:Get from memcache
 
-            if (0 && localStorageService.isSupported) {
+            if (localStorageService.isSupported) {
                 var data = localStorageService.get('mydata');
                 if (data && data.items && data.userId === userId) {
                     $log.info('Loading your '+userId+' data from local storage');
