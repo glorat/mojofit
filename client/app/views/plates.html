@@ -5,7 +5,7 @@
 
         <h3>Step 1: Set up weights</h3>
         <p>How much your barbell weighs:</p>
-        <input type="number" min="0" style="width:6em" ng-model="pc.barbell.weight">
+        <input type="number" min="0" step="any" style="width:6em" ng-model="pc.barbell.weight">
 
         <div class="btn-group">
             <label class="btn btn-sm btn-default" ng-model="pc.barbell.unit" btn-radio="'kg'">kg</label>
@@ -16,7 +16,7 @@
         <div ng-repeat="plate in pc.plates">
             <input type="number" style="width:6em" ng-model="plate[1]" min="0">
             x
-            <input type="number" style="width:6em" ng-model="plate[0]" min="1">
+            <input type="number" step="any" style="width:6em" ng-model="plate[0]" min="1">
 
             <div class="btn-group">
                 <label class="btn btn-sm btn-default" ng-model="plate[2]" btn-radio="'kg'">kg</label>
