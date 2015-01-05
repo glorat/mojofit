@@ -253,7 +253,7 @@ sub write_by_date {
 # Static
 sub get_revision {
 	my ($target) = @_;
-	return 0 unless $f->can_read("$Mojofit::DATA_DIR/${target}.json");
+	return 0 unless $f->can_read("$Mojofit::DATA_DIR/${target}.revision");
 	# Auto string to int
 	my $rev = $f->load_file("$Mojofit::DATA_DIR/${target}.revision");
 	return 0 + $rev;
