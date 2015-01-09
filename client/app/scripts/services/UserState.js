@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('clientApp')
-    .factory('UserStateLoader', function ($http, $log, $rootScope, MojoServer, localStorageService) {
+    .factory('UserStateLoader', function ($http, $log, $rootScope, localStorageService, MojoServer, RepMaxCalculator) {
         var defaultExercises = ['Barbell Squat', 'Standing Barbell Shoulder Press (OHP)', 'Barbell Bench Press', 'Barbell Deadlift', 'Pendlay Row', 'Power Clean', 'Pull-Up', 'Front Barbell Squat', 'Standing Dumbbell Shoulder Press', 'Barbell Curl', 'Cable External Rotation', 'Hang Clean', 'Clean and Jerk', 'Lat Pulldown', 'Hang Power Clean', 'Clean', 'Dips - Triceps Version', 'Face Pull', 'Dumbbell Bicep Curl', 'Plank', 'Goblet Squat (dumbbell)', 'Bent Over Barbell Row', 'Body Weight Glute Hamstring Raise', 'Front Squat', 'Power Snatch', 'Dumbbell Bulgarian Split Squat', 'Push-Up', 'Dumbbell Side Lateral Raise', 'Farmer\'s Walk', 'Abductor Machine', 'Overhead Barbell Squat', 'Bent-Over Rear Delt Raise', 'Front Dumbbell Raise', 'One-Arm Dumbbell Row', 'Barbell Shrug', 'Seated Bent-Over Rear Delt Raise', 'Seated Cable Row', 'Chin-Up', 'Snatch'];
 
         var userStatus = MojoServer.getUserStatus();
@@ -61,7 +61,8 @@ angular.module('clientApp')
             userData.workoutDates = userData.data.map(function(x){return new Date(x.date).setHours(0,0,0,0).valueOf();});
             userData.activeDate = new Date(userData.workoutDates[0]);
             userData.showChart = true;
-            var diff = new (Date) - start;
+            userData.repMax = RepMaxCalculator.genRepMaxFull(userData.data, userData.usedExercises, 'kg');
+            var diff = new Date() - start;
             $log.info('Processed user state in ' + diff +'ms');
         };
 
@@ -70,7 +71,8 @@ angular.module('clientApp')
 
             if (localStorageService.isSupported) {
                 var data = localStorageService.get('mydata');
-                if (data && data.items && data.userId === userId) {
+                // Lots of fields to force regen as I upgraded schemas
+                if (data && data.items && data.repMax && data.userId === userId) {
                     $log.info('Loading your '+userId+' data from local storage');
                     copyUserInto(data, userData);
                     $rootScope.$broadcast('UserState:stateLoaded',userData);
@@ -131,7 +133,7 @@ angular.module('clientApp')
     .factory('UserState', function ($http, $log, $rootScope, MojoServer, localStorageService, UserStateLoader) {
 
         var defaultUser = function(userId) {
-            return {userId:userId, data:[], usedExercises:UserStateLoader.defaultExercises, revision:0};
+            return {userId:userId, data:[], usedExercises:UserStateLoader.defaultExercises, revision:0, repMax:{}};
         };
 
         var currentUser = defaultUser(undefined);
@@ -146,6 +148,7 @@ angular.module('clientApp')
             tgtUser.workoutDates = srcUser.workoutDates;
             tgtUser.activeDate = srcUser.activeDate;
             tgtUser.showChart = srcUser.showChart;
+            tgtUser.repMax = srcUser.repMax;
         };
 
         // Listen for userId changes so we can manage just ourself
