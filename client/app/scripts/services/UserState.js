@@ -62,9 +62,15 @@ angular.module('clientApp')
                         var item = _.find(items, function (x){return x.date=== l.date;});
                         var action = _.find(item.actions,function(x){return x.name === exname;});
                         var set = _.find(action.sets, function(x){return x.weight=== l.weight && x.reps=== l.reps;});
-                        if (!set.badges) {set.badges=[];}
-                        set.badges.push(tag);
-                        // console.log(new Date(item.date) + ' ' + exname + ' ' + l.weight + 'x' + l.reps);
+                        if (set) {
+                            if (!set.badges) {set.badges=[];}
+                            set.badges.push(tag);
+                            // console.log(new Date(item.date) + ' ' + exname + ' ' + l.weight + 'x' + l.reps);
+                        }
+                        else {
+                            console.log('Could not find set for ' + exname);
+                            console.log(l);
+                        }
                     }
                 });
             };
