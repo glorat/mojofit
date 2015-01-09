@@ -37,9 +37,9 @@ angular.module('clientApp')
             var repMaxByName = {};
             names.forEach(function (name) {
                 var repMax = new Array(MAX_REP);
-                repMax[0] = {reps:'Est 1', latest: {weight:0}, history: []};
+                repMax[0] = {reps:'Est 1', latest: {weight:0, uw:0}, history: []};
                 for (var k = 1; k <= MAX_REP; k++) {
-                    repMax[k] = {reps:k, latest: {weight:0}, history: []};
+                    repMax[k] = {reps:k, latest: {weight:0, uw:0}, history: []};
                 }
                 repMaxByName[name] = repMax;
             });
@@ -50,18 +50,18 @@ angular.module('clientApp')
                         var repMax = repMaxByName[action.name];
                         action.sets.forEach(function (aset) {
                             var reps = aset.reps;
-                            var weight = setUnited(aset, unit);
+                            var uw = setUnited(aset, unit);
                             if (reps >= MAX_REP) {
                                 reps = MAX_REP;
                             }
                             for (var i = 1; i <= reps; i++) {
-                                if (repMax[i].latest.weight < weight) {
-                                    var est = est1rm(weight, i);
-                                    var entry = {weight:weight, date:item.date, reps:i, est1rm:est};
+                                if (repMax[i].latest.uw < uw) {
+                                    var est = est1rm(uw, i);
+                                    var entry = {weight:aset.weight, date:item.date, reps:reps, est1rm:est, uw:uw};
                                     repMax[i].latest = entry;
                                     repMax[i].history.push(entry);
-                                    if (est > repMax[0].latest.weight) {
-                                        repMax[0].latest = {weight:est, date:item.date, reps:i};
+                                    if (est > repMax[0].latest.uw) {
+                                        repMax[0].latest = {weight:aset.weight, date:item.date, reps:reps, uw:est};
                                         repMax[0].history.push(entry);
                                     }
                                 }

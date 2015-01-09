@@ -85,6 +85,7 @@ angular.module('clientApp')
 angular.module('clientApp').directive('setText', function (MojoServer, UnitConverter) {
     var userPrefs = MojoServer.getUserStatus().userPrefs;
     var dispUnit = userPrefs.unit; // This is a non-reactive var
+    var tmpl = '{{ data.reps }} x {{ data.weight }} {{ data.unit }} <span ng-show="dispValue">({{ dispValue | number : 1}} {{dispUnit}})</span> <span class="label label-primary" ng-repeat="badge in data.badges">{{ badge }}</span>';
 
     return {
         restrict: 'E',
@@ -98,7 +99,7 @@ angular.module('clientApp').directive('setText', function (MojoServer, UnitConve
                 }
             }
         },
-        template: '{{ data.reps }} x {{ data.weight }} {{ data.unit }} <span ng-show="dispValue">({{ dispValue | number : 1}} {{dispUnit}})</span>'
+        template: tmpl
     };
 });
 

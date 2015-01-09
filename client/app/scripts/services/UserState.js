@@ -52,6 +52,27 @@ angular.module('clientApp')
             return data;
         };
 
+        var attachRepMaxToItems = function(items, repMaxByName) {
+            var attachOneRepMaxToItems = function(exname) {
+                var repMaxes = repMaxByName[exname];
+                repMaxes.forEach(function(repMaxItem){
+                    var tag = repMaxItem.reps + 'RM';
+                    var l = repMaxItem.latest;
+                    if (l.weight >0) {
+                        var item = _.find(items, function (x){return x.date=== l.date;});
+                        var action = _.find(item.actions,function(x){return x.name === exname;});
+                        var set = _.find(action.sets, function(x){return x.weight=== l.weight && x.reps=== l.reps;});
+                        if (!set.badges) {set.badges=[];}
+                        set.badges.push(tag);
+                        // console.log(new Date(item.date) + ' ' + exname + ' ' + l.weight + 'x' + l.reps);
+                    }
+                });
+            };
+
+            var exs = _.keys(repMaxByName);
+            exs.forEach(attachOneRepMaxToItems);
+        };
+
         var copyUserInto = function(dataObj, userData) {
             var start = +new Date();
             var data = dataObj.items;
@@ -62,6 +83,7 @@ angular.module('clientApp')
             userData.activeDate = new Date(userData.workoutDates[0]);
             userData.showChart = true;
             userData.repMax = RepMaxCalculator.genRepMaxFull(userData.data, userData.usedExercises, 'kg');
+            attachRepMaxToItems(userData.data, userData.repMax);
             var diff = new Date() - start;
             $log.info('Processed user state in ' + diff +'ms');
         };
@@ -72,7 +94,7 @@ angular.module('clientApp')
             if (localStorageService.isSupported) {
                 var data = localStorageService.get('mydata');
                 // Lots of fields to force regen as I upgraded schemas
-                if (data && data.items && data.repMax && data.userId === userId) {
+                if (data && data.items && data.userId === userId) {
                     $log.info('Loading your '+userId+' data from local storage');
                     copyUserInto(data, userData);
                     $rootScope.$broadcast('UserState:stateLoaded',userData);
