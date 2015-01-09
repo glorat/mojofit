@@ -6,7 +6,7 @@
     <tr ng-repeat="repMax in repMax">
         <td>{{ repMax.name }}</td>
         <td ng-repeat="reps in repMax.repMax | limitTo:width">
-            {{ reps.weight | number : 1}}
+            {{ reps.latest.weight | number : 1}}
         </td>
     </tr>
 </table>

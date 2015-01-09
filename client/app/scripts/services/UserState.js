@@ -53,6 +53,7 @@ angular.module('clientApp')
         };
 
         var copyUserInto = function(dataObj, userData) {
+            var start = +new Date();
             var data = dataObj.items;
             userData.revision = +dataObj.revision;
             userData.data = processData(data);
@@ -60,6 +61,8 @@ angular.module('clientApp')
             userData.workoutDates = userData.data.map(function(x){return new Date(x.date).setHours(0,0,0,0).valueOf();});
             userData.activeDate = new Date(userData.workoutDates[0]);
             userData.showChart = true;
+            var diff = new (Date) - start;
+            $log.info('Processed user state in ' + diff +'ms');
         };
 
         var loadUser = function(userId) {

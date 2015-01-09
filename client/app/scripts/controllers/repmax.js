@@ -27,8 +27,7 @@ var repmaxFile = function() {
         return weight / (1.0278-0.0278*capreps);
     };
 
-    var genRepMax = function (items, names, unit) {
-
+    var genRepMaxFull = function (items, names, unit) {
         if (names === undefined || items === undefined) {
             return [];
         }
@@ -37,8 +36,9 @@ var repmaxFile = function() {
         var repMaxByName = {};
         names.forEach(function (name) {
             var repMax = new Array(MAX_REP);
-            for (var k = 0; k < MAX_REP; k++) {
-                repMax[k] = {weight: 0, date: 0};
+            repMax[0] = {reps:'Est 1', latest: {weight:0}, history: []};
+            for (var k = 1; k <= MAX_REP; k++) {
+                repMax[k] = {reps:k, latest: {weight:0}, history: []};
             }
             repMaxByName[name] = repMax;
         });
@@ -53,12 +53,16 @@ var repmaxFile = function() {
                         if (reps >= MAX_REP) {
                             reps = MAX_REP;
                         }
-                        for (var i = 0; i <= reps-1; i++) {
-                            if (repMax[i].weight < weight) {
-                                repMax[i].weight = weight;
-                                repMax[i].date = item.date;
-                                repMax[i].reps = i+1;
-                                repMax[i].est1rm = est1rm(weight, i+1);
+                        for (var i = 1; i <= reps; i++) {
+                            if (repMax[i].latest.weight < weight) {
+                                var est = est1rm(weight, i);
+                                var entry = {weight:weight, date:item.date, reps:i, est1rm:est};
+                                repMax[i].latest = entry;
+                                repMax[i].history.push(entry);
+                                if (est > repMax[0].latest.weight) {
+                                    repMax[0].latest = {weight:est, date:item.date, reps:i};
+                                    repMax[0].history.push(entry);
+                                }
                             }
                         }
                     });
@@ -66,20 +70,19 @@ var repmaxFile = function() {
             });
 
         });
-        return names.map(function (name) {
+        var ret = repMaxByName;
+        return ret;
+    };
+
+    var genRepMax = function (items, names, unit) {
+        var repMaxByName = genRepMaxFull(items, names, unit);
+        var ret = names.map(function (name) {
             var repMax = repMaxByName[name];
-            if (repMax[1].weight>0) {
-                var estRepMax = _.chain(repMax)
-                    .filter(function(x) {return x.reps<=5;})
-                    .map(function(x) {return x.est1rm;})
-                    .max()
-                    .value();
-                repMax.unshift({weight:estRepMax, reps:'Est 1'});
-            }
             return {name: name, repMax: repMax};
         });
 
-    };
+        return ret;
+    }
 
     function repMaxFromSet(aset, MAX_REP, origRepMax, curDate, unit) {
         var repMax = origRepMax;
