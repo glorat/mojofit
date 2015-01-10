@@ -8,7 +8,7 @@ describe('Service: KnapSack', function () {
     var KnapSack;
 
     beforeEach(inject(function (_KnapSack) {
-        KnapSack = _KnapSack_;
+        KnapSack = _KnapSack;
     }));
 
     it('should be loadable', function () {
