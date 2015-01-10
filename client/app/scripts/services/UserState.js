@@ -53,7 +53,34 @@ angular.module('clientApp')
         };
 
         var attachRepMaxToItems = function(items, repMaxByName) {
+            var badges = {
+                sets:[],
+                badges:[],
+                addBadge : function(wset, badge) {
+                    var i =_.indexOf(this.sets, wset);
+                    if (i === -1) {
+                        i = this.sets.length;
+                        this.sets.push(wset);
+                        this.badges.push([badge]);
+                    }
+                    else {
+                        this.sets[i] = wset;
+                        this.badges[i].push(badge);
+                    }
+                },
+                get : function(wset) {
+                    var i =_.indexOf(this.sets, wset);
+                    if (i===-1) {
+                        return [];
+                    }
+                    else {
+                        return this.badges[i];
+                    }
+                }
+            };
             var attachOneRepMaxToItems = function(exname) {
+
+
                 var repMaxes = repMaxByName[exname];
                 repMaxes.forEach(function(repMaxItem){
                     var tag = repMaxItem.reps + 'RM';
@@ -63,8 +90,9 @@ angular.module('clientApp')
                         var action = _.find(item.actions,function(x){return x.name === exname;});
                         var set = _.find(action.sets, function(x){return x.weight=== l.weight && x.reps=== l.reps;});
                         if (set) {
-                            if (!set.badges) {set.badges=[];}
-                            set.badges.push(tag);
+                            //if (!set.badges) {set.badges=[];}
+                            //set.badges.push(tag);
+                            badges.addBadge(set, tag);
                             // console.log(new Date(item.date) + ' ' + exname + ' ' + l.weight + 'x' + l.reps);
                         }
                         else {
@@ -73,10 +101,11 @@ angular.module('clientApp')
                         }
                     }
                 });
-            };
 
+            };
             var exs = _.keys(repMaxByName);
             exs.forEach(attachOneRepMaxToItems);
+            return badges;
         };
 
         var copyUserInto = function(dataObj, userData) {
@@ -89,7 +118,7 @@ angular.module('clientApp')
             userData.activeDate = new Date(userData.workoutDates[0]);
             userData.showChart = true;
             userData.repMax = RepMaxCalculator.genRepMaxFull(userData.data, userData.usedExercises, 'kg');
-            attachRepMaxToItems(userData.data, userData.repMax);
+            userData.setBadges = attachRepMaxToItems(userData.data, userData.repMax);
             var diff = new Date() - start;
             $log.info('Processed user state in ' + diff +'ms');
         };
@@ -161,7 +190,7 @@ angular.module('clientApp')
     .factory('UserState', function ($http, $log, $rootScope, MojoServer, localStorageService, UserStateLoader) {
 
         var defaultUser = function(userId) {
-            return {userId:userId, data:[], usedExercises:UserStateLoader.defaultExercises, revision:0, repMax:{}};
+            return {userId:userId, data:[], usedExercises:UserStateLoader.defaultExercises, revision:0, repMax:{}, setBadges:{}};
         };
 
         var currentUser = defaultUser(undefined);
@@ -177,6 +206,7 @@ angular.module('clientApp')
             tgtUser.activeDate = srcUser.activeDate;
             tgtUser.showChart = srcUser.showChart;
             tgtUser.repMax = srcUser.repMax;
+            tgtUser.setBadges = srcUser.setBadges;
         };
 
         // Listen for userId changes so we can manage just ourself

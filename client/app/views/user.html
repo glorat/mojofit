@@ -92,7 +92,7 @@
             <ul ng-repeat="action in i.actions | filter:exnameFilter">
                 <li>{{ action.name }}</li>
                 <ul ng-repeat="set in action.sets">
-                    <li><set-text data="set"></set-text></li>
+                    <li><set-text data="set" set-badges="userState.setBadges"></set-text></li>
                 </ul>
             </ul>
             <footer class="panel-footer" ng-show="i.notes.length && !exnameFilter">{{ i.notes }}</footer>
