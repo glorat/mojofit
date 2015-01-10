@@ -13,11 +13,21 @@ angular.module('clientApp')
               workout.actions = angular.copy(newW.actions);
           },
             setDate: function(newDate) {
+                var d = new Date(newDate.valueOf());
                 workout.date = newDate.valueOf();
                 var myState = UserState.getMyState();
-                var edit = _.find(myState.data, function(x) {return x.date === workout.date;});
-                var acts = edit ? angular.copy(edit.actions) : [];
-                workout.actions = acts;
+                var utc = +Date.UTC(d.getFullYear(), d.getMonth(), d.getDate());
+                var edit = _.find(myState.data, function(x) {return x.date === utc;});
+                if (edit) {
+                    var acts = angular.copy(edit.actions);
+                    workout.actions = acts;
+                    workout.notes = edit.notes;
+                }
+                else {
+                    workout.actions = [];
+                    workout.notes = '';
+                }
+
             }
         };
         return ret;
