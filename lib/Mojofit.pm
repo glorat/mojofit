@@ -16,6 +16,7 @@ use JSON;
 use SLIC;
 use Mojofit;
 use Mojofit::Model;
+use Mojofit::Global qw(read_file);
 use Fitstore;
 
 use Mojofit::DB;
@@ -77,6 +78,8 @@ $r->post('/auth/changepass')->to('auth#changepass');
 
 $r->post('/command/submitWorkouts')->to('command#submit_workouts');
 
+$r->post('/command/submitWeight')->to('command#submit_weight');
+
 $r->post('/command/deleteWorkout')->to('command#delete_workout');
 
 $r->get('/user/:username' => sub {
@@ -94,7 +97,7 @@ $r->get('/userraw/#username' => sub {
 	$target =~ m/^[A-Za-z0-9\-\.]+$/ or return $c->render(text => 'Invalid username');
 	
 	if ($f->can_read("$DATA_DIR/${target}.json")) {
-		my $jsonStream=$f->load_file("$DATA_DIR/${target}.json");
+		my $jsonStream=read_file("$DATA_DIR/${target}.json", ':encoding(UTF-8)');
 		$c->render(text => $jsonStream, format=>'json');
 	}
 	else {
