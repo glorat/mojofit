@@ -127,7 +127,26 @@ angular.module('clientApp')
                     })
                     /*jshint unused: vars */
                     .error(function(data, status) {
-                        workoutStatus.message = 'There was an error sending the registration request. Please try again later';
+                        workoutStatus.message = 'There was an error submitting the workout. Please try again later';
+                        workoutStatus.level = 'danger';
+                    });
+                return workoutStatus;
+            },
+            submitWeight: function(date, weight, cb) {
+                workoutStatus.message = 'Submitting weight record...';
+                workoutStatus.level = 'info';
+                var msg = {date:date, body:weight};
+                $http.post('/command/submitWeight', msg)
+                    .success(function(data) {
+                        workoutStatus.message = data.message;
+                        workoutStatus.level = data.level;
+                        if (cb && workoutStatus.level === 'success') { // Learn some JS - check for fn?
+                            cb();
+                        }
+                    })
+                    /*jshint unused: vars */
+                    .error(function(data, status) {
+                        workoutStatus.message = 'There was an error submitting the request. Please try again later';
                         workoutStatus.level = 'danger';
                     });
                 return workoutStatus;
