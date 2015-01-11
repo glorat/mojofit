@@ -45,8 +45,33 @@ sub delete_workout {
 	}
 }
 
+sub handle_submit_workouts {
+	my ($c, $id, $json) = @_;
+	my $items = $json->{items};
+	# Put in event store
+	my $name = $id;
+	my $store = Fitstore->new($id);
+	$store->submit_workouts($items);
+}
+
 sub submit_workouts {
 	my $c = shift;
+	$c->submit_any('handle_submit_workouts');
+}
+
+sub submit_weight {
+	my ($c) = @_;
+	$c->submit_any('handle_submit_weight');
+}
+
+sub handle_submit_weight {
+	my ($c, $id, $cmd) = @_;
+	my $store = Fitstore->new($id);
+	$store->submit_weight($cmd);
+}
+
+sub submit_any{
+	my ($c, $handler) = @_;
 	eval {
 		# TODO: Put this in "under"
 		my $json = $c->req->json;
@@ -58,12 +83,9 @@ sub submit_workouts {
 			$user or die "Login no longer valid!!\n";
 		}
 		
-		my $items = $json->{items};
-		# Put in event store
-		my $name = $id;
-		my $store = Fitstore->new($id);
-		$store->submit_workouts($items);
-	
+		# Handle it
+		$c->$handler($id, $json);
+
 		# Generate JSON view immediately
 		my $view = Fitstore::MainView->new($id);
 		$view->write_by_date();
@@ -81,7 +103,7 @@ sub submit_workouts {
 			symlink("$Mojofit::DATA_DIR/$id.json", "$Mojofit::DATA_DIR/$username.json");
 		}
 	
-		$c->render(json=>{level=>'success', message=>'Submitted successfully!', redirect_to=>"/#/user/$id"});
+		$c->render(json=>{level=>'success', message=>'Submitted successfully!', redirect_to=>"/user/$id"});
 	};
 	if ($@) {
 		$c->render(json=>{level=>'danger', message=>$@});
