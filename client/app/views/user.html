@@ -95,6 +95,9 @@
                     <li><set-text data="set" set-badges="userState.setBadges"></set-text></li>
                 </ul>
             </ul>
+            <div ng-show="i.body">
+                Bodyweight taken: {{ i.body.weight }}{{i.body.unit}}
+            </div>
             <footer class="panel-footer" ng-show="i.notes.length && !exnameFilter">{{ i.notes }}</footer>
         </div>
     </div>
