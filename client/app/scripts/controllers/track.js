@@ -58,5 +58,5 @@ angular.module('clientApp')
             var d = new Date($scope.date);
             d = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate());
             $scope.workoutStatus = MojoServer.submitWeight(d, $scope.bw, submitCB);
-        }
+        };
     });
