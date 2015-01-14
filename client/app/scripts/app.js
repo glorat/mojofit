@@ -16,7 +16,8 @@ angular
         'gm.datepickerMultiSelect',
         'googlechart',
         'LocalStorageModule',
-        'viewhead'
+        'viewhead',
+        'mojofit'
     ]);
 
 

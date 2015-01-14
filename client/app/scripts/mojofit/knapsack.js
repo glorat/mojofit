@@ -1,7 +1,7 @@
 'use strict';
 
 // Pure functional module
-angular.module('clientApp')
+angular.module('mojofit')
     .factory('KnapSack', function () {
         // var demo2 = [[20,6,'20kg'],[15,6,'15kg'],[10,6,'10kg'],[5,6,'5kg'],[2.5,6,'2.5kg'],[1,1.25,'1.25kg']];
 
@@ -61,7 +61,7 @@ angular.module('clientApp')
     });
 
 // Stateful module
-angular.module('clientApp')
+angular.module('mojofit')
     .factory('PlateCalculator', function (KnapSack, UnitConverter, localStorageService, $log) {
 
         // Maintain state here
@@ -138,7 +138,7 @@ angular.module('clientApp')
         };
     });
 
-angular.module('clientApp')
+angular.module('mojofit')
     .controller('PlateCalculatorController', function ($scope, PlateCalculator) {
         var self = this;
         this.plates = PlateCalculator.getPlates();
