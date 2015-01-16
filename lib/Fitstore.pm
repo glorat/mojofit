@@ -35,6 +35,11 @@ sub clone {
 	copy("$DATA_DIR/$from.json", "$DATA_DIR/$to.json");
 }
 
+sub handle_weight_submitted {
+	# Nothing todo
+	
+}
+
 sub handle_item_submitted {
 	my ($self, $ev) = @_;
 	$self->{dates}->{$ev->{item}->{date}} = 1;
@@ -43,6 +48,19 @@ sub handle_item_submitted {
 sub handle_item_deleted {
 	my ($self, $ev) = @_;
 	delete $self->{dates}->{$ev->{date}};
+}
+
+sub submit_weight {
+	my ($self, $cmd) = @_;
+	my $date = _sanitise_date($cmd->{date});
+	my $weight = $cmd->{body}->{weight};
+	my $unit = $cmd->{body}->{unit};
+	$weight += 0; 
+	$weight =~ m/^[\d\.]+$/ or die ("Weight $weight is not a valid number");
+	$unit =~ m/^(kg|lb)$/ or die ("Unit must be kg or lb");
+	# No other validation for now!
+	my $ev =  {action=>'weight_submitted', date=>$date, body=>{weight=>$weight, unit=>$unit}};
+	$self->commit_append($ev);
 }
 
 sub submit_workouts {
@@ -56,7 +74,6 @@ sub submit_workouts {
 	# No other validation for now!
 	my @events = map { {action=>'item_submitted', item=>$_}} (@$items);
 	$self->commit_append(\@events);
-	
 }
 
 sub delete_workout {
@@ -152,6 +169,7 @@ sub commit_append {
 		#print STDERR "There are ".scalar(@$event)." events to persist\n";
 		
 		foreach (@$event) {
+			('HASH' eq ref($_)) or die 'Code bug: attempted to commit event that was not a hash';
 			$_->{'time'} = time; # Stamp it
 			print FH encode_json($_);
 			print FH "\n";	
@@ -223,6 +241,13 @@ sub handle_item_submitted {
 	}
 	
 	# $self->{bydate}->{$item->{date}} = $item;
+}
+
+sub handle_weight_submitted {
+	my ($self, $ev) = @_;
+	my $body = $ev->{body};
+	my $date = $ev->{date}*1000; # To JS millis
+	$self->{bydate}->{$date}->{body} = $body;
 }
 
 

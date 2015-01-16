@@ -167,11 +167,13 @@ use List::Util qw(first max maxstr min minstr reduce shuffle sum);
 use List::MoreUtils qw(all);
 use Data::Dumper;
 use DateTime;
+use Mojofit::Global qw(read_file);
 
 sub getStream {
 	my ($target) = @_;
 	return [] unless $f->can_read("$Mojofit::DATA_DIR/${target}.json");
-	my $jsonStream=$f->load_file("$Mojofit::DATA_DIR/${target}.json");
+	# No  encoding here or JSON lib gets upset
+	my $jsonStream=read_file("$Mojofit::DATA_DIR/${target}.json");
 	my $data = decode_json($jsonStream);
 	my $stream = $data->{items};
 
