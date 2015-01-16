@@ -1,0 +1,23 @@
+<h3>Record weight</h3>
+<form class="form-horizontal">
+    <div class="form-group">
+        <div class="input-group col-xs-12">
+            <input type="text" class="form-control" ng-click="opened=true" placeholder="Date" datepicker-popup="yyyy/MM/dd" ng-model="date" is-open="opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" id="trackDate" />
+                <span class="input-group-btn">
+                    <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                </span>
+        </div>
+    </div>
+    <input ng-model="bw.weight" type="number" size="4" placeholder="{{ bw.unit }}" enter-tab style="width:4em" required min="10" max="1000">
+    <span ng-hide="unitedit" ng-click="unitedit = true">{{ bw.unit }}</span>
+    <select ng-show="unitedit" ng-model="bw.unit">
+        <option value="kg">kg</option>
+        <option value="lb">lb</option>
+    </select>
+    <button type="submit" class="btn btn-default" ng-click="submitWeight();">
+        Record Weight
+    </button>
+</form>
+<div class="alert" ng-class="'alert-' + workoutStatus.level" role="alert" ng-show="workoutStatus.message">
+    {{ workoutStatus.message }}
+</div>
