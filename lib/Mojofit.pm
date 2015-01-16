@@ -79,15 +79,6 @@ $r->post('/command/submitWorkouts')->to('command#submit_workouts');
 
 $r->post('/command/deleteWorkout')->to('command#delete_workout');
 
-$r->get('/user/:username' => sub {
-	my $c = shift;
-
-	my $target = $c->param('username');
-	$target =~ m/^[A-Za-z0-9\-\.]+$/ or return $c->render(text => 'Invalid username');
-	
-	$c->redirect_to("/#/user/$target");
-});
-
 $r->get('/userraw/#username' => sub {
 	my $c = shift;
 	my $target = $c->param('username');
