@@ -2,11 +2,11 @@
 <widget id="com.gainstrack" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>Gainstrack</name>
     <description>
-        A sample Apache Cordova application that responds to the deviceready event.
+	Gainstrack mobile app
     </description>
-    <author email="dev@cordova.apache.org" href="http://cordova.io">
-        Apache Cordova Team
+    <author email="kevin@glorat.net" href="http://www.gainstrack.com">
+        Kevin Tam
     </author>
-    <content src="index.html" />
+    <content src="mobile.html" />
     <access origin="*" />
 </widget>
