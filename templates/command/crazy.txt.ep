@@ -6,7 +6,7 @@ var addExercise = function(exname, sets) {
 	}
 	if (exname === 'Barbell Squat') {exname='Squat';}
 	if (exname === 'Barbell Bench Press') {exname='Bench Press';}
-	if (exname ==='OHP') {exname='Overhead Press';}
+	if (exname ==='Standing Barbell Shoulder Press (OHP)') {exname='Overhead Press';}
 	if (exname === 'Barbell Deadlift') {exname='Deadlift';}
 	
 	var $exercise = $('fieldset.sample').clone(),

@@ -187,11 +187,6 @@ sub getStream {
 			#$action;
 		}
 	}
-	if ($target !~ m/^SLIC-/) {
-		# Fito
-		$stream->filterPowerlifts;
-	}
-	
 	return $stream;
 }
 
