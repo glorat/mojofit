@@ -91,7 +91,7 @@ module.exports = function (grunt) {
           middleware: function (connect) {
             return [
               require('grunt-connect-proxy/lib/utils').proxyRequest,
-              modRewrite(['^[^\\.]*$ /index.html [L]']),
+              modRewrite(['^[^\\.]*$ /index.html /mobile.html [L]']),
               connect.static('.tmp'),
               connect().use(
                 '/bower_components',
@@ -181,7 +181,7 @@ module.exports = function (grunt) {
       app: {
         src: ['<%= yeoman.app %>/index.html'],
         ignorePath:  /\.\.\//,
-        exclude: [ /mobile-angular-ui/]
+        exclude: [ /mobile-angular-ui/, 'bower_components/bootstrap/dist/js/bootstrap.js']
       },
       mobile: {
         src: ['<%= yeoman.app %>/mobile.html'],
