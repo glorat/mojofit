@@ -1,0 +1,45 @@
+var item = <%== $payload %>;
+
+var addExercise = function(exname, sets) {
+	if (sets.length < 1) {
+		return;
+	}
+	if (exname === 'Barbell Squat') {exname='Squat';}
+	if (exname === 'Barbell Bench Press') {exname='Bench Press';}
+	if (exname ==='OHP') {exname='Overhead Press';}
+	if (exname === 'Barbell Deadlift') {exname='Deadlift';}
+	
+	var $exercise = $('fieldset.sample').clone(),
+	$current = $('.workout').first();
+	$exercise.removeClass('sample');
+	$exercise.addClass('workout');
+	$exercise.find('#ctrl_exercise').val(exname);
+
+	
+	// Add the elements
+	var $set_orig = $exercise.find('dl.Set');
+	for (var i=1; i<sets.length; i++) {
+		var $set_clone = $set_orig.clone();
+		$set_clone.find('#ctrl_reps').val(sets[i][0]);
+		$set_clone.find('#ctrl_weight').val(sets[i][1]);
+		var $set_counter =  $exercise.find('input.exercise_sets');
+		$set_counter.val(parseInt($set_counter.val(), 10)+1);
+		$set_clone.xfInsert('insertAfter', $set_orig, false, 0, false);
+	}	
+	// Fill in the data
+	var setElems = $exercise.find('dl.Set')
+	for (var i=0; i<sets.length; i++) {
+		$(setElems[i]).find('#ctrl_reps').val(sets[i].reps);
+		$(setElems[i]).find('#ctrl_weight').val(sets[i].weight);
+	}	
+	
+	// Finally add the whole exercise
+	$exercise.xfInsert('insertAfter', $current, false, false);
+	
+}
+
+// addExercise(exname,sets);
+
+item.actions.forEach(function(action){
+	addExercise(action.name, action.sets);
+});

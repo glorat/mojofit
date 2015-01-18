@@ -82,6 +82,8 @@ $r->post('/command/submitWeight')->to('command#submit_weight');
 
 $r->post('/command/deleteWorkout')->to('command#delete_workout');
 
+$r->get('/command/crazy')->to('command#crazy');
+
 $r->get('/user/:username' => sub {
 	my $c = shift;
 

@@ -3,6 +3,8 @@ use strict;
 use warnings;
 
 use Mojo::Base 'Mojolicious::Controller';
+use JSON -convert_blessed_universally;
+
 
 sub jsonAuthenticated {
 	my $c = shift;
@@ -110,5 +112,38 @@ sub submit_any{
 	}
 }
 
+sub crazy {
+	my ($c) = @_;
+	$c->app->log->info('Doing crazy stuff');
+	eval {
+		my $id = $c->session->{id};
+		$id or die "You must be logged in at http://www.gainstrack.com\n";
+		if ($id =~ m/^\d+$/) {
+			# Tighter check for real users
+			my $user = $c->users->get($c->dbic, $id);
+			$user or die "Login no longer valid at gainstrack!!\n";
+		}
+		else {
+			die("You must be a registered user at http://www.gainstrack.com\n")
+		}
+		my $isodate = $c->param('date');
+		my $date = DateTime::Format::DateParse->parse_datetime($isodate, 'UTC')->epoch;
+		my $stream = Mojofit::Stream::getStream($id);
+		my @ones = grep {$_->{date} eq $date} (@$stream);
+		my $one = $ones[0];
+		$one or die ("Could not find your workout for $isodate ($date)\n");
+		
+		my $json = JSON->new->allow_blessed->convert_blessed;
+		
+		my $data = $json->encode($one);
+		$c->stash('payload' => $data);
+		$c->render(format=>'txt', type=>'application/javascript');
+	};
+	if ($@) {
+		$@ =~ s/'/"/gs;
+		$@ =~ s/\n//gs;
+		$c->render(text=>"alert('Sorry, did not work: $@')", type=>'application/javascript');
+	}
+}
 
 1;
