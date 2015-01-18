@@ -1,3 +1,4 @@
+'use strict';
 
 angular.module('clientApp').config(['$routeProvider','$locationProvider',
   function($routeProvider, $locationProvider) {
