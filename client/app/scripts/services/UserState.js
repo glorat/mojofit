@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('clientApp')
-    .factory('UserStateLoader', function ($http, $log, $rootScope, localStorageService, MojoServer, RepMaxCalculator, fitViewProcessor) {
+    .factory('UserStateLoader', function ($log, $rootScope, localStorageService, MojoServer, RepMaxCalculator, fitViewProcessor) {
 
         var userStatus = MojoServer.getUserStatus();
 
@@ -57,7 +57,7 @@ angular.module('clientApp')
             }
 
             myCache[userId].state = 'requesting';
-            $http.get('/userraw/' + userId).success(function(data) {
+            MojoServer.getUserRaw(userId).success(function(data) {
                 // Due to aliasing, server may have stored userId
                 // and we don't want to gen it at runtime server currently
                 data.userId = userId;
@@ -81,7 +81,7 @@ angular.module('clientApp')
     });
 
 angular.module('clientApp')
-    .factory('UserState', function ($http, $log, $rootScope, MojoServer, localStorageService, UserStateLoader) {
+    .factory('UserState', function ($log, $rootScope, MojoServer, localStorageService, UserStateLoader) {
 
         var defaultUser = function(userId) {
             return {userId:userId, data:[], usedExercises:UserStateLoader.defaultExercises, revision:0, repMax:{}, setBadges:{}};

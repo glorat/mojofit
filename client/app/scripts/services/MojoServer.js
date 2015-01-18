@@ -1,7 +1,8 @@
 'use strict';
 
 angular.module('clientApp')
-    .factory('MojoServer', function ($http, $rootScope) {
+    .factory('MojoServer', function ($http, $rootScope, $log) {
+    var urlPrefix = ''; // http://www.gainstrack.com
         var userStatus = {isLoggedIn:undefined, id:'', username:'', userPrefs:{unit:'kg'}};
         var registerStatus = {message:'',level:'info'};
         var loginStatus = {message:'', level:'info'};
@@ -31,9 +32,13 @@ angular.module('clientApp')
 
         var refreshUserStatus = function() {
             userStatusReqStatus = 'requesting';
-            $http.get('/auth/getUserStatus').success(function(data) {
+            doPost('/auth/getUserStatus').success(function(data) {
                 handleStatus(data);
             });
+        };
+
+        var doPost = function(url, msg) {
+          return $http.post(urlPrefix + url, msg);
         };
 
         var ret = {
@@ -56,7 +61,7 @@ angular.module('clientApp')
             login: function(email,pass, cb) {
                 loginStatus.message = 'Logging in...';
                 loginStatus.level = 'info';
-                $http.post('/auth/login', {email:email, password:pass})
+                doPost('/auth/login', {email:email, password:pass})
                     .success(function(data) {
                         handleStatus(data, cb);
                     })
@@ -74,7 +79,7 @@ angular.module('clientApp')
 
                 loginStatus.message = action + '...';
                 loginStatus.level = 'info';
-                $http.post('/auth/' + method, msg)
+                doPost('/auth/' + method, msg)
                     .success(function(data) {
                         handleStatus(data, cb);
                     })
@@ -87,7 +92,7 @@ angular.module('clientApp')
             logout: function(email,pass, cb) {
                 loginStatus.message = 'Logging out...';
                 loginStatus.level = 'info';
-                $http.post('/auth/logout', {})
+                doPost('/auth/logout', {})
                     .success(function(data) {
                         handleStatus(data, cb);
                     })
@@ -101,7 +106,7 @@ angular.module('clientApp')
                 registerStatus.message = 'Attempting registration...';
                 registerStatus.level = 'info';
                 var msg = {email:email, firstname:firstname, lastname:lastname};
-                $http.post('/auth/register', msg)
+                doPost('/auth/register', msg)
                     .success(function(data) {
                         registerStatus.message = data.message;
                         registerStatus.level = data.level;
@@ -117,7 +122,7 @@ angular.module('clientApp')
                 workoutStatus.message = 'Submitting workout...';
                 workoutStatus.level = 'info';
                 var msg = {items:items};
-                $http.post('/command/submitWorkouts', msg)
+                doPost('/command/submitWorkouts', msg)
                     .success(function(data) {
                         workoutStatus.message = data.message;
                         workoutStatus.level = data.level;
@@ -136,7 +141,7 @@ angular.module('clientApp')
                 workoutStatus.message = 'Submitting weight record...';
                 workoutStatus.level = 'info';
                 var msg = {date:date, body:weight};
-                $http.post('/command/submitWeight', msg)
+                doPost('/command/submitWeight', msg)
                     .success(function(data) {
                         workoutStatus.message = data.message;
                         workoutStatus.level = data.level;
@@ -154,7 +159,7 @@ angular.module('clientApp')
             deleteWorkout: function(date, cb) {
                 workoutStatus.message = 'Deleting workout...';
                 workoutStatus.level = 'info';
-                $http.post('/command/deleteWorkout', {date : date})
+                doPost('/command/deleteWorkout', {date : date})
                     .success(function(data) {
                         workoutStatus.message = data.message;
                         workoutStatus.level = data.level;
@@ -168,7 +173,14 @@ angular.module('clientApp')
                         workoutStatus.level = 'danger';
                     });
                 return workoutStatus;
-            }
+            },
+          getUserRaw : function(userId) {
+            return $http.get(urlPrefix + '/userraw/' + userId);
+          },
+          setUrlPrefix : function(newPrefix) {
+            $log.warn('Setting $http prefix, presumably from Cordova');
+            urlPrefix = newPrefix;
+          }
 
         };
         return ret;
