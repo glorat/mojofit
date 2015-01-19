@@ -16,8 +16,7 @@ angular.module('clientApp').config(['$routeProvider','$locationProvider',
         controller: 'AboutCtrl'
       })
       .when('/login', {
-        templateUrl: 'views/login.html',
-        controller: 'LoginCtrl'
+        templateUrl: 'views/login.html'
       })
       .when('/repMax', {
         templateUrl: 'views/rep-max-table.html',

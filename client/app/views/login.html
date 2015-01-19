@@ -1,6 +1,7 @@
-<div class="panel panel-default">
+<div class="section" ng-controller="LoginCtrl as ctrl">
+<div class="panel panel-default" ng-hide="userStatus.isLoggedIn">
     <header class="panel-heading"><h3>Register</h3></header>
-    <form ng-submit="register()" class="form">
+    <form ng-submit="ctrl.register()" class="form">
         <div class="form-group">
             <label for="rfn">First name:</label>
             <input type="text" class="form-control" name="firstname" id="rfn" ng-model="reg.firstname" placeholder="First name" required>
@@ -21,7 +22,7 @@
 
 <div class="panel panel-default" ng-hide="userStatus.isLoggedIn">
     <header class="panel-heading"><h3>Login</h3></header>
-    <form ng-submit="login()" class="form">
+    <form ng-submit="ctrl.login()" class="form">
         <input type="email" class="form-control" name="email" ng-model="lgn.email" placeholder="joe@gainstrack.com" required>
         <input type="password" class="form-control" name="password" ng-model="lgn.password" placeholder="password" required>
         <button type="submit" class="btn btn-default">Submit</button>
@@ -31,9 +32,15 @@
 
 <div class="panel panel-default" ng-show="userStatus.isLoggedIn">
     <header class="panel-heading"><h3>Change password</h3></header>
-    <form ng-submit="changepass()" class="form">
+    <form ng-submit="ctrl.changepass()" class="form">
         <input type="password" class="form-control" name="oldpass" ng-model="cp.oldpass" placeholder="Old password" required>
         <input type="password" class="form-control" name="oldpass" ng-model="cp.newpass" placeholder="New password" required>
-        <button type="submit" class="btn btn-default">Submit</button>
+        <button type="submit" class="btn btn-primary">Submit</button>
     </form>
+</div>
+
+<div class="panel panel-default" ng-show="userStatus.isLoggedIn">
+  <header class="panel-heading"><h3>Logout</h3></header>
+  <button type="submit" class="btn btn-danger" ng-click="ctrl.logout()">Logout</button>
+</div>
 </div>
