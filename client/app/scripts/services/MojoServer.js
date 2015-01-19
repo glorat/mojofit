@@ -89,7 +89,7 @@ angular.module('clientApp')
                     });
                 return loginStatus;
             },
-            logout: function(email,pass, cb) {
+            logout: function(cb) {
                 loginStatus.message = 'Logging out...';
                 loginStatus.level = 'info';
                 doPost('/auth/logout', {})
