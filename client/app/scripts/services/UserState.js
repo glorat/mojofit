@@ -103,16 +103,21 @@ angular.module('clientApp')
             tgtUser.setBadges = srcUser.setBadges;
         };
 
-        // Listen for userId changes so we can manage just ourself
-        /*jshint unused: vars */
-        $rootScope.$on('MojoServer:userStatus', function(event,data) {
-            //userStatus === data; // Require
-            $log.info('UserState detected change in userStatus - Preloading state ' + data.username + ':' + data.revision);
-            var userId = data.username;
-            cloneInto(defaultUser(userId), myUser);
-            UserStateLoader.loadUser(userId);
+    var onUserStatusUpdate = function(event,data) {
+      //userStatus === data; // Require
+      $log.info('UserState detected change in userStatus - Preloading state ' + data.username + ':' + data.revision);
+      var userId = data.username;
+      cloneInto(defaultUser(userId), myUser);
+      UserStateLoader.loadUser(userId);
+    };
+    /*jshint unused: vars */
+    var userStatus = MojoServer.getUserStatus();
+    onUserStatusUpdate(null, userStatus);
 
-        });
+
+    // Listen for userId changes so we can manage just ourself
+
+        $rootScope.$on('MojoServer:userStatus', onUserStatusUpdate);
 
         $rootScope.$on('UserState:stateLoaded', function(event, data){
             var userId = data.userId;

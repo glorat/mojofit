@@ -1,0 +1,14 @@
+<div class="section scrollable-content">
+<table class="table">
+  <tr>
+    <th></th>
+    <th ng-repeat="x in repMax[0].repMax | limitTo:width">{{ repMax[0].repMax[$index].reps }}RM</th>
+  </tr>
+  <tr ng-repeat="repMax in repMax">
+    <td>{{ repMax.name }}</td>
+    <td ng-repeat="reps in repMax.repMax | limitTo:width">
+      {{ reps.latest.uw | number : 1}}
+    </td>
+  </tr>
+</table>
+</div>
