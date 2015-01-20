@@ -15,22 +15,20 @@ angular.module('Gainstrack', [
     $routeProvider.when('/login', {templateUrl:'views/login.html', reloadOnSearch: false});
     $routeProvider.when('/track', {
       templateUrl: 'views/track.html',
-      controller: 'TrackController',  reloadOnSearch: false
+      controller: 'TrackController',
+      reloadOnSearch: false
     });
     $routeProvider.when('/user/:userId', {
       templateUrl: 'views/mobile/mobileuser.html',
       controller: 'MobileUserController',
-      controllerAs: 'user'
+      controllerAs: 'user',
+      reloadOnSearch: false
     })
-
-    var app = document.URL.indexOf( 'http://' ) === -1 && document.URL.indexOf( 'https://' ) === -1;
-    if ( app ) {
-      // PhoneGap application
-      //MojoServer.setUrlPrefix ('http://www.gainstrack.com');
-    } else {
-      // Web page
-    }
-
+      .when('/repMax', {
+        templateUrl: 'views/mobile/rep-max-table.html',
+        controller: 'RepMaxController',
+        reloadOnSearch: false
+      })
 
   });
 

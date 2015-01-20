@@ -10,6 +10,15 @@ angular.module('clientApp')
 
         var userStatusReqStatus; // enums? FSM
 
+
+    var app = document.URL.indexOf( 'http://' ) === -1 && document.URL.indexOf( 'https://' ) === -1;
+    if ( app ) {
+      // PhoneGap application
+      urlPrefix = 'http://www.gainstrack.com';
+    } else {
+      // Web page
+    }
+
         var handleStatus = function (data, cb) {
             if (data.userStatus) {
                 userStatus.isLoggedIn = data.userStatus.isLoggedIn;
@@ -90,14 +99,15 @@ angular.module('clientApp')
                 return loginStatus;
             },
             logout: function(cb) {
-                loginStatus.message = 'Logging out...';
+              var action = 'logging out';
+                loginStatus.message = action + '...';
                 loginStatus.level = 'info';
                 doPost('/auth/logout', {})
                     .success(function(data) {
                         handleStatus(data, cb);
                     })
                     .error(function() {
-                        loginStatus.message = 'There was an error logging in. Please try again later';
+                        loginStatus.message = 'There was an error '+action+' out. Please try again later';
                         loginStatus.level = 'danger';
                     });
                 return loginStatus;

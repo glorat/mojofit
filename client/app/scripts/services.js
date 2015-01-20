@@ -13,8 +13,12 @@ angular.module('clientApp')
               workout.actions = angular.copy(newW.actions);
           },
             setDate: function(newDate) {
-                var d = new Date(newDate.valueOf());
-                workout.date = newDate.valueOf();
+              // Ensure we have a date object
+              var d = new Date(newDate.valueOf());
+              // JS UI requires local date
+              var localDate = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+              workout.date = localDate.valueOf();
+              // Our data format requires UTC
                 var myState = UserState.getMyState();
                 var utc = +Date.UTC(d.getFullYear(), d.getMonth(), d.getDate());
                 var edit = _.find(myState.data, function(x) {return x.date === utc;});
