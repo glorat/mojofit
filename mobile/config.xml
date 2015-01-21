@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="com.gainstrack" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>Gainstrack</name>
+    <description>
+	Gainstrack mobile app
+    </description>
+    <author email="kevin@glorat.net" href="http://www.gainstrack.com">
+        Kevin Tam
+    </author>
+    <content src="mobile.html" />
+    <access origin="*" />
+</widget>

@@ -91,7 +91,7 @@ module.exports = function (grunt) {
           middleware: function (connect) {
             return [
               require('grunt-connect-proxy/lib/utils').proxyRequest,
-              modRewrite(['^[^\\.]*$ /index.html [L]']),
+              modRewrite(['^[^\\.]*$ /index.html /mobile.html [L]']),
               connect.static('.tmp'),
               connect().use(
                 '/bower_components',
@@ -180,7 +180,12 @@ module.exports = function (grunt) {
     wiredep: {
       app: {
         src: ['<%= yeoman.app %>/index.html'],
-        ignorePath:  /\.\.\//
+        ignorePath:  /\.\.\//,
+        exclude: [ /mobile-angular-ui/, 'bower_components/bootstrap/dist/js/bootstrap.js']
+      },
+      mobile: {
+        src: ['<%= yeoman.app %>/mobile.html'],
+        ignorePath: /\.\.\//
       }
     },
 
@@ -200,7 +205,7 @@ module.exports = function (grunt) {
     // concat, minify and revision files. Creates configurations in memory so
     // additional tasks can operate on them
     useminPrepare: {
-      html: '<%= yeoman.app %>/index.html',
+      html: ['<%= yeoman.app %>/index.html', '<%= yeoman.app %>/mobile.html'],
       options: {
         dest: '<%= yeoman.dist %>',
         flow: {
@@ -324,7 +329,7 @@ module.exports = function (grunt) {
             '*.html',
             'views/{,*/}*.html',
             'images/{,*/}*.{webp}',
-            'fonts/*'
+            'fonts/*',
           ]
         }, {
           expand: true,
@@ -335,6 +340,12 @@ module.exports = function (grunt) {
           expand: true,
           cwd: 'bower_components/bootstrap/dist',
           src: 'fonts/*',
+          dest: '<%= yeoman.dist %>'
+        }, {
+          expand: true,
+          dot: true,
+          cwd: 'bower_components/mobile-angular-ui/dist',
+          src: ['fonts/*'],
           dest: '<%= yeoman.dist %>'
         }]
       },

@@ -4,20 +4,21 @@
     <form class="form-horizontal">
         <div class="form-group">
             <div class="input-group col-xs-12">
-                <input type="text" class="form-control" ng-click="opened=true" placeholder="Date" datepicker-popup="yyyy/MM/dd" ng-model="workout.date" is-open="opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" id="trackDate" />
+                <input type="text" class="form-control" ng-click="opened=true" placeholder="Date" datepicker-popup="yyyy/MM/dd" ng-model="workout.date" is-open="opened" datepicker-options="dateOptions" close-text="Close" id="trackDate" />
                 <span class="input-group-btn">
                     <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
                 </span>
             </div>
         </div>
         <div class="form-group">
-            <div class="col-xs-8">
-                <input class="form-control" type="text" id="newActionName" ng-model="newActionName" placeholder="Add exercise (press enter to accept)" typeahead="name for name in user.usedExercises | filter:$viewValue | limitTo:8" required>
+            <div class="col-xs-6">
+                <input class="form-control" type="text" id="newActionName" ng-model="newActionName" placeholder="Add exercise (press enter to accept)" typeahead="name for name in user.usedExercises | filter:$viewValue | limitTo:8">
             </div>
 
-            <div class="col-xs-4 btn-group">
-                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">Quick <span class="caret"></span></button>
-                <ul class="dropdown-menu dropdown-menu-right" role="menu">
+            <div class="col-xs-6 btn-group dropdown" is-open="status.isopen">
+
+                <button type="button" class="btn btn-default dropdown-toggle" aria-expanded="false">Quick <span class="caret"></span></button>
+                <ul class="dropdown-menu dropdown-menu-right" role="menu" ng-show="status.isopen">
                     <li ng-repeat="ex in user.usedExercises | limitTo:8">
                         <a href="" ng-click="addNamedAction(ex);false">
                         <span class="glyphicon glyphicon-plus"></span> {{ ex }}
@@ -25,8 +26,9 @@
                     </li>
                 </ul>
                 <button type="submit" class="btn btn-default" ng-click="addNamedAction(newActionName);newActionName='';">
-                    Add
+                  Add
                 </button>
+
             </div><!-- /btn-group -->
         </div><!-- /form-group -->
     </form>
@@ -40,11 +42,11 @@
             </div>
             <div class="col-xs-4">
 
-                <div class="btn-group">
-                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                <div class="btn-group dropdown" is-open="dd.isopen">
+                    <button type="button" class="btn btn-default dropdown-toggle" aria-expanded="false" >
                         Action <span class="caret"></span>
                     </button>
-                    <ul class="dropdown-menu" role="menu">
+                    <ul class="dropdown-menu" role="menu" ng-show="dd.isopen">
                         <li><a href="" ng-click="removeAction($index)">Delete...</a></li>
                         <li class="divider"></li>
                         <li><a href="" ng-click="cloneLastTime($index)">Clone last time</a></li>
