@@ -56,6 +56,7 @@ angular.module('clientApp')
 angular.module('clientApp').directive('selectOnClick', function () {
   return {
     restrict: 'A',
+    /*jshint unused: vars */
     link: function (scope, element, attrs) {
       element.on('click', function () {
         this.select();
