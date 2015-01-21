@@ -102,7 +102,7 @@ angular.module('clientApp')
               var action = 'logging out';
                 loginStatus.message = action + '...';
                 loginStatus.level = 'info';
-                doPost('/auth/logout', {})
+                doPost('/auth/logout', {a:'b'})
                     .success(function(data) {
                         handleStatus(data, cb);
                     })
