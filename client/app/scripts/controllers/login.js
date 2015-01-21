@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('clientApp')
-    .controller('LoginCtrl', function ($scope, $location, MojoServer) {
+    .controller('LoginCtrl', function ($scope, $location, MojoServer, UserState) {
         $scope.reg = {};
         $scope.lgn = {};
         $scope.userStatus = MojoServer.getUserStatus();
@@ -27,6 +27,7 @@ angular.module('clientApp')
 
       this.logout = function() {
         if (window.confirm('Are you sure you wish to disconnect from your account?')) {
+            UserState.clearCache(); // A bit cross-cutting to call this here...
           $scope.loginStatus =  MojoServer.logout(function(){location.reload();});
         };
       }
@@ -36,7 +37,4 @@ angular.module('clientApp')
     .controller('UserStatusController', function ($scope, MojoServer) {
         $scope.userStatus = MojoServer.getUserStatus();
 
-        $scope.logout = function() {
-            $scope.userStatus = MojoServer.logout();
-        };
     });
