@@ -28,7 +28,7 @@ angular.module('Gainstrack', [
         templateUrl: 'views/mobile/rep-max-table.html',
         controller: 'RepMaxController',
         reloadOnSearch: false
-      })
+      });
 
   });
 

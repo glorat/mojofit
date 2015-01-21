@@ -65,7 +65,7 @@ angular.module('clientApp')
                     $log.info('Saving data into local storage for '+userId );
                     localStorageService.set('mydata', data);
                 }
-
+                $log.info('Done user state request for ' + userId);
                 myCache[userId].state = 'done';
                 myCache[userId].data = data;
                 getCb(data);
@@ -152,7 +152,11 @@ angular.module('clientApp')
             reloadMyState: function() {
                 // Get latest revision number, to trigger new state load
                 MojoServer.refreshUserStatus();
-            }
+            },
+           clearCache:function() {
+             $log.info('Clearing localCache of myData');
+             localStorageService.set('mydata', {});
+           }
         };
         return ret;
     });
