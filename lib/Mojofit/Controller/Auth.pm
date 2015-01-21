@@ -121,7 +121,9 @@ Here are your login details.
 Email: $email
 Password: $pass
 
-The website is still in pre-alpha stage. At some point, you'll be able to change the password to something more memorable.
+The website is still in early beta. You can change your password at http://www.gainstrack.com/login
+
+To see the latest news on developments, please visit http://blog.gainstrack.com
 
 Thanks,
 
@@ -133,7 +135,7 @@ END
 	my %mail = ( to      =>  qq("$dispname" <$email>),
 		     bcc     => 'kevin@glorat.net',
 		     from    => 'Kevin Tam <kevin@glorat.net>',
-		     subject => 'Training log password retrieval',
+		     subject => 'Gainstrack training log password retrieval',
 		     text => $msg,
 		     );
 			 # This will die on failure
@@ -187,6 +189,8 @@ sub getUserStatus {
 	};
 	
 	if ($@) {
+                $c->app->log->warn("getUserStatus crashed with $@");
+
 		$status->{level} = 'warning';
 		$status->{message} = $@;
 	}

@@ -94,7 +94,7 @@ sub changepass {
 		return $user;
 	}
 	else {
-		die ("Incorrect password. Please try again");
+		die ("Incorrect password. Please try again\n");
 	}
 }
 
