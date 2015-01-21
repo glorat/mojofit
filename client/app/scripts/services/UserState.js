@@ -69,6 +69,9 @@ angular.module('clientApp')
                 myCache[userId].state = 'done';
                 myCache[userId].data = data;
                 getCb(data);
+            }).error(function(){
+              $log.warn('Failed user state request for ' + userId);
+              myCache[userId].state = 'error';
             });
         };
 
