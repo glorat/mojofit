@@ -12,18 +12,24 @@ angular.module('clientApp')
             }
         };
 
-        $scope.register = function() {
+        this.register = function() {
             $scope.registerStatus = MojoServer.register($scope.reg.email, $scope.reg.firstname, $scope.reg.lastname) ;
 
         };
 
-        $scope.login = function() {
+        this.login = function() {
             $scope.loginStatus = MojoServer.login($scope.lgn.email, $scope.lgn.password, onLogin);
         };
 
-        $scope.changepass = function() {
+        this.changepass = function() {
             $scope.loginStatus = MojoServer.changepass($scope.cp.oldpass, $scope.cp.newpass);
         };
+
+      this.logout = function() {
+        if (window.confirm('Are you sure you wish to disconnect from your account?')) {
+          $scope.loginStatus =  MojoServer.logout(function(){location.reload();});
+        };
+      }
     });
 
 angular.module('clientApp')

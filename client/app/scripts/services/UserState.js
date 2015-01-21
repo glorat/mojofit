@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('clientApp')
-    .factory('UserStateLoader', function ($http, $log, $rootScope, localStorageService, MojoServer, RepMaxCalculator, fitViewProcessor) {
+    .factory('UserStateLoader', function ($log, $rootScope, localStorageService, MojoServer, RepMaxCalculator, fitViewProcessor) {
 
         var userStatus = MojoServer.getUserStatus();
 
@@ -57,7 +57,7 @@ angular.module('clientApp')
             }
 
             myCache[userId].state = 'requesting';
-            $http.get('/userraw/' + userId).success(function(data) {
+            MojoServer.getUserRaw(userId).success(function(data) {
                 // Due to aliasing, server may have stored userId
                 // and we don't want to gen it at runtime server currently
                 data.userId = userId;
@@ -81,7 +81,7 @@ angular.module('clientApp')
     });
 
 angular.module('clientApp')
-    .factory('UserState', function ($http, $log, $rootScope, MojoServer, localStorageService, UserStateLoader) {
+    .factory('UserState', function ($log, $rootScope, MojoServer, localStorageService, UserStateLoader) {
 
         var defaultUser = function(userId) {
             return {userId:userId, data:[], usedExercises:UserStateLoader.defaultExercises, revision:0, repMax:{}, setBadges:{}};
@@ -103,16 +103,21 @@ angular.module('clientApp')
             tgtUser.setBadges = srcUser.setBadges;
         };
 
-        // Listen for userId changes so we can manage just ourself
-        /*jshint unused: vars */
-        $rootScope.$on('MojoServer:userStatus', function(event,data) {
-            //userStatus === data; // Require
-            $log.info('UserState detected change in userStatus - Preloading state ' + data.username + ':' + data.revision);
-            var userId = data.username;
-            cloneInto(defaultUser(userId), myUser);
-            UserStateLoader.loadUser(userId);
+    var onUserStatusUpdate = function(event,data) {
+      //userStatus === data; // Require
+      $log.info('UserState detected change in userStatus - Preloading state ' + data.username + ':' + data.revision);
+      var userId = data.username;
+      cloneInto(defaultUser(userId), myUser);
+      UserStateLoader.loadUser(userId);
+    };
+    /*jshint unused: vars */
+    var userStatus = MojoServer.getUserStatus();
+    onUserStatusUpdate(null, userStatus);
 
-        });
+
+    // Listen for userId changes so we can manage just ourself
+
+        $rootScope.$on('MojoServer:userStatus', onUserStatusUpdate);
 
         $rootScope.$on('UserState:stateLoaded', function(event, data){
             var userId = data.userId;
