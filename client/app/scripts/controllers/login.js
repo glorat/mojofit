@@ -29,8 +29,8 @@ angular.module('clientApp')
         if (window.confirm('Are you sure you wish to disconnect from your account?')) {
             UserState.clearCache(); // A bit cross-cutting to call this here...
           $scope.loginStatus =  MojoServer.logout(function(){location.reload();});
-        };
-      }
+        }
+      };
     });
 
 angular.module('clientApp')
