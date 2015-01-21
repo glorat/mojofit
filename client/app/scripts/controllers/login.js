@@ -27,8 +27,7 @@ angular.module('clientApp')
 
       this.logout = function() {
         if (window.confirm('Are you sure you wish to disconnect from your account?')) {
-          $scope.loginStatus =  MojoServer.logout();
-          location.reload();
+          $scope.loginStatus =  MojoServer.logout(function(){location.reload();});
         };
       }
     });
