@@ -34,6 +34,11 @@ sub delete_workout {
 		# Main handle here
 		my $date = $json->{date};
 		my $store = Fitstore->new($id);
+		my $err = $store->check_delete($date);
+		if ($err) {
+			$c->render(json=>{level=>'warning', message=>$err});
+			return;
+		}
 		$store->delete_workout($date);
 		
 		# Generate JSON view immediately
