@@ -1,11 +1,14 @@
-<div ng-repeat="set in action.sets">
-        <input class="col-xs-offset-3" ng-model="set.weight" type="number" size="4" step="0.1" placeholder="{{ set.unit }}" enter-tab select-on-click style="width:4em" >
-        <span ng-hide="unitedit" ng-click="unitedit = true">{{ set.unit }}</span>
-        <select ng-show="unitedit" ng-model="set.unit">
-            <option value="kg">kg</option>
-            <option value="lb">lb</option>
-        </select>
+<div ng-repeat="set in action.sets" class="col-xs-offset-3">
+
         <input ng-model="set.reps" type="number" size="2" placeholder="rp" ng-keydown="onLastInputEnter($event, $index)" select-on-click style="width:3em">
+  reps x
+  <input class="" ng-model="set.weight" type="number" size="4" step="0.1" placeholder="{{ set.unit }}" enter-tab select-on-click style="width:4em" >
+  <span ng-hide="unitedit" ng-click="unitedit = true">{{ set.unit }}</span>
+  <select ng-show="unitedit" ng-model="set.unit" >
+    <option value="kg">kg</option>
+    <option value="lb">lb</option>
+  </select>
+
         <div class="btn-group btn-group-xs" role="group">
             <a type="button" class="btn btn-default" ng-click="addSet($index)"><span class="glyphicon glyphicon-plus"></span></a>
             <a type="button" class="btn btn-default" ng-click="removeSet($index)"><span class="glyphicon glyphicon-minus"></span></a>
