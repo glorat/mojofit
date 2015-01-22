@@ -76,11 +76,20 @@ sub submit_workouts {
 	$self->commit_append(\@events);
 }
 
+sub check_delete {
+	my ($self, $origdate) = @_;
+	my $date = _sanitise_date($origdate);
+	if (!$self->{dates}->{$date}) {
+		return "Entry for this date does not exist ($date)\n";
+	}
+	return undef;
+}
+
 sub delete_workout {
 	my ($self, $origdate) = @_;
 	my $date = _sanitise_date($origdate);
 	if (!$self->{dates}->{$date}) {
-		die ("Entry for date $date does not exist currently");
+		die ("Entry for this date does not exist currently ($date)\n");
 	}
 	my $event = {action=>'item_deleted', date=>$date};
 	$self->commit_append($event);
