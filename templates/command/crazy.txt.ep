@@ -45,6 +45,10 @@ var addExercise = function(exname, sets) {
 
 // addExercise(exname,sets);
 
-item.actions.forEach(function(action){
+item.actions.reverse().forEach(function(action){
 	addExercise(action.name, action.sets);
 });
+// Ditch the first if empty
+if ( $('fieldset.workout').first().find('#ctrl_exercise').val()==='' ) {
+  $('fieldset.workout').first().xfRemove();
+}
