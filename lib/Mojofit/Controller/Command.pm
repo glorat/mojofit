@@ -31,6 +31,8 @@ sub delete_workout {
 			my $user = $c->users->get($c->dbic, $id);
 			$user or die "Login no longer valid!!\n";
 		}
+		my $csrf = $c->req->headers->header('X-XSRF-TOKEN') // '';
+		($csrf eq $c->csrf_token) or return $c->render(json=>{level=>'warning', message=>'CSRF attack foiled'});
 		# Main handle here
 		my $date = $json->{date};
 		my $store = Fitstore->new($id);
@@ -85,6 +87,7 @@ sub handle_submit_weight {
 
 sub handle_submit_prefs {
 	my ($c, $id, $cmd) = @_;
+	
 	my $store = Fitstore->new($id);
 	$store->submit_prefs($cmd);
 }
@@ -101,6 +104,9 @@ sub submit_any{
 			my $user = $c->users->get($c->dbic, $id);
 			$user or die "Login no longer valid!!\n";
 		}
+		
+		my $csrf = $c->req->headers->header('X-XSRF-TOKEN') // '';
+		($csrf eq $c->csrf_token) or return $c->render(json=>{level=>'warning', message=>'CSRF attack foiled'});
 		
 		# Handle it
 		my $ret = $c->$handler($id, $json);
