@@ -13,6 +13,8 @@ my $app = $t->ua->server->app;
 my $mode = $app->mode;
 is ($mode, 'test', 'testing mode');
 $app->dbic->resultset('Member')->delete();
+unlink "$FindBin::Bin/../t/data/KevinTam.json";
+
 is (0,$app->dbic->resultset('Member')->count(),'start with empty member db');
 
 
@@ -74,5 +76,31 @@ $t->get_ok('/')
   ->json_is('/userStatus/isLoggedIn' => 1)
   ->json_is('/userStatus/username' => 'KevinTam')
   ->json_like('/userStatus/id', qr'^\d+$');
-  my $regid = $t->tx->res->json->{id};
+  my $regid = $t->tx->res->json->{userStatus}->{id};
+  ok($regid =~ m/^\d+$/, 'numeric id');
+  my $username = $t->tx->res->json->{userStatus}->{username};
+  ok ($username eq 'KevinTam', 'preferred username');
+  
+  $t->app->log->level('warn');
+  
+  # Do more now that we are registered
+  $t->post_ok('/command/submitPrefs' => json => {})
+  ->status_is(200)
+  ->json_is('/level'=>'danger')  # FIXME: make this a warning
+  ->json_like('/message' => qr'No preferences');
+  $t->post_ok('/command/submitPrefs' => json => {gender=>'asdf'})
+  ->status_is(200)
+  ->json_is('/level'=>'danger')  # FIXME: make this a warning
+  ->json_like('/message' => qr'No preferences');
+  $t->post_ok('/command/submitPrefs' => json => {gender=>'f', preferred_unit=>'lb'})
+  ->status_is(200)
+  ->json_is('/level'=>'success') 
+  ->json_like('/message' => qr'Submitted successfully!');  
+  
+  $t->get_ok("/userraw/$username")
+  ->status_is(200)
+  ->json_is('/prefs/preferred_unit'=>'lb') 
+  ->json_is('/prefs/gender'=>'f');  
+  
+  
 done_testing();
