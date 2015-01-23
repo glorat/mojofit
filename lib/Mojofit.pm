@@ -80,6 +80,8 @@ $r->post('/command/submitWorkouts')->to('command#submit_workouts');
 
 $r->post('/command/submitWeight')->to('command#submit_weight');
 
+$r->post('/command/submitPrefs')->to('command#submit_prefs');
+
 $r->post('/command/deleteWorkout')->to('command#delete_workout');
 
 $r->get('/command/crazy')->to('command#crazy');
@@ -89,13 +91,11 @@ $r->get('/userraw/#username' => sub {
 	my $target = $c->param('username');
 	$target =~ m/^[A-Za-z0-9\-\.]+$/ or return $c->render(text => 'Invalid username');
 	
-	if ($f->can_read("$DATA_DIR/${target}.json")) {
+	if (-f "$DATA_DIR/${target}.json") {
 		my $jsonStream=read_file("$DATA_DIR/${target}.json", ':encoding(UTF-8)');
 		$c->render(text => $jsonStream, format=>'json');
 	}
 	else {
-		#my $tgtuser = $c->dbic->ResultSet('Member')->find({username=>$target});
-		#my $restarget = $tgtuser->id;
 		$c->res->code(404);
 		return $c->render(json => "Unknown username $target");
 	}

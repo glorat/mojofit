@@ -40,6 +40,11 @@ sub handle_weight_submitted {
 	
 }
 
+sub handle_prefs_submitted {
+	# Nothing todo
+	
+}
+
 sub handle_item_submitted {
 	my ($self, $ev) = @_;
 	$self->{dates}->{$ev->{item}->{date}} = 1;
@@ -48,6 +53,22 @@ sub handle_item_submitted {
 sub handle_item_deleted {
 	my ($self, $ev) = @_;
 	delete $self->{dates}->{$ev->{date}};
+}
+
+sub submit_prefs {
+	my ($self, $orig) = @_;
+	my $prefs = {}; # Operate on whitelist basis
+	$prefs->{gender} = $orig->{gender} if ($orig->{gender} && $orig->{gender}=~m/^(m|f)$/ );
+	$prefs->{dob} = _sanitise_date($orig->{dob}) if ($orig->{dob});
+	$prefs->{preferred_unit} = $orig->{preferred_unit} if ($orig->{preferred_unit} && $orig->{preferred_unit}=~m/^(kg|lb)$/); 
+	if (scalar keys %$prefs) {
+		my $ev =  {action=>'prefs_submitted', body=>$prefs};
+		$self->commit_append($ev);
+	}
+	else {
+		die 'No preferences to submit\n'; # Throw better?
+	}
+	
 }
 
 sub submit_weight {
@@ -116,7 +137,7 @@ sub _sanitise_date {
 
 	if ($epoch_time != $date) {
 		my $diff = $epoch_time - $date;
-		die ("Supplied date $origdate mismatches UTC midnight. Bug in submission\n");
+		die ("Supplied date $origdate mismatches UTC midnight. Code bug in submission\n");
 	}
 	return $epoch_time;
 }
@@ -214,10 +235,18 @@ our $f = File::Util->new();
 sub new {
 	my ($class, $id) = @_;
 	# Sanitise $id
-	my $self = {id=>$id, index=>0, bydate=>{}};
+	my $self = {id=>$id, index=>0, bydate=>{}, prefs=>{}};
 	bless $self, $class;
 	$self->load_from_stream;
 	return $self;
+}
+
+sub handle_prefs_submitted {
+	my ($self, $event) = @_;
+	my $newprefs = $event->{body};
+	foreach (keys %$newprefs) {
+		$self->{prefs}->{$_} = $newprefs->{$_};
+	}
 }
 
 sub handle_item_submitted {
@@ -277,7 +306,7 @@ sub write_by_date {
 	my @keys = sort keys %{$self->{bydate}};
 	my @items = map {$self->{bydate}->{$_}} (@keys);
 	open OUT, ">$Fitstore::DATA_DIR/$self->{id}.json";
-	print OUT encode_json({revision=>$self->{index}, items=>\@items, id=>$self->{id}});
+	print OUT encode_json({revision=>$self->{index}, items=>\@items, id=>$self->{id}, prefs=>$self->{prefs}});
 	close OUT; 
 	open OUT, ">$Fitstore::DATA_DIR/$self->{id}.revision";
 	print OUT $self->{index};

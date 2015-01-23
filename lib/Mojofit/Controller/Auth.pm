@@ -104,6 +104,7 @@ sub changepass {
 		$c->render(json=>{level=>'success', message=>'Password changed as requested!'});
 	};
 	if ($@) {
+
 		$c->render(json=>{level=>'danger', message=>$@});
 	}
 }

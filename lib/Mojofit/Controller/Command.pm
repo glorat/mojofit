@@ -71,10 +71,22 @@ sub submit_weight {
 	$c->submit_any('handle_submit_weight');
 }
 
+sub submit_prefs {
+	my ($c) = @_;
+	$c->submit_any('handle_submit_prefs');
+}
+
+
 sub handle_submit_weight {
 	my ($c, $id, $cmd) = @_;
 	my $store = Fitstore->new($id);
 	$store->submit_weight($cmd);
+}
+
+sub handle_submit_prefs {
+	my ($c, $id, $cmd) = @_;
+	my $store = Fitstore->new($id);
+	$store->submit_prefs($cmd);
 }
 
 sub submit_any{
@@ -91,7 +103,7 @@ sub submit_any{
 		}
 		
 		# Handle it
-		$c->$handler($id, $json);
+		my $ret = $c->$handler($id, $json);
 
 		# Generate JSON view immediately
 		my $view = Fitstore::MainView->new($id);
@@ -113,7 +125,14 @@ sub submit_any{
 		$c->render(json=>{level=>'success', message=>'Submitted successfully!', redirect_to=>"/user/$id"});
 	};
 	if ($@) {
-		$c->render(json=>{level=>'danger', message=>$@});
+		if ('Mojo::Exception' eq ref($@)) {
+			$c->app->log->warn($@->message);
+			$c->app->log->warn($@->frames);
+			$c->render(json=>{level=>'danger', message=>$@->message});	
+		}
+		else {
+			$c->render(json=>{level=>'danger', message=>$@});	
+		}	
 	}
 }
 
