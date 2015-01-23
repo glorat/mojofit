@@ -168,6 +168,8 @@ sub getUserStatus {
 		    $c->session(id=>$id, username=>$id);
 			$c->session(expiration => 3600*24*30); # 30-days for now
 		}
+		# Set CSRF token 
+		$c->cookie('XSRF-TOKEN' => $c->csrf_token, {path => '/'});
 		
 		my $id = $c->session('id');
 		if ($id =~ m/^\d+$/) {

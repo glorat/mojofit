@@ -33,6 +33,17 @@ $t->get_ok('/')
   ->json_is('/userStatus/isLoggedIn' => 0)
   ->json_has('/userStatus/id');
   my $id = $t->tx->res->json->{id};
+  my @cookies = grep {$_->name eq 'XSRF-TOKEN'} ($t->ua->cookie_jar->find(Mojo::URL->new('http://localhost/')));
+  ok (scalar(@cookies)==1, 'One matching XSRF cookie');
+  my $token = $cookies[0]->value;
+  
+  ok(defined($token), 'XSRF token obtained');
+  
+ 
+  $t->ua->on(start => sub {
+    my ($ua, $tx) = @_;
+    $tx->req->headers->header('X-XSRF-TOKEN' => $token);
+  });
 
   $t->post_ok('/auth/register' => form => $reg)
   ->status_is(200)
