@@ -181,7 +181,7 @@ module.exports = function (grunt) {
       app: {
         src: ['<%= yeoman.app %>/index.html'],
         ignorePath:  /\.\.\//,
-        exclude: [ /mobile-angular-ui/, 'bower_components/bootstrap/dist/js/bootstrap.js']
+        exclude: [ /mobile-angular-ui/, 'bower_components/bootstrap/dist/js/bootstrap.js', /add-to-homescreen/]
       },
       mobile: {
         src: ['<%= yeoman.app %>/mobile.html'],
