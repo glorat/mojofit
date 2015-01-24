@@ -161,7 +161,7 @@ sub nameToUsername {
 sub getUserStatus {
 	my $c = shift;
 	my $status = {};
-	my $msg = {level=>'Success', message=>'', userStatus=>$status};
+	my $msg = {level=>'Success', message=>'', userStatus=>$status, csrfToken => $c->csrf_token};
 	eval {
 		if (!$c->session('id')) {
 			my $id = genId();
@@ -169,7 +169,7 @@ sub getUserStatus {
 			$c->session(expiration => 3600*24*30); # 30-days for now
 		}
 		# Set CSRF token 
-		$c->cookie('XSRF-TOKEN' => $c->csrf_token, {path => '/'});
+		#$c->cookie('XSRF-TOKEN' => $c->csrf_token, {path => '/'});
 		
 		my $id = $c->session('id');
 		if ($id =~ m/^\d+$/) {
