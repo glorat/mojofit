@@ -106,7 +106,10 @@ sub submit_any{
 		}
 		
 		my $csrf = $c->req->headers->header('X-XSRF-TOKEN') // '';
-		($csrf eq $c->csrf_token) or return $c->render(json=>{level=>'warning', message=>'CSRF attack foiled'});
+		if ($csrf ne $c->csrf_token) {
+			$c->app->log("User $id failed CSRF check while performing $handler. Was given $csrf");
+			return $c->render(json=>{level=>'warning', message=>'CSRF failure. Please report this error, refresh your page and try again'});	
+		} 
 		
 		# Handle it
 		my $ret = $c->$handler($id, $json);
