@@ -72,9 +72,9 @@ angular.module('clientApp')
             $scope.editWorkout({date:  utcDate});
         };
 
-        $scope.editWorkout = function(newW) {
+        $scope.editWorkout = function(date) {
             // WorkoutState.setWorkout(newW);
-            WorkoutState.setDate(newW.date);
+            WorkoutState.setDate(date);
             $location.path('/track');
         };
 
