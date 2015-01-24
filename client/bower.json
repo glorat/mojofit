@@ -10,7 +10,8 @@
     "angular-route": "~1.2.0",
     "angular-bootstrap": "~0.11.2",
     "underscore": "~1.7.0",
-    "mobile-angular-ui": "~1.2.0-beta.11"
+    "mobile-angular-ui": "~1.2.0-beta.11",
+    "add-to-homescreen": "~3.1.1"
   },
   "devDependencies": {
     "angular-mocks": "~1.2.0",
