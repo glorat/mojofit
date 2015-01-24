@@ -14,6 +14,7 @@
   <link rel="stylesheet" href="bower_components/mobile-angular-ui/dist/css/mobile-angular-ui-hover.css" />
   <link rel="stylesheet" href="bower_components/mobile-angular-ui/dist/css/mobile-angular-ui-base.css" />
   <link rel="stylesheet" href="bower_components/mobile-angular-ui/dist/css/mobile-angular-ui-desktop.css" />
+  <link rel="stylesheet" href="bower_components/add-to-homescreen/style/addtohomescreen.css" />
   <!-- endbower -->
   <!-- endbuild -->
 
@@ -29,6 +30,7 @@
   <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
   <script src="bower_components/underscore/underscore.js"></script>
   <script src="bower_components/mobile-angular-ui/dist/js/mobile-angular-ui.min.js"></script>
+  <script src="bower_components/add-to-homescreen/src/addtohomescreen.js"></script>
   <!-- endbower -->
   <!-- endbuild -->
 
@@ -59,6 +61,15 @@
   <script src="scripts/mobile/mobileapp.js"></script>
   <script src="scripts/mobile/mobileuser.js"></script>
   <!-- endbuild -->
+
+  <script>
+    addToHomescreen({
+      detectHomeScreen:'true',
+      maxDisplayCount: 5,
+      displayPace: 0,
+      debug:true
+    });
+  </script>
 </head>
 <body ng-app="Gainstrack" ng-controller="MainController">
 
