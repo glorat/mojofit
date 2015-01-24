@@ -9,6 +9,7 @@ angular.module('clientApp')
         var workoutStatus = {level:'info', message:''};
 
         var userStatusReqStatus; // enums? FSM
+    var csrfToken = '';
 
 
     var app = document.URL.indexOf( 'http://' ) === -1 && document.URL.indexOf( 'https://' ) === -1;
@@ -20,6 +21,7 @@ angular.module('clientApp')
     }
 
         var handleStatus = function (data, cb) {
+          csrfToken = data.csrfToken;
             if (data.userStatus) {
                 userStatus.isLoggedIn = data.userStatus.isLoggedIn;
                 userStatus.email = data.userStatus.email;
@@ -47,7 +49,16 @@ angular.module('clientApp')
         };
 
         var doPost = function(url, msg) {
-          return $http.post(urlPrefix + url, msg);
+          var req = {
+            method: 'POST',
+            url: urlPrefix + url,
+            headers: {
+              'X-XSRF-TOKEN': csrfToken
+            },
+            data: msg
+          };
+
+          return $http(req);
         };
 
         var ret = {
