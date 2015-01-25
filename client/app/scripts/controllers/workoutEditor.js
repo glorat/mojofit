@@ -6,7 +6,7 @@ angular.module('clientApp').directive('workoutEditor', function() {
         restrict: 'E',
         scope: {workout:'='},
         templateUrl: 'views/workout-editor.html',
-        controller: function ($scope, UserState, MojoServer) {
+        controller: function ($scope, UserState, MojoServer, $timeout) {
             var userPrefs = MojoServer.getUserPrefs();
             // This is just for usedExercises.. can do better?
             $scope.user = UserState.getMyState();
@@ -32,7 +32,7 @@ angular.module('clientApp').directive('workoutEditor', function() {
                 }
                 else {
                     // TODO: Tooltip
-                    window.alert('Type an exercise and press enter or click to select it. It will be added below');
+                    $timeout(function(){window.alert('Type an exercise and press enter or click to select it. It will be added below');});
                 }
 
             };
