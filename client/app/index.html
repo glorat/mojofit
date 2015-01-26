@@ -47,9 +47,10 @@
           <li class=""><a ng-href="#">Home</a></li>
           <li class=""><a ng-href="/user/{{ userStatus.username}}" ng-show="userStatus.username">My Log</a></li>
           <li class=""><a ng-href="/user/KevinTam">Kevin's Log</a></li>
+          <li class=""><a href="http://blog.gainstrack.com">News/Blog</a></li>
 
 
-            <li role="presentation" class="dropdown">
+          <li role="presentation" class="dropdown">
                 <a class="dropdown-toggle" href="#" role="button" aria-expanded="false">
                     Tools <span class="caret"></span>
                 </a>
@@ -61,7 +62,7 @@
             </li>
 
           <li><a ng-href="/login" ng-bind-template="{{ userStatus.isLoggedIn ? 'Account' : 'Login' }}">Login</a></li>
-          <li><a ng-href="/about">About</a></li>
+          <!-- <li><a ng-href="/about">About</a></li> -->
         </ul>
             <div class="" >
                 <span ng-show="userStatus.username" ng-bind-template="Welcome {{ userStatus.username}}"></span>
