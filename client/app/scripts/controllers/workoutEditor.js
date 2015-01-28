@@ -7,11 +7,11 @@ angular.module('clientApp').directive('workoutEditor', function() {
         scope: {workout:'='},
         templateUrl: 'views/workout-editor.html',
         controller: function ($scope, UserState, MojoServer, $timeout) {
-            var userPrefs = MojoServer.getUserPrefs();
             // This is just for usedExercises.. can do better?
             $scope.user = UserState.getMyState();
 
-            $scope.dateOptions = {
+
+          $scope.dateOptions = {
                 formatYear: 'yy',
                 startingDay: 1
             };
@@ -26,7 +26,7 @@ angular.module('clientApp').directive('workoutEditor', function() {
             $scope.addNamedAction = function(newName) {
               if (!newName) {newName = $scope.newActionName;}
                 if (newName) {
-                    var emptySet = {weight:undefined, unit:userPrefs.unit};
+                    var emptySet = {weight:undefined, unit:$scope.user.prefs['preferred_unit']};
                     $scope.workout.actions.push({name:newName, sets:[emptySet]});
                   $scope.newActionName='';
                 }
@@ -38,7 +38,7 @@ angular.module('clientApp').directive('workoutEditor', function() {
             };
 
             $scope.addAction = function(index) {
-                var emptySet = {weight:undefined, unit:userPrefs.unit};
+                var emptySet = {weight:undefined, unit:$scope.user.prefs.unit};
                 var newName = '';
                 $scope.workout.actions.splice(index+1,0, {name:newName, sets:[emptySet]});
             };

@@ -6,7 +6,7 @@
             <input type="text" class="form-control" name="firstname" id="rfn" ng-model="reg.firstname" placeholder="First name" required>
             <input type="text" class="form-control" name="lastname" id="rln" ng-model="reg.lastname" placeholder="Last name" required>
             <input type="email" class="form-control" name="email" id="rem" ng-model="reg.email" placeholder="Enter email" required>
-         <button type="submit" class="btn btn-default">Submit</button>
+         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
 </div>
 
@@ -17,12 +17,43 @@
     <form ng-submit="ctrl.login()" class="form">
         <input type="email" class="form-control" name="email" ng-model="lgn.email" placeholder="joe@gainstrack.com" required>
         <input type="password" class="form-control" name="password" ng-model="lgn.password" placeholder="password" required>
-        <button type="submit" class="btn btn-default">Submit</button>
+        <button type="submit" class="btn btn-primary">Submit</button>
     </form>
 </div>
 <div class="alert" ng-class="'alert-' + loginStatus.level" role="alert" ng-show="loginStatus.message">{{ loginStatus.message }}</div>
 
-<div class="panel panel-default" ng-show="userStatus.isLoggedIn">
+<div class="panel panel-default">
+  <header class="panel-heading"><h3>User Preferences</h3></header>
+  <form ng-submit="ctrl.submitPrefs()">
+    <div class="form-group">
+      <div class="col-xs-4">
+        Date of birth:
+      </div>
+      <div class="input-group col-xs-8">
+        <input type="text" class="form-control" ng-click="opened=true" placeholder="Date" datepicker-popup="yyyy/MM/dd" ng-model="userState.prefs.dob" is-open="opened" datepicker-options="dateOptions" close-text="Close" id="dob" required />
+
+      </div>
+    </div>
+    <div>
+    <div class="col-xs-4">Gender:</div>
+      <div class="btn-group col-xs-8">
+        <label class="btn btn-success" ng-model="userState.prefs.gender" btn-radio="'m'">Male</label>
+        <label class="btn btn-success" ng-model="userState.prefs.gender" btn-radio="'f'">Female</label>
+      </div>
+    </div>
+    <div class="col-xs-4">Preferred Unit:</div>
+
+    <div class="btn-group col-xs-8">
+      <label class="btn btn-success" ng-model="userState.prefs.preferred_unit" btn-radio="'kg'">kg</label>
+      <label class="btn btn-success" ng-model="userState.prefs.preferred_unit" btn-radio="'lb'">lb</label>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
+</div>
+  <div class="alert" ng-class="'alert-' + prefsStatus.level" role="alert" ng-show="prefsStatus.message">{{ prefsStatus.message }}</div>
+
+
+  <div class="panel panel-default" ng-show="userStatus.isLoggedIn">
     <header class="panel-heading"><h3>Change password</h3></header>
     <form ng-submit="ctrl.changepass()" class="form">
         <input type="password" class="form-control" name="oldpass" ng-model="cp.oldpass" placeholder="Old password" required>

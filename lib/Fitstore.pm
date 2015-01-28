@@ -245,7 +245,13 @@ sub handle_prefs_submitted {
 	my ($self, $event) = @_;
 	my $newprefs = $event->{body};
 	foreach (keys %$newprefs) {
-		$self->{prefs}->{$_} = $newprefs->{$_};
+		if ($_ eq 'dob') {
+			$self->{prefs}->{$_} = 1000*$newprefs->{$_}; # JS bollocks
+		}
+		else {
+			$self->{prefs}->{$_} = $newprefs->{$_};
+		}
+		
 	}
 }
 

@@ -82,8 +82,8 @@ angular.module('clientApp')
     });
 
 
-angular.module('clientApp').directive('setText', function (MojoServer, UnitConverter) {
-    var userPrefs = MojoServer.getUserStatus().userPrefs;
+angular.module('clientApp').directive('setText', function (UserState, UnitConverter) {
+    var userPrefs = UserState.getMyState().prefs;
     var dispUnit = userPrefs.unit; // This is a non-reactive var
     var tmpl = '{{ data.reps }} x {{ data.weight }} {{ data.unit }} <span ng-show="dispValue">({{ dispValue | number : 1}} {{dispUnit}})</span> <span class="label label-primary" ng-repeat="badge in badges">{{ badge }}</span>';
 
