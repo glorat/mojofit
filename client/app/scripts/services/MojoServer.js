@@ -3,7 +3,7 @@
 angular.module('clientApp')
     .factory('MojoServer', function ($http, $rootScope, $log) {
     var urlPrefix = ''; // http://www.gainstrack.com
-        var userStatus = {isLoggedIn:undefined, id:'', username:'', userPrefs:{unit:'kg'}};
+        var userStatus = {isLoggedIn:undefined, id:'', username:''};
         var registerStatus = {message:'',level:'info'};
         var loginStatus = {message:'', level:'info'};
         var workoutStatus = {level:'info', message:''};
@@ -20,8 +20,14 @@ angular.module('clientApp')
       // Web page
     }
 
-        var handleStatus = function (data, cb) {
-          csrfToken = data.csrfToken;
+        var handleStatus = function (data, cb, status) {
+          if (!status) {
+            status = loginStatus;
+          }
+          if (data.csrfToken) {
+            csrfToken = data.csrfToken;
+          }
+
             if (data.userStatus) {
                 userStatus.isLoggedIn = data.userStatus.isLoggedIn;
                 userStatus.email = data.userStatus.email;
@@ -29,8 +35,8 @@ angular.module('clientApp')
                 userStatus.username = data.userStatus.username;
                 userStatus.revision = data.userStatus.revision;
             }
-            loginStatus.message = data.message;
-            loginStatus.level = data.level;
+          status.message = data.message;
+          status.level = data.level;
 
             userStatusReqStatus = 'done';
 
@@ -61,15 +67,31 @@ angular.module('clientApp')
           return $http(req);
         };
 
+    var genSubmit = function(action, status, cmd, msg, cb) {
+      status.message = action + '...';
+      status.level = 'info';
+      doPost('/command/' + cmd, msg)
+        .success(function(data) {
+          status.message = data.message;
+          status.level = data.level;
+          if (cb && status.level === 'success') { // Learn some JS - check for fn?
+            cb();
+          }
+        })
+        /*jshint unused: vars */
+        .error(function(data, status) {
+          status.message = 'There was an error '+action+'. Please try again later';
+          status.level = 'danger';
+        });
+      return status;
+    };
+
         var ret = {
             getUserStatus: function() {
                 if (userStatus.isLoggedIn === undefined && userStatusReqStatus !== 'requesting') {
                     refreshUserStatus();
                 }
                 return userStatus;
-            },
-            getUserPrefs: function() {
-                return userStatus.userPrefs;
             },
             refreshUserStatus: function() {
                 refreshUserStatus();
@@ -118,7 +140,7 @@ angular.module('clientApp')
                         handleStatus(data, cb);
                     })
                     .error(function() {
-                        loginStatus.message = 'There was an error '+action+' out. Please try again later';
+                        loginStatus.message = 'There was an error '+action+'. Please try again later';
                         loginStatus.level = 'danger';
                     });
                 return loginStatus;
@@ -159,23 +181,16 @@ angular.module('clientApp')
                 return workoutStatus;
             },
             submitWeight: function(date, weight, cb) {
-                workoutStatus.message = 'Submitting weight record...';
-                workoutStatus.level = 'info';
-                var msg = {date:date, body:weight};
-                doPost('/command/submitWeight', msg)
-                    .success(function(data) {
-                        workoutStatus.message = data.message;
-                        workoutStatus.level = data.level;
-                        if (cb && workoutStatus.level === 'success') { // Learn some JS - check for fn?
-                            cb();
-                        }
-                    })
-                    /*jshint unused: vars */
-                    .error(function(data, status) {
-                        workoutStatus.message = 'There was an error submitting the request. Please try again later';
-                        workoutStatus.level = 'danger';
-                    });
-                return workoutStatus;
+              var msg = {date:date, body:weight};
+              return genSubmit('submitting weight record', workoutStatus, 'submitWeight', msg, cb);
+            },
+            submitPrefs: function(origprefs, cb) {
+              var prefs = angular.copy(origprefs);
+              if (prefs.dob) {
+                var d = prefs.dob;
+                prefs.dob = Date.UTC(d.getFullYear(), d.getMonth(), d.getDay());
+              }
+              return genSubmit('submitting preferences', workoutStatus, 'submitPrefs', prefs, cb);
             },
             deleteWorkout: function(date, cb) {
                 workoutStatus.message = 'Deleting workout...';

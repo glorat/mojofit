@@ -87,7 +87,8 @@ angular.module('clientApp')
     .factory('UserState', function ($log, $rootScope, MojoServer, localStorageService, UserStateLoader) {
 
         var defaultUser = function(userId) {
-            return {userId:userId, data:[], usedExercises:UserStateLoader.defaultExercises, revision:0, repMax:{}, setBadges:{}};
+          /*jshint camelcase: false */
+            return {userId:userId, data:[], usedExercises:UserStateLoader.defaultExercises, revision:0, repMax:{}, setBadges:{}, prefs:{}};
         };
 
         var currentUser = defaultUser(undefined);
@@ -104,14 +105,17 @@ angular.module('clientApp')
             tgtUser.showChart = srcUser.showChart;
             tgtUser.repMax = srcUser.repMax;
             tgtUser.setBadges = srcUser.setBadges;
+            tgtUser.prefs = srcUser.prefs;
         };
 
     var onUserStatusUpdate = function(event,data) {
       //userStatus === data; // Require
       $log.info('UserState detected change in userStatus - Preloading state ' + data.username + ':' + data.revision);
       var userId = data.username;
-      cloneInto(defaultUser(userId), myUser);
-      UserStateLoader.loadUser(userId);
+      if (userId) {
+        cloneInto(defaultUser(userId), myUser);
+        UserStateLoader.loadUser(userId);
+      }
     };
     /*jshint unused: vars */
     var userStatus = MojoServer.getUserStatus();

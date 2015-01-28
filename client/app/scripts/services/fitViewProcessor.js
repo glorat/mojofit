@@ -125,6 +125,10 @@
         userData.showChart = true;
         userData.repMax = RepMaxCalculator.genRepMaxFull(userData.data, userData.usedExercises, 'kg');
         userData.setBadges = createSetBadgeMap(userData.data, userData.repMax);
+        userData.prefs = dataObj.prefs;
+        if (userData.prefs.dob) {
+          userData.prefs.dob = new Date(new Date(userData.prefs.dob).setHours(0,0,0,0));
+        }
     };
 
     return {

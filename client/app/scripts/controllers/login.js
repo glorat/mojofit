@@ -5,6 +5,7 @@ angular.module('clientApp')
         $scope.reg = {};
         $scope.lgn = {};
         $scope.userStatus = MojoServer.getUserStatus();
+        $scope.userState = UserState.getMyState();
 
         var onLogin = function(user) {
             if (user.isLoggedIn) {
@@ -23,6 +24,10 @@ angular.module('clientApp')
 
         this.changepass = function() {
             $scope.loginStatus = MojoServer.changepass($scope.cp.oldpass, $scope.cp.newpass);
+        };
+
+        this.submitPrefs = function() {
+          $scope.prefsStatus = MojoServer.submitPrefs($scope.userState.prefs);
         };
 
       this.logout = function() {
