@@ -27,7 +27,8 @@ $c->app->log->debug("Trying to log in $email");
 	    # This should match what went into the session above!
 		my $status = {isLoggedIn=>1, userPrefs=> undef, id=>$user->id, email=>$user->email, username=>$user->username}; #$user->{userPrefs}
 		$c->app->log->debug("Logged in $email");
-		$c->render(json=>{userStatus=>$status, level=>'success', message=>'Logged In!'});
+		#$c->render(json=>{userStatus=>$status, level=>'success', message=>'Logged In!'});
+		getUserStatus($c);
 	};
 	if ($@) {
 		$c->render(json=>{level=>'danger', message=>$@});
