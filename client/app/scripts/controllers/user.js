@@ -90,9 +90,9 @@ angular.module('clientApp').directive('setText', function () {
         scope: {data : '=', setBadges : '=', unit:'@'},
         controller: function ($scope, UnitConverter, UserState) {
           var userPrefs = UserState.getMyState().prefs;
-          var dispUnit = userPrefs.preferred_unit; // This is a non-reactive var
+          var dispUnit = userPrefs.preferredUnit; // This is a non-reactive var
 
-          if (dispUnit !== $scope.data.unit) {
+          if (dispUnit && dispUnit !== $scope.data.unit) {
                 var dispValue = UnitConverter.convert($scope.data.weight, $scope.data.unit, dispUnit);
                 if (dispValue) {
                     $scope.dispValue = dispValue;

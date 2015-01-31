@@ -60,7 +60,7 @@ sub submit_prefs {
 	my $prefs = {}; # Operate on whitelist basis
 	$prefs->{gender} = $orig->{gender} if ($orig->{gender} && $orig->{gender}=~m/^(m|f)$/ );
 	$prefs->{dob} = _sanitise_date($orig->{dob}) if ($orig->{dob});
-	$prefs->{preferred_unit} = $orig->{preferred_unit} if ($orig->{preferred_unit} && $orig->{preferred_unit}=~m/^(kg|lb)$/); 
+	$prefs->{preferredUnit} = $orig->{preferredUnit} if ($orig->{preferredUnit} && $orig->{preferredUnit}=~m/^(kg|lb)$/); 
 	if (scalar keys %$prefs) {
 		my $ev =  {action=>'prefs_submitted', body=>$prefs};
 		$self->commit_append($ev);

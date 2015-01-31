@@ -26,7 +26,7 @@ angular.module('clientApp').directive('workoutEditor', function() {
             $scope.addNamedAction = function(newName) {
               if (!newName) {newName = $scope.newActionName;}
                 if (newName) {
-                    var emptySet = {weight:undefined, unit:$scope.user.prefs['preferred_unit']};
+                    var emptySet = {weight:undefined, unit:$scope.user.prefs.preferredUnit};
                     $scope.workout.actions.push({name:newName, sets:[emptySet]});
                   $scope.newActionName='';
                 }

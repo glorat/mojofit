@@ -102,14 +102,14 @@ $t->get_ok('/')
   ->status_is(200)
   ->json_is('/level'=>'danger')  # FIXME: make this a warning
   ->json_like('/message' => qr'No preferences');
-  $t->post_ok('/command/submitPrefs' => json => {gender=>'f', preferred_unit=>'lb'})
+  $t->post_ok('/command/submitPrefs' => json => {gender=>'f', preferredUnit=>'lb'})
   ->status_is(200)
   ->json_is('/level'=>'success') 
   ->json_like('/message' => qr'Submitted successfully!');  
   
   $t->get_ok("/userraw/$username")
   ->status_is(200)
-  ->json_is('/prefs/preferred_unit'=>'lb') 
+  ->json_is('/prefs/preferredUnit'=>'lb') 
   ->json_is('/prefs/gender'=>'f');  
   
   
