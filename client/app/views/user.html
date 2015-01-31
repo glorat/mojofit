@@ -35,18 +35,12 @@
             </header>
             <rep-max-table user="userState" exercises="userState.usedExercises" limit-to="5" width="5"></rep-max-table>
         </div>
-        <div class="panel panel-default ">
-            <header class="panel-heading">User Prefrences</header>
-            <div>
-                <user-prefs></user-prefs>
-            </div>
-        </div>
     </div>
 
 
      <div class="col-md-8 col-md-pull-4">
 
-         <p>
+         <p ng-show="userStatus.isLoggedIn">
              <a href="/userraw/{{ userId }}" target="_self">Download raw data (JSON)</a> - for a computer readable form, for backup, and for import to other sites (e.g. CrazyStrength)
          </p>
 
@@ -80,8 +74,7 @@
 
 
     <div>
-        There are {{userState.data.length}} log entries... On page {{currentPage}} with {{itemsPerPage}} items per page
-        <pagination total-items="userState.data.length" items-per-page="itemsPerPage" ng-model="currentPage"></pagination>
+        <pagination total-items="userState.data.length" items-per-page="itemsPerPage" max-size="10" ng-model="currentPage"></pagination>
         <div ng-repeat="i in userState.data | startFrom:(currentPage-1)*itemsPerPage | limitTo:itemsPerPage" class="panel panel-default">
             <header class="panel-heading">
                 {{ datestr(i.date) }}
@@ -100,6 +93,8 @@
             </div>
             <footer class="panel-footer" ng-show="i.notes.length && !exnameFilter">{{ i.notes }}</footer>
         </div>
+      There are {{userState.data.length}} log entries...
+
     </div>
 
      </div>

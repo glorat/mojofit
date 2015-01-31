@@ -123,7 +123,7 @@
         userData.workoutDates = userData.data.map(function(x){return new Date(x.date).setHours(0,0,0,0).valueOf();});
         userData.activeDate = new Date(userData.workoutDates[0]);
         userData.showChart = true;
-        userData.repMax = RepMaxCalculator.genRepMaxFull(userData.data, userData.usedExercises, 'kg');
+        userData.repMax = RepMaxCalculator.genRepMaxFull(userData.data, userData.usedExercises, dataObj.prefs.preferred_unit);
         userData.setBadges = createSetBadgeMap(userData.data, userData.repMax);
         userData.prefs = dataObj.prefs;
         if (userData.prefs.dob) {
