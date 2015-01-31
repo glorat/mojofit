@@ -117,10 +117,6 @@ angular.module('clientApp')
         UserStateLoader.loadUser(userId);
       }
     };
-    /*jshint unused: vars */
-    var userStatus = MojoServer.getUserStatus();
-    onUserStatusUpdate(null, userStatus);
-
 
     // Listen for userId changes so we can manage just ourself
 
@@ -139,8 +135,10 @@ angular.module('clientApp')
             }
         });
 
+    var userStatus = MojoServer.getUserStatus();
+    onUserStatusUpdate(null, userStatus);
 
-        var ret = {
+    var ret = {
             setCurrentUserId: function(newUserId) {
                 if (currentUser.userId !== newUserId) {
                     cloneInto(defaultUser(newUserId), currentUser);
