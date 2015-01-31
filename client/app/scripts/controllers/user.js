@@ -82,16 +82,17 @@ angular.module('clientApp')
     });
 
 
-angular.module('clientApp').directive('setText', function (UserState, UnitConverter) {
-    var userPrefs = UserState.getMyState().prefs;
-    var dispUnit = userPrefs.unit; // This is a non-reactive var
+angular.module('clientApp').directive('setText', function () {
     var tmpl = '{{ data.reps }} x {{ data.weight }} {{ data.unit }} <span ng-show="dispValue">({{ dispValue | number : 1}} {{dispUnit}})</span> <span class="label label-primary" ng-repeat="badge in badges">{{ badge }}</span>';
 
     return {
         restrict: 'E',
         scope: {data : '=', setBadges : '=', unit:'@'},
-        controller: function ($scope) {
-            if (dispUnit !== $scope.data.unit) {
+        controller: function ($scope, UnitConverter, UserState) {
+          var userPrefs = UserState.getMyState().prefs;
+          var dispUnit = userPrefs.preferred_unit; // This is a non-reactive var
+
+          if (dispUnit !== $scope.data.unit) {
                 var dispValue = UnitConverter.convert($scope.data.weight, $scope.data.unit, dispUnit);
                 if (dispValue) {
                     $scope.dispValue = dispValue;
