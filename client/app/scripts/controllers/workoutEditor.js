@@ -26,7 +26,7 @@ angular.module('clientApp').directive('workoutEditor', function() {
             $scope.addNamedAction = function(newName) {
               if (!newName) {newName = $scope.newActionName;}
                 if (newName) {
-                    var emptySet = {weight:undefined, unit:$scope.user.prefs.preferredUnit};
+                    var emptySet = {weight:undefined, unit:$scope.user.prefs.preferredUnit || 'kg'};
                     $scope.workout.actions.push({name:newName, sets:[emptySet]});
                   $scope.newActionName='';
                 }
@@ -38,7 +38,7 @@ angular.module('clientApp').directive('workoutEditor', function() {
             };
 
             $scope.addAction = function(index) {
-                var emptySet = {weight:undefined, unit:$scope.user.prefs.unit};
+                var emptySet = {weight:undefined, unit:$scope.user.prefs.preferredUnit || 'kg'};
                 var newName = '';
                 $scope.workout.actions.splice(index+1,0, {name:newName, sets:[emptySet]});
             };

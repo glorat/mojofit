@@ -42,8 +42,7 @@ angular.module('clientApp')
     .controller('TrackWeightController', function ($scope, $location, WorkoutState, UserState, MojoServer) {
         var userStatus = MojoServer.getUserStatus();
 
-        $scope.date = new Date().setHours(0,0,0,0,0,0);
-        $scope.bw = {weight:0, unit:'kg'};
+    $scope.weightInput = WorkoutState.getWeightInput();
 
         var submitCB = function() {
             UserState.reloadMyState();
@@ -55,8 +54,8 @@ angular.module('clientApp')
         };
 
         $scope.submitWeight = function() {
-            var d = new Date($scope.date);
+            var d = new Date($scope.weightInput.date);
             d = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate());
-            $scope.workoutStatus = MojoServer.submitWeight(d, $scope.bw, submitCB);
+            $scope.workoutStatus = MojoServer.submitWeight(d, $scope.weightInput.bw, submitCB);
         };
     });

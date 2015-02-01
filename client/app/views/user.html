@@ -95,7 +95,7 @@
                 </ul>
             </ul>
             <div ng-show="i.body">
-                Bodyweight taken: {{ i.body.weight }}{{i.body.unit}}
+                <button class="btn btn-default" ng-click="editWeight(i.date)"><span class="glyphicon glyphicon-scale"></span>Bodyweight: {{ i.body.weight }}{{i.body.unit}}</button>
             </div>
             <footer class="panel-footer" ng-show="i.notes.length && !exnameFilter">{{ i.notes }}</footer>
         </div>
