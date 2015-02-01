@@ -17,7 +17,7 @@ angular.module('clientApp').directive('strengthScore', function () {
         var dt = _.last($scope.user.data).date;
         WorkoutState.setWeightDate(dt);
         $location.path('/trackweight');
-      }
+      };
 
       $scope.canEdit = function() {
         return ($scope.user.userId === $scope.userStatus.id) || ($scope.user.userId === $scope.userStatus.username);
@@ -25,13 +25,13 @@ angular.module('clientApp').directive('strengthScore', function () {
 
       $scope.noWeight = function(){
         return ($scope.user.data.length>0) && ! _.last($scope.user.data).body.weight;
-      }
+      };
     }
   };
 });
 
 angular.module('clientApp')
-  .controller('ScoreController', function ($scope) {
+  .controller('ScoreController', function ($scope, UserState) {
     $scope.user = UserState.getMyState();
 
   });
