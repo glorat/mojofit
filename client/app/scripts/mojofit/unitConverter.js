@@ -46,7 +46,7 @@ angular.module('mojofit')
       }
     };
 
-    var strengthScore = function(exname, wgt, unit, bw, bunit, gender, dob) {
+    var strengthScore = function(exname, wgt, unit, bw, bunit /*, gender, dob*/) {
       var interceptMap = {'Barbell Squat':129, 'Barbell Bench Press':94, 'Barbell Deadlift':150};
       var intercept = interceptMap[exname];
       if (!exname) {return 0;}
