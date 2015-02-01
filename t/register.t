@@ -29,13 +29,12 @@ $t->get_ok('/')
   
   $t->post_ok('/auth/getUserStatus')
   ->status_is(200)
-  ->json_is('/level' => 'Success')
+  ->json_is('/level' => 'success')
   ->json_is('/userStatus/isLoggedIn' => 0)
-  ->json_has('/userStatus/id');
+  ->json_has('/userStatus/id')
+  ->json_has('/csrfToken');
   my $id = $t->tx->res->json->{id};
-  my @cookies = grep {$_->name eq 'XSRF-TOKEN'} ($t->ua->cookie_jar->find(Mojo::URL->new('http://localhost/')));
-  ok (scalar(@cookies)==1, 'One matching XSRF cookie');
-  my $token = $cookies[0]->value;
+  my $token = $t->tx->res->json->{csrfToken};
   
   ok(defined($token), 'XSRF token obtained');
   
@@ -78,12 +77,12 @@ $t->get_ok('/')
 
   $t->post_ok('/auth/login' => json => {email=>$reg->{email}, password=>$user->changepass})
   ->status_is(200)
-  ->json_is('/level'=>'success')
-  ->json_like('/message' => qr'Logged In');
+  ->json_is('/level'=>'success');
+#  ->json_like('/message' => qr'Logged In');
 
   $t->get_ok('/auth/getUserStatus')
   ->status_is(200)
-  ->json_is('/level' => 'Success')
+  ->json_is('/level' => 'success')
   ->json_is('/userStatus/isLoggedIn' => 1)
   ->json_is('/userStatus/username' => 'KevinTam')
   ->json_like('/userStatus/id', qr'^\d+$');
