@@ -1,16 +1,14 @@
-<h3>Record weight</h3>
+<div class="section scrollable-content">
+<h2>Record weight</h2>
 <form class="form-horizontal">
     <div class="form-group">
         <div class="input-group col-xs-12">
-            <input type="text" class="form-control" ng-click="opened=true" placeholder="Date" datepicker-popup="yyyy/MM/dd" ng-model="date" is-open="opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" id="trackDate" />
-                <span class="input-group-btn">
-                    <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
-                </span>
+            <input type="text" class="form-control" ng-click="opened=true" placeholder="Date" datepicker-popup="yyyy/MM/dd" ng-model="weightInput.date" is-open="opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" id="trackDate" />
         </div>
     </div>
-    <input ng-model="bw.weight" type="number" size="4" step="0.1" placeholder="{{ bw.unit }}" enter-tab style="width:4em" required min="10" max="1000">
+    <input ng-model="weightInput.bw.weight" type="number" size="4" step="0.1" placeholder="{{ weightInput.bw.unit }}" enter-tab style="width:4em" required min="10" max="1000">
     <span ng-hide="unitedit" ng-click="unitedit = true">{{ bw.unit }}</span>
-    <select ng-show="unitedit" ng-model="bw.unit">
+    <select ng-show="unitedit" ng-model="weightInput.bw.unit">
         <option value="kg">kg</option>
         <option value="lb">lb</option>
     </select>
@@ -20,4 +18,5 @@
 </form>
 <div class="alert" ng-class="'alert-' + workoutStatus.level" role="alert" ng-show="workoutStatus.message">
     {{ workoutStatus.message }}
+</div>
 </div>

@@ -149,7 +149,7 @@
     return e;
   };
 
-  var calcScore = function (data, repMax, UnitConverter, $log) {
+  var calcScore = function (data, repMax, UnitConverter) {
 // data is in reverse date order, hence first.
     // Hope that contract never changes!
     var bw = _.first(data).body.weight;
@@ -164,7 +164,6 @@
       var perExRep = function (reps) {
         var rec = repMax[exname][reps].latest;
         var score = UnitConverter.strengthScore(exname, rec.est1rm, rec.est1rmUnit, bw, bunit);
-        // $log.debug('Score for ' + exname + ' with ' + reps + ' reps is ' + score);
         return score;
       };
 
@@ -180,9 +179,9 @@
     return ret;
   };
 
-  var calcScores = function(data, repMax, UnitConverter, $log) {
+  var calcScores = function(data, repMax, UnitConverter) {
     if (data.length > 0) {
-      var scores = calcScore(data, repMax, UnitConverter, $log);
+      var scores = calcScore(data, repMax, UnitConverter);
       scores = scores.map(scoreToGame);
       return scores;
     }

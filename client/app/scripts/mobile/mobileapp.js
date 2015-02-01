@@ -17,13 +17,18 @@ angular.module('Gainstrack', [
       templateUrl: 'views/track.html',
       controller: 'TrackController',
       reloadOnSearch: false
-    });
-    $routeProvider.when('/user/:userId', {
-      templateUrl: 'views/mobile/mobileuser.html',
-      controller: 'MobileUserController',
-      controllerAs: 'user',
-      reloadOnSearch: false
     })
+      .when('/trackweight', {
+        templateUrl: 'views/trackweight.html',
+        controller: 'TrackWeightController',
+        reloadOnSearch: false
+      })
+      .when('/user/:userId', {
+        templateUrl: 'views/mobile/mobileuser.html',
+        controller: 'MobileUserController',
+        controllerAs: 'user',
+        reloadOnSearch: false
+      })
     .when('/repMax', {
       templateUrl: 'views/mobile/rep-max-table.html',
       controller: 'RepMaxController',

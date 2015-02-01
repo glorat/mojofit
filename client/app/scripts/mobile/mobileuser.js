@@ -37,5 +37,9 @@ angular.module('clientApp')
       $location.path('/track');
     };
 
+    $scope.editWeight = function(date) {
+      WorkoutState.setWeightDate(date);
+      $location.path('/trackweight');
+    };
 
   });

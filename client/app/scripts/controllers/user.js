@@ -78,8 +78,13 @@ angular.module('clientApp')
             $location.path('/track');
         };
 
+    $scope.editWeight = function(date) {
+      WorkoutState.setWeightDate(date);
+      $location.path('/trackweight');
+    };
 
-    });
+
+  });
 
 
 angular.module('clientApp').directive('setText', function () {
