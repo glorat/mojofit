@@ -23,7 +23,9 @@ angular.module('clientApp').directive('strengthScore', function () {
         return ($scope.user.userId === $scope.userStatus.id) || ($scope.user.userId === $scope.userStatus.username);
       };
 
-      $scope.noWeight = ! _.last($scope.user.data).body.weight;
+      $scope.noWeight = function(){
+        return ($scope.user.data.length>0) && ! _.last($scope.user.data).body.weight;
+      }
     }
   };
 });
