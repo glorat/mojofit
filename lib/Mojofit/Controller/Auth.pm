@@ -162,7 +162,7 @@ sub nameToUsername {
 sub getUserStatus {
 	my $c = shift;
 	my $status = {};
-	my $msg = {level=>'Success', message=>'', userStatus=>$status, csrfToken => $c->csrf_token};
+	my $msg = {level=>'success', message=>'', userStatus=>$status, csrfToken => $c->csrf_token};
 	eval {
 		if (!$c->session('id')) {
 			my $id = genId();
