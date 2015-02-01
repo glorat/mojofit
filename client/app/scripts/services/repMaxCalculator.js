@@ -69,11 +69,11 @@
                             for (var i = 1; i <= reps; i++) {
                                 if (repMax[i].latest.uw < uw) {
                                     var est = est1rm(uw, i);
-                                    var entry = {weight:aset.weight, date:item.date, reps:aset.reps, est1rm:est, uw:uw};
+                                    var entry = {weight:aset.weight, est1rmUnit:unit, date:item.date, reps:aset.reps, est1rm:est, uw:uw};
                                     repMax[i].latest = entry;
                                     repMax[i].history.push(entry);
                                     if (est > repMax[0].latest.uw) {
-                                        repMax[0].latest = {weight:aset.weight, date:item.date, reps:aset.reps, uw:est};
+                                        repMax[0].latest = {weight:aset.weight, est1rmUnit:unit, date:item.date, reps:aset.reps, uw:est};
                                         repMax[0].history.push(entry);
                                     }
                                 }

@@ -34,21 +34,37 @@ angular.module('mojofit')
             var denom = a + b*kg + c*kg*kg + d*kg*kg*kg + e*kg*kg*kg*kg + f*kg*kg*kg*kg*kg;
             return 500/denom;
         };
+    var convert = function(from, fromUnit, toUnit) {
+      if (fromUnit === toUnit) {
+        return from;
+      }
+      else if (data[fromUnit] && data[toUnit] && data[fromUnit][1]===data[toUnit][1]) {
+        return from * data[fromUnit][0] / data[toUnit][0];
+      }
+      else {
+        return 0;
+      }
+    };
+
+    var strengthScore = function(exname, wgt, unit, bw, bunit, gender, dob) {
+      var interceptMap = {'Barbell Squat':129, 'Barbell Bench Press':94, 'Barbell Deadlift':150};
+      var intercept = interceptMap[exname];
+      if (!exname) {return 0;}
+      var slope = 0.06; // Even for deadlift? Certainly for SQ/BP
+      var bodyKg = convert(bw, bunit, 'kg');
+      var wilks = maleWilks(bodyKg);
+      var kg = convert(wgt, unit, 'kg');
+      var wilksPoint = kg * wilks;
+      var eliteWilks = intercept + bodyKg*slope;
+
+      return wilksPoint/eliteWilks;
+    };
 
         var ret = {
-            convert : function(from, fromUnit, toUnit) {
-                if (fromUnit === toUnit) {
-                    return from;
-                }
-                else if (data[fromUnit] && data[toUnit] && data[fromUnit][1]===data[toUnit][1]) {
-                    return from * data[fromUnit][0] / data[toUnit][0];
-                }
-                else {
-                    return 0;
-                }
-            },
+            convert : convert,
             maleWilks : maleWilks,
-            femaleWilks : femaleWilks
+            femaleWilks : femaleWilks,
+            strengthScore : strengthScore
         };
         return ret;
     });

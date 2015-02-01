@@ -1,0 +1,4 @@
+<div ng-repeat="d in data">
+  <h4>{{ d.exname }} - <button type="button" class="btn btn-sm btn-primary" disabled="disabled">Lvl {{d.level}}</button></h4>
+  <progressbar animate="false" value="d.points" type="success" max="100"><b>{{d.points}}/100</b></progressbar>
+</div>
