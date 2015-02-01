@@ -23,7 +23,7 @@ var repmaxFile = function() {
 
                 $scope.$watchCollection('[user, exercises]', function (newVals) {
                     var exs = _.first(newVals[1], $scope.limitTo);
-                    var repMaxByName = $scope.user.repMax;
+                    var repMaxByName = $scope.user.stats.repMax;
                     var repMax = pickout(exs, repMaxByName);
                     $scope.repMax = repMax;
                 }, false);
@@ -35,7 +35,7 @@ var repmaxFile = function() {
         .controller('RepMaxController', function ($scope, UserState) {
             $scope.width = 10; // That's how much we an fit in a full view
             var curr = UserState.getCurrentUser();
-            $scope.repMax = pickout(curr.usedExercises, curr.repMax); // RepMaxCalculator.genRepMax(curr.data, curr.usedExercises, 'kg');
+            $scope.repMax = pickout(curr.usedExercises, curr.stats.repMax); // RepMaxCalculator.genRepMax(curr.data, curr.usedExercises, 'kg');
             //UserState.getCurrentUser().repMax;
         });
 
