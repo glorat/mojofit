@@ -2,3 +2,8 @@
   <h4><button type="button" class="btn btn-md btn-primary" disabled="disabled"><b>Level {{d.level}}</b></button> - {{ d.exname }}</h4>
   <progressbar animate="false" value="d.points" type="success" max="100"><b>{{d.points}}/100</b></progressbar>
 </div>
+<alert ng-show="noWeight" type="danger">
+  Strength levels in accurate due to missing bodyweight
+  <button class="btn btn-danger" ng-click="editWeight()" ng-show="canEdit()">Fix It</button>
+</alert>
+
