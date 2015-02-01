@@ -88,7 +88,15 @@ angular.module('clientApp')
 
         var defaultUser = function(userId) {
           /*jshint camelcase: false */
-            return {userId:userId, data:[], usedExercises:UserStateLoader.defaultExercises, revision:0, repMax:{}, setBadges:{}, prefs:{}};
+            return {
+              userId:userId,
+              data:[],
+              usedExercises:UserStateLoader.defaultExercises,
+              revision:0,
+              stats:{repMax:{}},
+              setBadges:{},
+              prefs:{}
+            };
         };
 
         var currentUser = defaultUser(undefined);
@@ -103,7 +111,7 @@ angular.module('clientApp')
             tgtUser.workoutDates = srcUser.workoutDates;
             tgtUser.activeDate = srcUser.activeDate;
             tgtUser.showChart = srcUser.showChart;
-            tgtUser.repMax = srcUser.repMax;
+            tgtUser.stats = srcUser.stats;
             tgtUser.setBadges = srcUser.setBadges;
             tgtUser.prefs = srcUser.prefs;
         };

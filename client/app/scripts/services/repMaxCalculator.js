@@ -15,8 +15,9 @@
     }
 
 }(function () {
+  var POWER_LIFTS = ['Barbell Squat','Barbell Bench Press','Barbell Deadlift'];
 
-        var setUnited = function(s, unit) {
+  var setUnited = function(s, unit) {
             if (!s.unit) {
                 return 0;
             }
@@ -140,8 +141,59 @@
             return history;
         };
 
+
+  var scoreToGame = function(e) {
+    // require e.keys has exname, scores, avgScore
+    e.level = Math.floor(e.avgScore*10);
+    e.points = Math.floor((e.avgScore*10- e.level)*100);
+    return e;
+  };
+
+  var calcScore = function (data, repMax, UnitConverter, $log) {
+// data is in reverse date order, hence first.
+    // Hope that contract never changes!
+    var bw = _.first(data).body.weight;
+    var bunit = _.first(data).body.unit;
+    if (!bw) {
+      bw = 100;
+      bunit = 'kg'; // Big penalty for no bw supplied
+    }
+
+    var ret = POWER_LIFTS.map(function (exname) {
+
+      var perExRep = function (reps) {
+        var rec = repMax[exname][reps].latest;
+        var score = UnitConverter.strengthScore(exname, rec.est1rm, rec.est1rmUnit, bw, bunit);
+        // $log.debug('Score for ' + exname + ' with ' + reps + ' reps is ' + score);
+        return score;
+      };
+
+      var perEx = _.range(1, 5 + 1).map(perExRep);
+
+      var avg = _.reduce(perEx, function (memo, num) {
+          return memo + num;
+        }, 0) / perEx.length;
+
+      return {exname: exname, scores: perEx, avgScore: avg};
+    });
+
+    return ret;
+  };
+
+  var calcScores = function(data, repMax, UnitConverter, $log) {
+    if (data.length > 0) {
+      var scores = calcScore(data, repMax, UnitConverter, $log);
+      scores = scores.map(scoreToGame);
+      return scores;
+    }
+    else {
+      return [];
+    }
+  };
+
         return {
             genRepMaxFull : genRepMaxFull,
-            genRepMaxHistory : genRepMaxHistory
+            genRepMaxHistory : genRepMaxHistory,
+          calcScores:calcScores
         };
 }));
