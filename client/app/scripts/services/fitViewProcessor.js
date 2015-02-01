@@ -24,6 +24,7 @@
         var x = _.chain(data)
             .map(function(d){return d.actions;})
             .flatten()
+          .filter(function(d){return d !== undefined;})
             .countBy(function(d){return d.name;})
             .pairs()
             .sortBy(function (d){return -d[1];})
@@ -42,6 +43,7 @@
         // Too many strings in the data
         data.map(function(item){
             item.date = parseInt(item.date);
+          if (item.actions) {
             item.actions.map(function(action){
                 if (aliases[action.name]) {
                     action.name = aliases[action.name];
@@ -52,7 +54,7 @@
                 });
             });
             return item;
-        });
+        }});
 
         data.sort(function(a,b) {
             if (b.date < a.date) { return -1; }
