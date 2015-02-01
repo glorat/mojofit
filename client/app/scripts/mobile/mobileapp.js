@@ -24,11 +24,16 @@ angular.module('Gainstrack', [
       controllerAs: 'user',
       reloadOnSearch: false
     })
-      .when('/repMax', {
-        templateUrl: 'views/mobile/rep-max-table.html',
-        controller: 'RepMaxController',
-        reloadOnSearch: false
-      });
+    .when('/repMax', {
+      templateUrl: 'views/mobile/rep-max-table.html',
+      controller: 'RepMaxController',
+      reloadOnSearch: false
+    })
+    .when('/score', {
+      templateUrl: 'views/score.html',
+      controller: 'ScoreController',
+      reloadOnSearch: false
+    });
 
   });
 
