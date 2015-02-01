@@ -77,8 +77,13 @@ sub submit_weight {
 	my $weight = $cmd->{body}->{weight};
 	my $unit = $cmd->{body}->{unit};
 	$weight += 0; 
-	$weight =~ m/^[\d\.]+$/ or die ("Weight $weight is not a valid number");
-	$unit =~ m/^(kg|lb)$/ or die ("Unit must be kg or lb");
+	$weight =~ m/^[\d\.]+$/ or die ("Weight $weight is not a valid number\n");
+	$unit =~ m/^(kg|lb)$/ or die ("Unit must be kg or lb\n");
+	
+	unless ($self->{dates}->{$date}) {
+		die ("Please only submit bodyweight for days you are also logging a workout\n");
+	}
+	
 	# No other validation for now!
 	my $ev =  {action=>'weight_submitted', date=>$date, body=>{weight=>$weight, unit=>$unit}};
 	$self->commit_append($ev);
@@ -235,7 +240,8 @@ our $f = File::Util->new();
 sub new {
 	my ($class, $id) = @_;
 	# Sanitise $id
-	my $self = {id=>$id, index=>0, bydate=>{}, prefs=>{}};
+	# body : date->recorded bodyweight
+	my $self = {id=>$id, index=>0, bydate=>{}, prefs=>{}, body=>{}};
 	bless $self, $class;
 	$self->load_from_stream;
 	return $self;
@@ -291,7 +297,7 @@ sub handle_weight_submitted {
 	my ($self, $ev) = @_;
 	my $body = $ev->{body};
 	my $date = $ev->{date}*1000; # To JS millis
-	$self->{bydate}->{$date}->{body} = $body;
+	$self->{body}->{$date} = $body;
 }
 
 
@@ -310,7 +316,15 @@ sub handle_item_deleted {
 sub write_by_date {
 	my ($self) = @_;
 	my @keys = sort keys %{$self->{bydate}};
-	my @items = map {$self->{bydate}->{$_}} (@keys);
+	my %bw = (weight=>0, unit=>'kg');
+	my @items = map {
+		my $date = $_;
+		if ($self->{body}->{$date}) {
+			%bw = %{$self->{body}->{$date}};
+		}
+		%{$self->{bydate}->{$date}->{body}} = %bw;
+		$self->{bydate}->{$_}
+	} (@keys);
 	open OUT, ">$Fitstore::DATA_DIR/$self->{id}.json";
 	print OUT encode_json({revision=>$self->{index}, items=>\@items, id=>$self->{id}, prefs=>$self->{prefs}});
 	close OUT; 
