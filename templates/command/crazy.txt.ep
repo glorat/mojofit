@@ -1,5 +1,9 @@
 var item = <%== $payload %>;
 
+var isNumber = function(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+};
+
 var addExercise = function(exname, sets) {
 	if (sets.length < 1) {
 		return;
@@ -34,7 +38,7 @@ var addExercise = function(exname, sets) {
 		var srcWeight = sets[i].weight;
 		if (tgtUnit === 'kg' && sets[i].unit !== 'kg') {srcWeight /= 2.20462;}
 		if (tgtUnit !== 'kg' && sets[i].unit === 'kg') {srcWeight *= 2.20462;}
-		srcWeight = +srcWeight.toFixed(1);
+		srcWeight = isNumber(srcWeight) ? +srcWeight.toFixed(1) : 0;
 		$(setElems[i]).find('#ctrl_weight').val(srcWeight);
 	}	
 	
