@@ -1,6 +1,6 @@
 <div class="section scrollable-content">
 <h2>Record weight</h2>
-<form class="form-horizontal">
+<form class="form-horizontal" ng-submit="submitWeight()">
     <div class="form-group">
         <div class="input-group col-xs-12">
             <input type="text" class="form-control" ng-click="opened=true" placeholder="Date" datepicker-popup="yyyy/MM/dd" ng-model="weightInput.date" is-open="opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" id="trackDate" />
@@ -12,7 +12,7 @@
         <option value="kg">kg</option>
         <option value="lb">lb</option>
     </select>
-    <button type="submit" class="btn btn-default" ng-click="submitWeight();">
+    <button type="submit" class="btn btn-default">
         Record Weight
     </button>
 </form>
