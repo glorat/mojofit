@@ -67,9 +67,7 @@ angular.module('clientApp')
         });
 
         $scope.addWorkout = function() {
-            var d = new Date($scope.newWorkout.date);
-            var utcDate = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate());
-            $scope.editWorkout({date:  utcDate});
+            $scope.editWorkout($scope.newWorkout.date);
         };
 
         $scope.editWorkout = function(date) {
@@ -79,8 +77,10 @@ angular.module('clientApp')
         };
 
     $scope.editWeight = function(date) {
-      WorkoutState.setWeightDate(date);
-      $location.path('/trackweight');
+      if ($scope.canEdit()) {
+        WorkoutState.setWeightDate(date);
+        $location.path('/trackweight');
+      }
     };
 
 
