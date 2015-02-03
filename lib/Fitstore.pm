@@ -269,7 +269,10 @@ sub handle_item_submitted {
 	$item->{actions} = [map {
 		$_->{sets} = [map {
 			my $set = $_;
-			if ($set->{lb}) {
+			if ($set->{unit}) {
+			    # This is the normal case
+			}
+			elsif ($set->{lb}) {
 				# Back compat
 				$set->{kg} = 0.453592 * $set->{lb};
 				$set->{unit} = 'lb';
