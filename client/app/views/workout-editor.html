@@ -38,15 +38,15 @@
             </div><!-- /btn-group -->
         </div><!-- /form-group -->
     </form>
-<div class="panel panel-default">
-    <header class="panel-heading">Track workout for {{workout.date | date}}</header>
+<div class="">
+    <h3>Track workout for {{workout.date | date}}</h3>
     <form class="form-horizontal" ng-repeat="action in workout.actions">
         <div class="form-group">
-            <div class="col-xs-6 col-xs-offset-2">
+            <div class="col-xs-8 col-md-offset-2 col-md-6">
                 <p class="form-control-static" ng-hide="nameedit" ng-click="nameedit = true">{{ action.name }}</p>
                 <input type="text" class="form-control" ng-show="nameedit" ng-model="action.name" >
             </div>
-            <div class="col-xs-4">
+            <div class="col-xs-4 col-md-4">
 
                 <div class="btn-group dropdown" is-open="dd.isopen">
                     <button type="button" class="btn btn-default dropdown-toggle" aria-expanded="false" >
