@@ -174,7 +174,7 @@ angular.module('mojofit')
       restrict: 'E',
       scope: {solution: '='},
       templateUrl: 'views/plate-solution.html',
-      controller: function ($scope, PlateCalculator) {
+      controller: function () {
       }
     };
   });

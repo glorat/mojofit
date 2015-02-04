@@ -86,8 +86,39 @@ angular.module('clientApp').directive('actionSetsEditor', function() {
         restrict: 'E',
         scope: {action:'='},
         templateUrl: 'views/action-editor.html',
-        controller: function ($scope) {
+        controller: function ($scope, UserState, UnitConverter, PlateCalculator, $modal) {
+          var userPrefs = UserState.getMyState().prefs;
+          $scope.dispUnit = userPrefs.preferredUnit; // This is a non-reactive var
 
+          $scope.needsConvert = function(aset) {
+            return aset.unit !== $scope.dispUnit;
+          };
+          $scope.dispValue = function(aset) {
+            return UnitConverter.convert(aset.weight, aset.unit, $scope.dispUnit);
+          };
+          $scope.platesFor = function(aset) {
+            return PlateCalculator.getSolutionFor(aset.weight, aset.unit);
+          };
+          $scope.showPlates = function(aset) {
+            var m = $modal.open({
+              template: '<div class="modal-body"><h2>Use these plates</h2><plate-solution solution="solution"></plate-solution><button class="btn btn-primary" ng-click="$close(solution)">Use {{ solution.total}}{{solution.unit}}</button><button class="btn btn-danger" ng-click="$dismiss()">Cancel</button></div>',
+              controller: function($scope, solution) {
+                $scope.solution = solution;
+              },
+              //size: 'lg',
+              resolve: {
+                solution: function () {
+                  return PlateCalculator.getSolutionFor(aset.weight, aset.unit);
+                }
+              }
+            });
+
+            m.result.then(function (solution) {
+              aset.weight = +solution.total.toFixed(1);
+              aset.unit = solution.unit;
+            });
+
+          };
             $scope.addSet = function(index) {
                 var newSet = angular.copy($scope.action.sets[index]);
                 $scope.action.sets.splice(index+1,0, newSet);

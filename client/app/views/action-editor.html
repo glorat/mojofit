@@ -12,4 +12,5 @@
       <a type="button" class="btn btn-default" ng-click="removeSet($index)"><span class="glyphicon glyphicon-minus"></span></a>
   </div>
   <span ng-show="needsConvert(set)">({{ dispValue(set) | number : 1}} {{dispUnit}})</span>
+  <button ng-click="showPlates(set)"><span class="glyphicon glyphicon-menu-hamburger"></span></button>
 </div>
