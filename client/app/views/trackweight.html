@@ -7,7 +7,7 @@
         </div>
     </div>
     <input ng-model="weightInput.bw.weight" type="number" size="4" step="0.1" placeholder="{{ weightInput.bw.unit }}" enter-tab style="width:4em" required min="10" max="1000">
-    <span ng-hide="unitedit" ng-click="unitedit = true">{{ bw.unit }}</span>
+    <span ng-hide="unitedit" ng-click="unitedit = true">{{ weightInput.bw.unit }}</span>
     <select ng-show="unitedit" ng-model="weightInput.bw.unit">
         <option value="kg">kg</option>
         <option value="lb">lb</option>

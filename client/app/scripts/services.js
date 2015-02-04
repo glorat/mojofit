@@ -2,8 +2,10 @@
 
 angular.module('clientApp')
     .factory('WorkoutState', function (UserState, $log) {
-        var workout = {date:new Date().setHours(0,0,0,0).valueOf(), actions:[]};
-        var weight = {date:new Date().setHours(0,0,0,0).valueOf(), bw: {weight:0, unit:'kg'}};
+    var user = UserState.getMyState();
+
+    var workout = {date:new Date().setHours(0,0,0,0).valueOf(), actions:[]};
+    var weight = {date:new Date().setHours(0,0,0,0).valueOf(), bw: {weight:0, unit: 'kg'}};
 
     var saneDate = function(d) {
       d = new Date(d.valueOf());
@@ -26,6 +28,8 @@ angular.module('clientApp')
           },
           setWeightDate: function(newDate) {
             weight.date = saneDate(newDate);
+            weight.bw.unit = user.prefs.preferredUnit || 'kg';
+
           },
             setDate: function(newDate) {
               // Ensure we have a date object
