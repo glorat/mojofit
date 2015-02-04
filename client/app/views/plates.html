@@ -33,37 +33,15 @@
 
         <div class="table col-lg-1">
         <h3>Step 2: Enter target weight</h3>
-
-        <table class="table table-condensed" style="width: auto;">
-            <tr>
-                <th>Num</th>
-                <th>Plate</th>
-                <th>kg</th>
-            </tr>
-            <tr>
-                <td></td>
-                <td>{{ pc.barbell.weight }}{{pc.barbell.unit}} barbell</td>
-                <td></td>
-            </tr>
-            <tr ng-repeat="sol in pc.solution">
-                <td>{{ sol[1] }}</td>
-                <td>{{ sol[2] }}</td>
-                <td>{{ sol[0] | number:1 }}kg</td>
-            </tr>
-            <tr>
-                <th>Total:</th>
-                <td></td>
-                <th>{{pc.solutionTotal | number:1}} {{pc.unit}}</th>
-            </tr>
-        </table>
+          <plate-solution solution="solution"></plate-solution>
         </div>
     </div>
     <div>
         <label for="targetWeight">Target weight</label>
-        <input id="targetWeight" type="number" ng-model="pc.weight" ng-change="pc.refresh()" style="width:6em" min="1">
+        <input id="targetWeight" type="number" ng-model="pc.target.weight" ng-change="pc.refresh()" style="width:6em" min="1">
         <div class="btn-group">
-            <label class="btn btn-default" ng-model="pc.unit" btn-radio="'kg'">kg</label>
-            <label class="btn btn-default" ng-model="pc.unit" btn-radio="'lb'">lb</label>
+            <label class="btn btn-default" ng-model="pc.target.unit" btn-radio="'kg'">kg</label>
+            <label class="btn btn-default" ng-model="pc.target.unit" btn-radio="'lb'">lb</label>
         </div>
     </div>
 </div>

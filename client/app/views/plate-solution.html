@@ -1,0 +1,19 @@
+<table class="table table-condensed" style="width: auto;">
+  <tr>
+    <th>Num</th>
+    <th>Plate</th>
+  </tr>
+  <tr>
+    <td></td>
+    <td>{{ solution.barbell.weight }}{{solution.barbell.unit}} barbell</td>
+    <td></td>
+  </tr>
+  <tr ng-repeat="sol in solution.plates">
+    <td>{{ sol[1] }}</td>
+    <td>{{ sol[2] }}</td>
+  </tr>
+  <tr>
+    <th>Total:</th>
+    <th>{{solution.total | number:1}} {{unit}}</th>
+  </tr>
+</table>
