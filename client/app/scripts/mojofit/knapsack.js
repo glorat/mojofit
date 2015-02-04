@@ -110,7 +110,7 @@ angular.module('mojofit')
         };
 
         var getSolutionFor = function(weight, unit) {
-            // Do all the maths in hk
+            // Do all the maths in kg
             var targetKg = UnitConverter.convert(weight, unit, 'kg');
             var barbellKg = UnitConverter.convert(barbell.weight, barbell.unit, 'kg');
             var toSolve = (targetKg - barbellKg) / 2.0; // Plates on 2 sides!
@@ -124,8 +124,10 @@ angular.module('mojofit')
             // Convert the answers back to requested
             var solutionTotal = UnitConverter.convert(total,'kg',unit);
             return {
-                solution:plateSolution,
-                solutionTotal :solutionTotal
+                plates:plateSolution,
+                total :solutionTotal,
+              barbell:barbell,
+              unit:unit
             };
         };
 
@@ -143,14 +145,12 @@ angular.module('mojofit')
         var self = this;
         this.plates = PlateCalculator.getPlates();
         this.barbell = PlateCalculator.getBarbell();
-        this.weight = 120;
-        this.unit = 'kg';
+        this.target = {weight:120, unit:'kg'};
         this.solution = [];
         this.solutionTotal = 0;
         var refresh = function() {
-            var res = PlateCalculator.getSolutionFor(self.weight, self.unit);
-            self.solution = res.solution;
-            self.solutionTotal = res.solutionTotal;
+            var res = PlateCalculator.getSolutionFor(self.target.weight, self.target.unit);
+          $scope.solution = res;
         };
         this.solve = function() {
             PlateCalculator.solve();
@@ -167,3 +167,14 @@ angular.module('mojofit')
 
         refresh();
     });
+
+angular.module('mojofit')
+  .directive('plateSolution',function(){
+    return {
+      restrict: 'E',
+      scope: {solution: '='},
+      templateUrl: 'views/plate-solution.html',
+      controller: function ($scope, PlateCalculator) {
+      }
+    };
+  });
