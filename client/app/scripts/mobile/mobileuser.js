@@ -32,14 +32,15 @@ angular.module('clientApp')
     };
 
     $scope.editWorkout = function(date) {
-      // WorkoutState.setWorkout(newW);
       WorkoutState.setDate(date);
       $location.path('/track');
     };
 
     $scope.editWeight = function(date) {
-      WorkoutState.setWeightDate(date);
-      $location.path('/trackweight');
+      if ($scope.canEdit()) {
+        WorkoutState.setWeightDate(date);
+        $location.path('/trackweight');
+      }
     };
 
   });
