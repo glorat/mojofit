@@ -25,7 +25,7 @@
                 <label class="btn btn-sm btn-default" ng-model="plate[2]" btn-radio="'lb'">lb</label>
             </div>
         </div>
-        <button class="btn btn-primary" type="submit" ng-click="pc.solve()">Apply</button>
+        <button class="btn btn-primary" type="submit" ng-click="pc.solve()" analytics-on="click" analytics-event="plate solve" analytics-category="Tools">Apply</button>
         <button class="btn btn-default" type="submit" ng-click="pc.reset()">Reset to defaults</button>
     </div>
     </div>

@@ -55,7 +55,7 @@
                     <ul class="dropdown-menu" role="menu" ng-show="dd.isopen">
                         <li><a href="" ng-click="removeAction($index)">Delete...</a></li>
                         <li class="divider"></li>
-                        <li><a href="" ng-click="cloneLastTime($index)">Clone last time</a></li>
+                        <li><a href="" ng-click="cloneLastTime($index)" analytics-on="click" analytics-event="log clone action" analytics-category="Tools">Clone last time</a></li>
                     </ul>
                 </div>
             </div>
