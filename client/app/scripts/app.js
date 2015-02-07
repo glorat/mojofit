@@ -18,7 +18,8 @@ angular
         'LocalStorageModule',
         'viewhead',
         'mojofit',
-    'angulartics'
+    'angulartics',
+    'angulartics.google.analytics'
     ]);
 
 
