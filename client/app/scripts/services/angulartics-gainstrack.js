@@ -9,10 +9,10 @@ angular.module('clientApp')
         this.init = function () {
           var analytics = {
             trackPage : function(path) {
-              $log.warn('I tracked ' +  path);
+              $log.info('User visited ' +  path);
             },
             trackEvent : function(action, properties) {
-              $log.warn('I tracked event' +  action + ' ' + properties);
+              $log.info('User performed ' +  action + ' in category ' + properties.category);
             }
           };
           ready(analytics);

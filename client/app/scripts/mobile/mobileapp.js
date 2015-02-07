@@ -40,7 +40,11 @@ angular.module('Gainstrack', [
       reloadOnSearch: false
     });
 
-  });
+  })
+  .run(['angularticsGainstrack', function (angularticsGainstrack) {
+    angularticsGainstrack.init();
+  }]);
+
 
 angular.module('Gainstrack.controllers.Main', [])
 
