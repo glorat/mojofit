@@ -17,7 +17,8 @@ angular
         'googlechart',
         'LocalStorageModule',
         'viewhead',
-        'mojofit'
+        'mojofit',
+    'angulartics'
     ]);
 
 

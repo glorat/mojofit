@@ -79,18 +79,14 @@
       </div>
     </div>
 
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
-    <!-- Google Analytics: change UA-XXXXX-X to be your site's ID -->
-    <!--
-     <script>
-       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-       (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-       m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-       })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-       ga('create', 'UA-XXXXX-X');
-       ga('send', 'pageview');
-    </script>-->
+      ga('create', 'UA-59362707-1', 'auto');
+    </script>
 
     <!-- build:js(.) scripts/oldieshim.js -->
     <!--[if lt IE 9]>
@@ -119,6 +115,8 @@
     <script src="scripts/modules/gm.datepickerMultiSelect.js"></script>
     <script src="scripts/modules/angular-local-storage.js"></script>
     <script src="scripts/modules/angular-viewhead.js"></script>
+    <script src="scripts/modules/angulartics.js"></script>
+    <script src="scripts/modules/angulartics-ga.js"></script>
 
     <script src="scripts/app.js"></script>
     <script src="scripts/appconfig.js"></script>
@@ -127,6 +125,7 @@
     <script src="scripts/services/fitViewProcessor.js"></script>
     <script src="scripts/services/MojoServer.js"></script>
     <script src="scripts/services/UserState.js"></script>
+    <script src="scripts/services/angulartics-gainstrack.js"></script>
     <script src="scripts/controllers/main.js"></script>
     <script src="scripts/controllers/user.js"></script>
     <script src="scripts/controllers/workoutEditor.js"></script>
