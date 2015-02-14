@@ -71,7 +71,7 @@ sub filterSetReps {
 sub filterMaxWeight {
 	my ($action) = shift;
 	my @sets = @{$action->{sets}};
-	my @kgs = map {$_->kg} (@sets);
+	my @kgs = map {$_->kg || 0} (@sets);
 	@kgs or return $action;
 	my $max = max (@kgs);
 	$max ||= 0;
