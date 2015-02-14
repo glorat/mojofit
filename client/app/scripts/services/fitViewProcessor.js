@@ -125,14 +125,14 @@
         userData.workoutDates = userData.data.map(function(x){return new Date(x.date).setHours(0,0,0,0).valueOf();});
         userData.activeDate = new Date(userData.workoutDates[0]);
         userData.showChart = true;
-        userData.stats = {};
-        userData.stats.repMax = RepMaxCalculator.genRepMaxFull(userData.data, userData.usedExercises, dataObj.prefs.preferredUnit || 'kg');
-        userData.stats.strengthScore = RepMaxCalculator.calcScores(userData.data, userData.stats.repMax, UnitConverter, $log);
-        userData.setBadges = createSetBadgeMap(userData.data, userData.repMax);
         userData.prefs = dataObj.prefs;
         if (userData.prefs.dob) {
           userData.prefs.dob = new Date(new Date(userData.prefs.dob).setHours(0,0,0,0));
         }
+        userData.stats = {};
+        userData.stats.repMax = RepMaxCalculator.genRepMaxFull(userData.data, userData.usedExercises, dataObj.prefs.preferredUnit || 'kg');
+        userData.stats.strengthScore = RepMaxCalculator.calcScores(userData.data, userData.stats.repMax, UnitConverter, userData.prefs.gender);
+        userData.setBadges = createSetBadgeMap(userData.data, userData.repMax);
     };
 
     return {
