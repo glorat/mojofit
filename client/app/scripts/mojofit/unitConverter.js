@@ -46,18 +46,44 @@ angular.module('mojofit')
       }
     };
 
-    var strengthScore = function(exname, wgt, unit, bw, bunit /*, gender, dob*/) {
-      var interceptMap = {'Barbell Squat':129, 'Barbell Bench Press':94, 'Barbell Deadlift':150};
-      var intercept = interceptMap[exname];
+    var strengthScore = function(exname, wgt, unit, bw, bunit, gender /*,dob*/) {
       if (!exname) {return 0;}
-      var slope = 0.06; // Even for deadlift? Certainly for SQ/BP
+
+      if (gender === 'f') {
+        return strengthScoreFemale(exname, wgt, unit, bw, bunit);
+      }
+      else {
+        return strengthScoreMale(exname, wgt, unit, bw, bunit);
+      }
+    };
+
+    var strengthScoreMale = function(exname, wgt, unit, bw, bunit /*, gender, dob*/) {
+      var interceptMap = {'Barbell Squat':129, 'Barbell Bench Press':94, 'Barbell Deadlift':150};
+      // 0.06 Even for deadlift? Certainly for SQ/BP
+      var slopeMap = {'Barbell Squat':0.06, 'Barbell Bench Press':0.06, 'Barbell Deadlift':0.06};
+      var wilksFn = maleWilks;
+      if (!exname) {return 0;}
+      return strengthScoreGen(interceptMap, slopeMap, wilksFn, exname, wgt, bunit, bw, unit);
+
+    };
+
+    function strengthScoreGen(interceptMap, slopeMap, wilksFn, exname, wgt, bunit, bw, unit) {
+      var intercept = interceptMap[exname];
+      var slope = slopeMap[exname];
       var bodyKg = convert(bw, bunit, 'kg');
-      var wilks = maleWilks(bodyKg);
+      var wilks = wilksFn(bodyKg);
       var kg = convert(wgt, unit, 'kg');
       var wilksPoint = kg * wilks;
-      var eliteWilks = intercept + bodyKg*slope;
+      var eliteWilks = intercept + bodyKg * slope;
 
-      return wilksPoint/eliteWilks;
+      return wilksPoint / eliteWilks;
+    }
+
+    var strengthScoreFemale = function(exname, wgt, unit, bw, bunit /*, dob*/) {
+      var interceptMap = {'Barbell Squat':129, 'Barbell Bench Press':94, 'Barbell Deadlift':150};
+      var slopeMap = {'Barbell Squat':0, 'Barbell Bench Press':0, 'Barbell Deadlift':0};
+      var wilksFn = femaleWilks;
+      return strengthScoreGen(interceptMap, slopeMap, wilksFn, exname, wgt, bunit, bw, unit);
     };
 
         var ret = {
