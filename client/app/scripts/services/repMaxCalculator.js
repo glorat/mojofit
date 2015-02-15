@@ -41,10 +41,12 @@
             return weight / (1.0278-0.0278*capreps);
         };
 
-        var genRepMaxFull = function (items, names, unit) {
-            if (names === undefined || items === undefined) {
+        var genRepMaxFull = function (itemsOrig, names, unit) {
+            if (names === undefined || itemsOrig === undefined) {
                 return [];
             }
+          // This could just as well be .reverse
+          var items = _.sortBy(itemsOrig, function(x){return x.date;});
 
             var MAX_REP = 20;
             var repMaxByName = {};
@@ -104,7 +106,7 @@
             return repMax;
         }
 
-        var genRepMaxHistory = function(items, name, unit) {
+        var genRepMaxHistory = function(items, exname, unit) {
             var MAX_REP = 8;
             var repMax = new Array(MAX_REP);
             for (var k = 0; k < MAX_REP+1; k++) {
@@ -120,12 +122,14 @@
             var history = [];// allDates.map(function(d) {return {date:d, repMax: angular.copy(repMax)};});
 
             var accRepMax = function(aset) {
-                repMax = repMaxFromSet(aset, MAX_REP, repMax, curDate, unit);
-                history.push(repMax);
+              repMax = repMaxFromSet(aset, MAX_REP, repMax, curDate, unit);
+              //var score = UnitConverter.strengthScore(exname, rec.est1rm, rec.est1rmUnit, bw, bunit, gender);
+
+              history.push(repMax);
             };
 
             var processAction = function(action) {
-                if (action.name === name) {
+                if (action.name === exname) {
                     action.sets.forEach(accRepMax);
                 }
             };
@@ -149,22 +153,26 @@
     return e;
   };
 
+  function calcScoreForExercise(repMaxEx, UnitConverter, exname, bw, bunit, gender) {
+    var perExRep = function (reps) {
+      var rec = repMaxEx[reps].latest;
+      var score = UnitConverter.strengthScore(exname, rec.est1rm, rec.est1rmUnit, bw, bunit, gender);
+      return score;
+    };
+
+    var perEx = _.range(1, 5 + 1).map(perExRep);
+
+    var avg = _.reduce(perEx, function (memo, num) {
+        return memo + num;
+      }, 0) / perEx.length;
+
+    return {exname: exname, scores: perEx, avgScore: avg};
+  }
+
   function calcScore2(repMax, UnitConverter, bw, bunit, gender) {
     var ret = POWER_LIFTS.map(function (exname) {
-
-      var perExRep = function (reps) {
-        var rec = repMax[exname][reps].latest;
-        var score = UnitConverter.strengthScore(exname, rec.est1rm, rec.est1rmUnit, bw, bunit, gender);
-        return score;
-      };
-
-      var perEx = _.range(1, 5 + 1).map(perExRep);
-
-      var avg = _.reduce(perEx, function (memo, num) {
-          return memo + num;
-        }, 0) / perEx.length;
-
-      return {exname: exname, scores: perEx, avgScore: avg};
+      var repMaxEx = repMax[exname];
+      return calcScoreForExercise(repMaxEx, UnitConverter, exname, bw, bunit, gender);
     });
 
     return ret;
@@ -193,9 +201,64 @@
     }
   };
 
-        return {
+  var genDailyDates = function(minDate, maxDate) {
+    var curDateObj = new Date(new Date(minDate).setUTCHours(0,0,0,0));
+    var curDate = curDateObj.valueOf();
+    var dates = [];
+    while (curDate<maxDate) {
+      dates.push(curDate);
+      curDateObj.setDate(curDateObj.getDate() + 1); // I hate mutable classes
+      curDate = curDateObj.valueOf();
+    }
+    return dates;
+
+  };
+
+  var calcScoreHistory = function(userData, exname, UnitConverter, gender) {
+    gender = gender || 'm';
+    var body = _.first(userData.data).body; // TODO: Technically, bw/bwunit should be historic
+    var bw = body.weight;
+    var bwunit = body.unit;
+
+    var items = userData.data;
+    var repMax = userData.stats.repMax;
+    var byDate = _.groupBy(items, function(item){return new Date(item.date).setUTCHours(0,0,0,0).valueOf(); });
+    var allDates = _.keys(byDate).map(function(x){return +x;});
+    var minDate = _.min(allDates);
+    var maxDate = _.max(allDates);
+    var history = [];// allDates.map(function(d) {return {date:d, repMax: angular.copy(repMax)};});
+
+    // Pointers into repMax[exname][i].history[ptr]
+    // Need 1+5 entries, first is est1rm ignored
+    var histPtr = [0,0,0,0,0,0];
+    var repMaxEx = repMax[exname];
+
+    var daily = genDailyDates(minDate, maxDate);
+    daily.forEach(function(curDate){
+      // Update histPtr
+      for (var i=1; i<=5; i++) {
+        var nexthist = repMaxEx[i].history[histPtr[i]+1];
+        if (nexthist && nexthist.date <= curDate ) {
+          histPtr[i]++; // Next hist item counts
+        }
+      }
+      // Construct current repMax. (First entry is garbage)
+      var repMaxEntry = _.range(0,6).map(function(x){
+        return {latest:repMaxEx[x].history[histPtr[x]]};
+      });
+
+      var scoreObj = calcScoreForExercise(repMaxEntry, UnitConverter, exname, bw, bwunit, gender);
+      history.push([new Date(curDate), scoreObj.avgScore]);
+    });
+    return history;
+  };
+
+
+  return {
             genRepMaxFull : genRepMaxFull,
             genRepMaxHistory : genRepMaxHistory,
-          calcScores:calcScores
+          calcScores:calcScores,
+          calcScoreForExercise:calcScoreForExercise,
+    calcScoreHistory:calcScoreHistory
         };
 }));

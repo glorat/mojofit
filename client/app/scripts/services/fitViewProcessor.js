@@ -6,8 +6,8 @@
         module.exports = myService(require('./repMaxCalculator'), require('underscore'), require('./unitConverter'));
     } else if( angular) {
         angular.module('clientApp')
-            .factory('fitViewProcessor', function(RepMaxCalculator, UnitConverter, $log){
-                return myService(RepMaxCalculator, _, UnitConverter, $log);
+            .factory('fitViewProcessor', function(RepMaxCalculator, UnitConverter){
+                return myService(RepMaxCalculator, _, UnitConverter);
             });
     } else {
 
@@ -15,7 +15,7 @@
         // window.myService = myService;
     }
 
-}(function(RepMaxCalculator, _, UnitConverter, $log){
+}(function(RepMaxCalculator, _, UnitConverter){
     var defaultExercises = ['Barbell Squat', 'Standing Barbell Shoulder Press (OHP)', 'Barbell Bench Press', 'Barbell Deadlift', 'Pendlay Row', 'Power Clean', 'Pull-Up', 'Front Barbell Squat', 'Standing Dumbbell Shoulder Press', 'Barbell Curl', 'Cable External Rotation', 'Hang Clean', 'Clean and Jerk', 'Lat Pulldown', 'Hang Power Clean', 'Clean', 'Dips - Triceps Version', 'Face Pull', 'Dumbbell Bicep Curl', 'Plank', 'Goblet Squat (dumbbell)', 'Bent Over Barbell Row', 'Body Weight Glute Hamstring Raise', 'Front Squat', 'Power Snatch', 'Dumbbell Bulgarian Split Squat', 'Push-Up', 'Dumbbell Side Lateral Raise', 'Farmer\'s Walk', 'Abductor Machine', 'Overhead Barbell Squat', 'Bent-Over Rear Delt Raise', 'Front Dumbbell Raise', 'One-Arm Dumbbell Row', 'Barbell Shrug', 'Seated Bent-Over Rear Delt Raise', 'Seated Cable Row', 'Chin-Up', 'Snatch'];
 
 

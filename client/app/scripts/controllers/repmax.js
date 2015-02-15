@@ -41,19 +41,18 @@ var repmaxFile = function() {
 
 
     angular.module('clientApp')
-        .controller('RepMaxHistoryController', function ($scope, UserState, googleChartApiPromise, RepMaxCalculator) {
+        .controller('RepMaxHistoryController', function ($scope, UserState, googleChartApiPromise, RepMaxCalculator, UnitConverter) {
             var curr = UserState.getCurrentUser();
 
-            var genRepMaxHistoryTable = function(items, name, unit) {
-                if (!items.length) {
+            var genRepMaxHistoryTable = function(exname) {
+                if (!curr.data.length) {
                     return undefined;
                 }
-                var history = RepMaxCalculator.genRepMaxHistory(items,name, unit);
+              var history = RepMaxCalculator.calcScoreHistory(curr, exname, UnitConverter);
+                //var history = RepMaxCalculator.genRepMaxHistory(items,name, unit);
                 var data = new google.visualization.DataTable();
                 data.addColumn('date', 'Date');
-                for (var i=1; i<history[0].length; i++) {
-                    data.addColumn('number', i + ' RM');
-                }
+                data.addColumn({type:'number',label:'Strength', pattern:'#%'});
 
                 data.addRows(history);
                 return data;
@@ -63,8 +62,8 @@ var repmaxFile = function() {
 
             //UserState.getCurrentUser().repMax;
             googleChartApiPromise.then(function() {
-                var data = genRepMaxHistoryTable(curr.data, 'Barbell Squat', 'kg');
-                var options = {'hAxis':{'title':''},'vAxis':{'title':'','format':'# kg'},'interpolateNulls':'true','legend':{'position':'top','maxLines':5}};
+                var data = genRepMaxHistoryTable('Barbell Squat');
+                var options = {'hAxis':{'title':''},'vAxis':{'title':'Strength','format':'#%'},'interpolateNulls':'true','legend':{'position':'top','maxLines':5}};
                 var chart = new window.google.visualization.LineChart(document.getElementById('rep-max-history-dev'));
                 chart.draw(data, options);
             });
