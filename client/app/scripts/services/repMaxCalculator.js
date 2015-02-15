@@ -89,7 +89,7 @@
         };
 
         function repMaxFromSet(aset, MAX_REP, origRepMax, curDate, unit) {
-            var repMax = origRepMax;
+            var repMax = angular.copy(origRepMax);
             var reps = aset.reps;
             var kg = setUnited(aset, unit);
             if (reps >= MAX_REP) {
@@ -149,16 +149,7 @@
     return e;
   };
 
-  var calcScore = function (data, repMax, UnitConverter, gender) {
-// data is in reverse date order, hence first.
-    // Hope that contract never changes!
-    var bw = _.first(data).body.weight;
-    var bunit = _.first(data).body.unit;
-    if (!bw) {
-      bw = 100;
-      bunit = 'kg'; // Big penalty for no bw supplied
-    }
-
+  function calcScore2(repMax, UnitConverter, bw, bunit, gender) {
     var ret = POWER_LIFTS.map(function (exname) {
 
       var perExRep = function (reps) {
@@ -177,6 +168,18 @@
     });
 
     return ret;
+  }
+
+  var calcScore = function (data, repMax, UnitConverter, gender) {
+// data is in reverse date order, hence first.
+    // Hope that contract never changes!
+    var bw = _.first(data).body.weight;
+    var bunit = _.first(data).body.unit;
+    if (!bw) {
+      bw = 100;
+      bunit = 'kg'; // Big penalty for no bw supplied
+    }
+    return calcScore2(repMax, UnitConverter, bw, bunit, gender);
   };
 
   var calcScores = function(data, repMax, UnitConverter, gender) {
