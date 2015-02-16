@@ -39,30 +39,54 @@ var repmaxFile = function() {
             //UserState.getCurrentUser().repMax;
         });
 
+  angular.module('clientApp').directive('strengthHistoryGraph', function(){
+    return {
+      restrict: 'E',
+      scope: {user: '='},
+      template:'<div id="rep-max-history-dev" style="width: 100%; height: 200px;"><!-- TODO --></div>',
+      //templateUrl: 'views/rep-max-history.html',
+      controller: 'RepMaxHistoryController'
+    };
+  });
 
     angular.module('clientApp')
         .controller('RepMaxHistoryController', function ($scope, UserState, googleChartApiPromise, RepMaxCalculator, UnitConverter) {
             var curr = UserState.getCurrentUser();
 
-            var genRepMaxHistoryTable = function(exname) {
+            var genRepMaxHistoryTable = function() {
                 if (!curr.data.length) {
                     return undefined;
                 }
-              var history = RepMaxCalculator.calcScoreHistory(curr, exname, UnitConverter);
-                //var history = RepMaxCalculator.genRepMaxHistory(items,name, unit);
-                var data = new google.visualization.DataTable();
-                data.addColumn('date', 'Date');
-                data.addColumn({type:'number',label:'Strength', pattern:'#%'});
 
-                data.addRows(history);
-                return data;
+              var items = curr.data;
+              var byDate = _.groupBy(items, function(item){return new Date(item.date).setUTCHours(0,0,0,0).valueOf(); });
+              var allDates = _.keys(byDate).map(function(x){return +x;});
+              var minDate = _.min(allDates);
+              var maxDate = _.max(allDates);
+              var daily = RepMaxCalculator.genDailyDates(minDate, maxDate);
+              var columnar = [daily];
+
+              var data = new google.visualization.DataTable();
+              data.addColumn('date', 'Date');
+
+              var POWER_LIFTS = ['Barbell Squat','Barbell Bench Press','Barbell Deadlift'];
+              POWER_LIFTS.forEach(function(exname){
+                columnar.push(RepMaxCalculator.calcScoreHistory(curr, exname, daily, UnitConverter, 'm'));
+                data.addColumn('number',exname);
+              });
+              //var one = RepMaxCalculator.calcScoreHistory(curr, exname, daily, UnitConverter, 'm');
+              var history = _.zip.apply(_, columnar);
+                //var history = RepMaxCalculator.genRepMaxHistory(items,name, unit);
+
+              data.addRows(history);
+              return data;
 
             };
 
 
             //UserState.getCurrentUser().repMax;
             googleChartApiPromise.then(function() {
-                var data = genRepMaxHistoryTable('Barbell Squat');
+                var data = genRepMaxHistoryTable();
                 var options = {'hAxis':{'title':''},'vAxis':{'title':'Strength','format':'#%'},'interpolateNulls':'true','legend':{'position':'top','maxLines':5}};
                 var chart = new window.google.visualization.LineChart(document.getElementById('rep-max-history-dev'));
                 chart.draw(data, options);

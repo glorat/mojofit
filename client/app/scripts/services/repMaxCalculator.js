@@ -206,7 +206,7 @@
     var curDate = curDateObj.valueOf();
     var dates = [];
     while (curDate<maxDate) {
-      dates.push(curDate);
+      dates.push(new Date(curDate));
       curDateObj.setDate(curDateObj.getDate() + 1); // I hate mutable classes
       curDate = curDateObj.valueOf();
     }
@@ -214,27 +214,20 @@
 
   };
 
-  var calcScoreHistory = function(userData, exname, UnitConverter, gender) {
+  var calcScoreHistory = function(userData, exname, daily, UnitConverter, gender) {
     gender = gender || 'm';
     var body = _.first(userData.data).body; // TODO: Technically, bw/bwunit should be historic
     var bw = body.weight;
     var bwunit = body.unit;
 
-    var items = userData.data;
     var repMax = userData.stats.repMax;
-    var byDate = _.groupBy(items, function(item){return new Date(item.date).setUTCHours(0,0,0,0).valueOf(); });
-    var allDates = _.keys(byDate).map(function(x){return +x;});
-    var minDate = _.min(allDates);
-    var maxDate = _.max(allDates);
-    var history = [];// allDates.map(function(d) {return {date:d, repMax: angular.copy(repMax)};});
 
     // Pointers into repMax[exname][i].history[ptr]
     // Need 1+5 entries, first is est1rm ignored
     var histPtr = [0,0,0,0,0,0];
     var repMaxEx = repMax[exname];
 
-    var daily = genDailyDates(minDate, maxDate);
-    daily.forEach(function(curDate){
+    return daily.map(function(curDate){
       // Update histPtr
       for (var i=1; i<=5; i++) {
         var nexthist = repMaxEx[i].history[histPtr[i]+1];
@@ -248,9 +241,8 @@
       });
 
       var scoreObj = calcScoreForExercise(repMaxEntry, UnitConverter, exname, bw, bwunit, gender);
-      history.push([new Date(curDate), scoreObj.avgScore]);
+      return scoreObj.avgScore;
     });
-    return history;
   };
 
 
@@ -259,6 +251,7 @@
             genRepMaxHistory : genRepMaxHistory,
           calcScores:calcScores,
           calcScoreForExercise:calcScoreForExercise,
-    calcScoreHistory:calcScoreHistory
+    calcScoreHistory:calcScoreHistory,
+    genDailyDates:genDailyDates
         };
 }));

@@ -26,6 +26,10 @@
             <header class="panel-heading">Graph</header>
             <div id="chart_div" style="width: 100%; height: 200px;" ng-show="showChart"><!-- TODO --></div>
         </div>
+      <div class="panel panel-default">
+        <header class="panel-heading">Strength history</header>
+        <strength-history-graph></strength-history-graph>
+      </div>
 
         <div class="panel panel-default ">
             <header class="panel-heading">Workout Calendar</header>
@@ -37,7 +41,6 @@
             <header class="panel-heading">
                 Rep maxes
                 <a href="/repMax" class="pull-right"><span class="glyphicon glyphicon-resize-full"></span></a>
-                <a href="/repMaxHistory" class="pull-right"><span class="glyphicon glyphicon-resize-full"></span></a>
             </header>
             <rep-max-table user="userState" exercises="userState.usedExercises" limit-to="5" width="5"></rep-max-table>
         </div>
