@@ -51,7 +51,8 @@ var repmaxFile = function() {
 
     angular.module('clientApp')
         .controller('RepMaxHistoryController', function ($scope, UserState, googleChartApiPromise, RepMaxCalculator, UnitConverter) {
-            var curr = UserState.getCurrentUser();
+        $scope.user = $scope.user || UserState.getCurrentUser();
+        var curr = $scope.user;
 
             var genRepMaxHistoryTable = function() {
                 if (!curr.data.length) {
@@ -83,14 +84,18 @@ var repmaxFile = function() {
 
             };
 
-
-            //UserState.getCurrentUser().repMax;
-            googleChartApiPromise.then(function() {
-                var data = genRepMaxHistoryTable();
-                var options = {'hAxis':{'title':''},'vAxis':{'title':'Strength','format':'#%'},'interpolateNulls':'true','legend':{'position':'top','maxLines':5}};
-                var chart = new window.google.visualization.LineChart(document.getElementById('rep-max-history-dev'));
-                chart.draw(data, options);
-            });
+        $scope.$watch('user.data', function(){
+          //UserState.getCurrentUser().repMax;
+          googleChartApiPromise.then(function() {
+            var data = genRepMaxHistoryTable();
+            var options = {'hAxis':{'title':''},'vAxis':{'title':'Strength','format':'#%'},'interpolateNulls':'true','legend':{'position':'top','maxLines':5}};
+            var chart = new window.google.visualization.LineChart(document.getElementById('rep-max-history-dev'));
+            chart.draw(data, options);
+          });
         });
+
+
+
+      });
 };
 repmaxFile();

@@ -49,6 +49,11 @@ angular.module('mojofit')
     var strengthScore = function(exname, wgt, unit, bw, bunit, gender /*,dob*/) {
       if (!exname) {return 0;}
 
+      if (!bw) {
+        bw = 100;
+        bunit = 'kg'; // Big penalty for no bw supplied
+      }
+
       if (gender === 'f') {
         return strengthScoreFemale(exname, wgt, unit, bw, bunit);
       }
