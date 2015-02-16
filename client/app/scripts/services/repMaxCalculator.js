@@ -223,6 +223,8 @@
     // Need 1+5 entries, first is est1rm ignored
     var histPtr = [0,0,0,0,0,0];
     var repMaxEx = repMax[exname];
+    var dirty=1;
+    var cleanVal=0;
 
     return daily.map(function(curDate){
       // Update histPtr
@@ -230,6 +232,7 @@
         var nexthist = repMaxEx[i].history[histPtr[i]+1];
         if (nexthist && nexthist.date <= curDate ) {
           histPtr[i]++; // Next hist item counts
+          dirty++;
         }
       }
       // Construct current repMax. (First entry is garbage)
@@ -237,9 +240,39 @@
         return {latest:repMaxEx[x].history[histPtr[x]]};
       });
 
-      var scoreObj = calcScoreForExercise(repMaxEntry, UnitConverter, exname, bw, bwunit, gender);
-      return scoreObj.avgScore;
+      if (dirty) {
+        var scoreObj = calcScoreForExercise(repMaxEntry, UnitConverter, exname, bw, bwunit, gender);
+        cleanVal = scoreObj.avgScore;
+      }
+      dirty = 0;
+      return cleanVal;
+
     });
+  };
+
+  var calcScoreHistoryTable = function(curr, UnitConverter) {
+    if (!curr.data.length) {
+      return null;
+    }
+
+    var items = curr.data;
+    var byDate = _.groupBy(items, function(item){return new Date(item.date).setUTCHours(0,0,0,0).valueOf(); });
+    var allDates = _.keys(byDate).map(function(x){return +x;});
+    var minDate = _.min(allDates);
+    var maxDate = _.max(allDates);
+    var daily = genDailyDates(minDate, maxDate);
+    var columnar = [daily];
+
+    var cols = [];
+    cols.push(['date','Date']);
+
+    var POWER_LIFTS = ['Barbell Squat','Barbell Bench Press','Barbell Deadlift'];
+    POWER_LIFTS.forEach(function(exname){
+      columnar.push(calcScoreHistory(curr, exname, daily, UnitConverter, 'm'));
+      cols.push(['number',exname]);
+    });
+    var history = _.zip.apply(_, columnar);
+    return {rows:history, cols:cols};
   };
 
 
@@ -248,7 +281,6 @@
             genRepMaxHistory : genRepMaxHistory,
           calcScores:calcScores,
           calcScoreForExercise:calcScoreForExercise,
-    calcScoreHistory:calcScoreHistory,
-    genDailyDates:genDailyDates
+    calcScoreHistoryTable:calcScoreHistoryTable
         };
 }));
