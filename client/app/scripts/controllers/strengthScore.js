@@ -12,7 +12,6 @@ angular.module('clientApp').directive('strengthScore', function () {
         $scope.data = newVal.strengthScore;
       }, false);
 
-
       $scope.editWeight = function() {
         var dt = _.last($scope.user.data).date;
         WorkoutState.setWeightDate(dt);
