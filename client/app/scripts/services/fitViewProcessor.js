@@ -132,6 +132,11 @@
         userData.stats = {};
         userData.stats.repMax = RepMaxCalculator.genRepMaxFull(userData.data, userData.usedExercises, dataObj.prefs.preferredUnit || 'kg');
         userData.stats.strengthScore = RepMaxCalculator.calcScores(userData.data, userData.stats.repMax, UnitConverter, userData.prefs.gender);
+
+      for (var i=0; i<100; i++) {
+        userData.stats.strengthHistory = RepMaxCalculator.calcScoreHistoryTable(userData, UnitConverter);
+
+      }
         userData.setBadges = createSetBadgeMap(userData.data, userData.repMax);
     };
 

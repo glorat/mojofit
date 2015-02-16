@@ -52,42 +52,19 @@ var repmaxFile = function() {
     angular.module('clientApp')
         .controller('RepMaxHistoryController', function ($scope, UserState, googleChartApiPromise, RepMaxCalculator, UnitConverter) {
         $scope.user = $scope.user || UserState.getCurrentUser();
-        var curr = $scope.user;
 
-            var genRepMaxHistoryTable = function() {
-                if (!curr.data.length) {
-                    return undefined;
-                }
-
-              var items = curr.data;
-              var byDate = _.groupBy(items, function(item){return new Date(item.date).setUTCHours(0,0,0,0).valueOf(); });
-              var allDates = _.keys(byDate).map(function(x){return +x;});
-              var minDate = _.min(allDates);
-              var maxDate = _.max(allDates);
-              var daily = RepMaxCalculator.genDailyDates(minDate, maxDate);
-              var columnar = [daily];
-
-              var data = new google.visualization.DataTable();
-              data.addColumn('date', 'Date');
-
-              var POWER_LIFTS = ['Barbell Squat','Barbell Bench Press','Barbell Deadlift'];
-              POWER_LIFTS.forEach(function(exname){
-                columnar.push(RepMaxCalculator.calcScoreHistory(curr, exname, daily, UnitConverter, 'm'));
-                data.addColumn('number',exname);
-              });
-              //var one = RepMaxCalculator.calcScoreHistory(curr, exname, daily, UnitConverter, 'm');
-              var history = _.zip.apply(_, columnar);
-                //var history = RepMaxCalculator.genRepMaxHistory(items,name, unit);
-
-              data.addRows(history);
-              return data;
-
-            };
-
-        $scope.$watch('user.data', function(){
+        $scope.$watch('user.stats', function(){
           //UserState.getCurrentUser().repMax;
           googleChartApiPromise.then(function() {
-            var data = genRepMaxHistoryTable();
+            //var dt = RepMaxCalculator.calcScoreHistoryTable($scope.user, UnitConverter);
+            var dt = $scope.user.stats.strengthHistory;
+            if (!dt) {return null;}
+
+            var data = new google.visualization.DataTable();
+            dt.cols.forEach(function (col){
+              data.addColumn(col[0],col[1]);
+            });
+            data.addRows(dt.rows);
             var options = {'hAxis':{'title':''},'vAxis':{'title':'Strength','format':'#%'},'interpolateNulls':'true','legend':{'position':'top','maxLines':5}};
             var chart = new window.google.visualization.LineChart(document.getElementById('rep-max-history-dev'));
             chart.draw(data, options);
