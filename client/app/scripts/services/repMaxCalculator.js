@@ -183,10 +183,7 @@
     // Hope that contract never changes!
     var bw = _.first(data).body.weight;
     var bunit = _.first(data).body.unit;
-    if (!bw) {
-      bw = 100;
-      bunit = 'kg'; // Big penalty for no bw supplied
-    }
+
     return calcScore2(repMax, UnitConverter, bw, bunit, gender);
   };
 
