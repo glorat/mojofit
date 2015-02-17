@@ -188,7 +188,7 @@ angular.module('clientApp')
               var prefs = angular.copy(origprefs);
               if (prefs.dob) {
                 var d = prefs.dob;
-                prefs.dob = Date.UTC(d.getFullYear(), d.getMonth(), d.getDay());
+                prefs.dob = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate());
               }
               return genSubmit('submitting preferences', workoutStatus, 'submitPrefs', prefs, cb);
             },
