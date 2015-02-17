@@ -43,7 +43,10 @@
         // Too many strings in the data
         data.map(function(item){
             item.date = parseInt(item.date);
-            item.date = new Date(item.date).setUTCHours(0,0,0,0).valueOf();
+            var dt = new Date(item.date);
+            dt.setUTCHours(0,0,0,0);
+            item.date = dt.valueOf(); // Fixup bad dates
+            item.localDate = new Date(dt.getUTCFullYear(), dt.getUTCMonth(), dt.getUTCDate()); // For display
           if (item.actions) {
             item.actions.map(function(action){
                 if (aliases[action.name]) {
