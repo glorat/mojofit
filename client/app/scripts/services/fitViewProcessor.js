@@ -43,6 +43,10 @@
         // Too many strings in the data
         data.map(function(item){
             item.date = parseInt(item.date);
+            var dt = new Date(item.date);
+            dt.setUTCHours(0,0,0,0);
+            item.date = dt.valueOf(); // Fixup bad dates
+            item.localDate = new Date(dt.getUTCFullYear(), dt.getUTCMonth(), dt.getUTCDate()); // For display
           if (item.actions) {
             item.actions.map(function(action){
                 if (aliases[action.name]) {
@@ -61,6 +65,10 @@
             if (b.date > a.date) { return 1; }
             return 0;
         });
+        // Inject index
+        for (var i=0; i<data.length; i++) {
+          data[i].index = i;
+        }
 
         return data;
     };
@@ -117,23 +125,40 @@
         return badges;
     };
 
+    var utcDateToLocal = function(d) {
+      var d1 = new Date(d);
+      var d2 = new Date(d1.getUTCFullYear(), d1.getUTCMonth(), d1.getUTCDate());
+      return d2;
+    };
+
     var copyUserInto = function(dataObj, userData) {
         var data = dataObj.items;
         userData.revision = +dataObj.revision;
         userData.data = processData(data);
         userData.usedExercises = usedExercises(data);
-        userData.workoutDates = userData.data.map(function(x){return new Date(x.date).setHours(0,0,0,0).valueOf();});
+        userData.workoutDates = userData.data.map(function(x){return utcDateToLocal(x.date).valueOf();});
         userData.activeDate = new Date(userData.workoutDates[0]);
         userData.showChart = true;
         userData.prefs = dataObj.prefs;
         if (userData.prefs.dob) {
-          userData.prefs.dob = new Date(new Date(userData.prefs.dob).setHours(0,0,0,0));
+          userData.prefs.dob = utcDateToLocal(userData.prefs.dob);
         }
         userData.stats = {};
         userData.stats.repMax = RepMaxCalculator.genRepMaxFull(userData.data, userData.usedExercises, dataObj.prefs.preferredUnit || 'kg');
         userData.stats.strengthScore = RepMaxCalculator.calcScores(userData.data, userData.stats.repMax, UnitConverter, userData.prefs.gender);
         userData.stats.strengthHistory = RepMaxCalculator.calcScoreHistoryTable(userData, UnitConverter);
         userData.setBadges = createSetBadgeMap(userData.data, userData.stats.repMax);
+
+        userData.data.forEach(function(item){
+          var f = _.find(userData.stats.strengthHistory.rows, function(x){return x[0].valueOf()===item.date.valueOf();});
+          if (f) {
+            item.scores = f;
+          }
+          else {
+            // This shouldn't happen. FIXME: Warn?
+            // debugger;
+          }
+        });
     };
 
     return {
