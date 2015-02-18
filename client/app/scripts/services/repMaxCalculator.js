@@ -202,9 +202,13 @@
     var curDateObj = new Date(new Date(minDate).setUTCHours(0,0,0,0));
     var curDate = curDateObj.valueOf();
     var dates = [];
-    while (curDate<maxDate) {
+    while (curDate<=maxDate) {
       dates.push(new Date(curDate));
-      curDateObj.setDate(curDateObj.getDate() + 1); // I hate mutable classes
+      curDateObj.setUTCDate(curDateObj.getUTCDate() + 1); // I hate mutable classes
+      if (curDateObj.getUTCHours()!==0) {
+        // debugger;
+        // This is a code bug!
+      }
       curDate = curDateObj.valueOf();
     }
     return dates;
@@ -271,8 +275,9 @@
       columnar.push(calcScoreHistory(curr, exname, daily, UnitConverter, 'm'));
       cols.push(['number',exname]);
     });
-    var history = _.zip.apply(_, columnar);
-    return {rows:history, cols:cols};
+
+    var rows = _.zip.apply(_, columnar);
+    return {cols:cols, data:columnar, rows:rows};
   };
 
 

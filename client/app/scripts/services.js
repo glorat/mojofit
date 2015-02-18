@@ -10,7 +10,7 @@ angular.module('clientApp')
     var saneDate = function(d) {
       d = new Date(d.valueOf());
       // JS UI requires local date
-      var localDate = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+      var localDate = new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
       return localDate.valueOf();
     };
 
@@ -35,11 +35,11 @@ angular.module('clientApp')
               // Ensure we have a date object
               var d = new Date(newDate.valueOf());
               // JS UI requires local date
-              var localDate = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+              var localDate = new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
               workout.date = localDate.valueOf();
               // Our data format requires UTC
                 var myState = UserState.getMyState();
-                var utc = +Date.UTC(d.getFullYear(), d.getMonth(), d.getDate());
+                var utc = +Date.UTC(localDate.getFullYear(), localDate.getMonth(), localDate.getDate());
                 var edit = _.find(myState.data, function(x) {return x.date === utc;});
                 if (edit) {
                     var acts = angular.copy(edit.actions);

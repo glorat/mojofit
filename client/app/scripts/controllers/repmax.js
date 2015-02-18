@@ -50,7 +50,7 @@ var repmaxFile = function() {
   });
 
     angular.module('clientApp')
-        .controller('RepMaxHistoryController', function ($scope, UserState, googleChartApiPromise, RepMaxCalculator, UnitConverter) {
+        .controller('RepMaxHistoryController', function ($scope, UserState, googleChartApiPromise) {
         $scope.user = $scope.user || UserState.getCurrentUser();
 
         $scope.$watch('user.stats', function(){
@@ -64,7 +64,10 @@ var repmaxFile = function() {
             dt.cols.forEach(function (col){
               data.addColumn(col[0],col[1]);
             });
-            data.addRows(dt.rows);
+
+            var history = _.zip.apply(_, dt.data);
+
+            data.addRows(history);
             var options = {'hAxis':{'title':''},'vAxis':{'title':'Strength','format':'#%'},'interpolateNulls':'true','legend':{'position':'top','maxLines':5}};
             var chart = new window.google.visualization.LineChart(document.getElementById('rep-max-history-dev'));
             chart.draw(data, options);
