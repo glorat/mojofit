@@ -101,7 +101,7 @@ angular.module('clientApp').directive('actionSetsEditor', function() {
           };
           $scope.showPlates = function(aset) {
             var m = $modal.open({
-              template: '<div class="modal-body"><h2>Use these plates</h2><plate-solution solution="solution"></plate-solution><button class="btn btn-primary" ng-click="$close(solution)">Use {{ solution.total}}{{solution.unit}}</button><button class="btn btn-danger" ng-click="$dismiss()">Cancel</button></div>',
+              template: '<div class="modal-body"><h2>Use these plates</h2><plate-solution solution="solution"></plate-solution><button class="btn btn-primary" ng-click="$close(solution)">Use {{ solution.total | number:1 }}{{solution.unit}}</button><button class="btn btn-danger" ng-click="$dismiss()">Cancel</button></div>',
               controller: function($scope, solution) {
                 $scope.solution = solution;
               },
