@@ -41,6 +41,10 @@
             return weight / (1.0278-0.0278*capreps);
         };
 
+  var defaultRepMax = function() {
+    return {weight:0, uw:0, est1rm:0};
+  }
+
         var genRepMaxFull = function (itemsOrig, names, unit) {
             if (names === undefined || itemsOrig === undefined) {
                 return [];
@@ -52,9 +56,9 @@
             var repMaxByName = {};
             names.forEach(function (name) {
                 var repMax = new Array(MAX_REP);
-                repMax[0] = {reps:'Est 1', latest: {weight:0, uw:0}, history: []};
+                repMax[0] = {reps:'Est 1', latest: defaultRepMax(), history: []};
                 for (var k = 1; k <= MAX_REP; k++) {
-                    repMax[k] = {reps:k, latest: {weight:0, uw:0}, history: []};
+                    repMax[k] = {reps:k, latest:defaultRepMax(), history: []};
                 }
                 repMaxByName[name] = repMax;
             });
@@ -156,7 +160,8 @@
   function calcScoreForExercise(repMaxEx, UnitConverter, exname, bw, bunit, gender) {
     var perExRep = function (reps) {
       var rec = repMaxEx[reps].latest;
-      var score = UnitConverter.strengthScore(exname, rec.est1rm, rec.est1rmUnit, bw, bunit, gender);
+
+      var score = rec ? UnitConverter.strengthScore(exname, rec.est1rm, rec.est1rmUnit, bw, bunit, gender) : 0;
       return score;
     };
 
