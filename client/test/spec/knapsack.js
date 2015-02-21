@@ -1,17 +1,17 @@
 'use strict';
 
 describe('Service: KnapSack', function () {
-
+/*
     // load the controller's module
-    beforeEach(module('clientApp'));
+    beforeEach(module('mojofit'));
 
-    var KnapSack;
+    var ks;
 
-    beforeEach(inject(function (_KnapSack) {
-        KnapSack = _KnapSack;
+    beforeEach(inject(function (KnapSack) {
+      ks = KnapSack;
     }));
 
     it('should be loadable', function () {
-        expect(KnapSack).isDefined();
-    });
+        expect(ks).isDefined();
+    });*/
 });
