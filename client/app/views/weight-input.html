@@ -1,0 +1,6 @@
+<input ng-model="input.weight" type="number" size="4" step="0.1" placeholder="{{ input.unit }}" select-on-click enter-tab style="width:4em" required min="-1000" max="1000">
+<span ng-hide="unitedit" ng-click="unitedit = true">{{ input.unit }}</span>
+<select ng-show="unitedit" ng-model="input.unit">
+  <option value="kg">kg</option>
+  <option value="lb">lb</option>
+</select>
