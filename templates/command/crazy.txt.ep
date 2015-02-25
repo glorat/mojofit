@@ -56,3 +56,5 @@ item.actions.reverse().forEach(function(action){
 if ( $('fieldset.workout').first().find('#ctrl_exercise').val()==='' ) {
   $('fieldset.workout').first().xfRemove();
 }
+
+XenForo.getEditorInForm($('#WForm')).$editor.html(item.notes);
