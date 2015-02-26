@@ -23,7 +23,7 @@ angular.module('clientApp')
             if (localStorageService.isSupported) {
                 var data = localStorageService.get('mydata');
                 // Lots of fields to force regen as I upgraded schemas
-                if (data && data.items && data.userId === userId && data.items[0].body) {
+                if (data && data.items && data.userId === userId && data.items[0] && data.items[0].body) {
                     $log.info('Loading your '+userId+' data from local storage');
                     copyUserInto(data, userData);
                     $rootScope.$broadcast('UserState:stateLoaded',userData);
@@ -95,7 +95,7 @@ angular.module('clientApp')
               revision:0,
               stats:{repMax:{}},
               setBadges:{},
-              prefs:{}
+              prefs:{preferredUnit:'kg'}
             };
         };
 
