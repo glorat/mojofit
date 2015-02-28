@@ -22,6 +22,7 @@ angular.module('clientApp')
             $log.error ('This function should be deprecated');
               workout.date = newW.date.valueOf();
               workout.actions = angular.copy(newW.actions);
+
           },
           getWeightInput : function() {
             return weight;
@@ -45,10 +46,15 @@ angular.module('clientApp')
                     var acts = angular.copy(edit.actions);
                     workout.actions = acts;
                     workout.notes = edit.notes;
+                    // FIXME: Knowledge of the fields in a workout is fragile
+                    workout.program = edit.program;
+                    workout.workout = edit.workout;
                 }
                 else {
                     workout.actions = [];
                     workout.notes = '';
+                    workout.progrma = edit.program;
+                    workout.workout = edit.workout;
                 }
 
             }

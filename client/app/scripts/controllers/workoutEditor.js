@@ -77,19 +77,20 @@ angular.module('clientApp').directive('workoutEditor', function() {
             };
           $scope.programNames = ProgramRegistry.listPrograms();
 
-          $scope.$watch('programName', function(){
-            $scope.workoutNames = ProgramRegistry.listWorkouts($scope.programName);
-            var program = ProgramRegistry.getProgram($scope.programName);
-            $scope.workoutName =  program ? program.chooseWorkout($scope.user) : '';
+          $scope.$watch('workout.program', function(){
+            $scope.workoutNames = ProgramRegistry.listWorkouts($scope.workout.program);
+            var program = ProgramRegistry.getProgram($scope.workout.program);
+            if (!$scope.workout.workout) {
+              // Auto select a program for the user
+              $scope.workout.workout =  program ? program.chooseWorkout($scope.user) : '';
+            }
           });
 
           $scope.applyWorkout = function() {
-            if (window.confirm('Apply ' + $scope.programName + ' exercises for workout ' + $scope.workoutName + '?')) {
-              var program = ProgramRegistry.getProgram($scope.programName);
-              var wout = program.applyWorkout($scope.workoutName, $scope.user);
+            if (window.confirm('Apply ' + $scope.workout.program + ' exercises for workout ' + $scope.workout.workout + '?')) {
+              var program = ProgramRegistry.getProgram($scope.workout.program);
+              var wout = program.applyWorkout($scope.workout.workout, $scope.user);
               $scope.workout.actions = wout.actions;
-              $scope.workout.program = wout.program;
-              $scope.workout.workout = wout.workout;
             }
           };
         }

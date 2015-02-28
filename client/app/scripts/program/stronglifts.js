@@ -24,13 +24,20 @@
 
   // TODO: Make this user configurable
   var kgcfg = {};
-  kgcfg[SQ] = {incr:5, init:20};
+  kgcfg[SQ] = {incr:2.5, init:20};
   kgcfg[DL] = {incr:5, init:40};
   kgcfg[BP] = {incr:2.5, init:20};
   kgcfg[OP] = {incr:2.5, init:20};
-  kgcfg[BR] = {incr:2.5, init:20};
+  kgcfg[BR] = {incr:2.5, init:30};
+  var lbcfg = {};
+  lbcfg[SQ] = {incr:5, init:45};
+  lbcfg[DL] = {incr:10, init:95};
+  lbcfg[BP] = {incr:5, init:45};
+  lbcfg[OP] = {incr:5, init:45};
+  lbcfg[BR] = {incr:5, init:65};
 
-  var cfg = {'kg': kgcfg};
+
+  var cfg = {'kg': kgcfg, 'lb':lbcfg};
 
   var workoutChooser = function(state) {
     var lastSL = _.find(state.data, function(d){return d.program === NAME;});
