@@ -3,18 +3,18 @@
 (function( myService){
 
   if (typeof module !== 'undefined' && module.exports ) {
-    module.exports = myService(require('../mojofit/unitConverter'), require('underscore'));
+    module.exports = myService(require('../mojofit/unitConverter'), require('./registry'), require('underscore'));
   } else if( angular) {
     angular.module('clientApp')
       .factory('stronglifts', function(UnitConverter){
-        return myService(UnitConverter, _);
+        return myService(UnitConverter, ProgramRegistry, _);
       });
   } else {
     // Die?
     // window.myService = myService;
   }
 
-}(function(UnitConverter, _) {
+}(function(UnitConverter, ProgramRegistry, _) {
   var NAME = 'Stronglifts 5x5';
   var SQ = 'Barbell Squat';
   var BP = 'Barbell Bench Press';
@@ -102,10 +102,15 @@
     }
   };
 
-  return {
+  var program = {
+    name : NAME,
     chooseWorkout : workoutChooser,
     availableWorkouts : ['A','B'],
     applyWorkout : applyWorkout
   };
+
+  ProgramRegistry.registerProgram(program);
+
+  return program;
 
 }));
