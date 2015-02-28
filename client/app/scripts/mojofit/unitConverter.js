@@ -1,7 +1,20 @@
 'use strict';
 
-angular.module('mojofit')
-    .factory('UnitConverter', function () {
+(function( myService){
+
+  if (typeof module !== 'undefined' && module.exports ) {
+    module.exports = myService();
+  } else if( angular) {
+    angular.module('mojofit')
+      .factory('UnitConverter', function(){
+        return myService();
+      });
+  } else {
+    // Die?
+    // window.myService = myService;
+  }
+
+}(function () {
         var data = {
             'kg' : [1,'kg'],
             'lb' : [1/2.2, 'kg']
@@ -98,4 +111,4 @@ angular.module('mojofit')
             strengthScore : strengthScore
         };
         return ret;
-    });
+}));
