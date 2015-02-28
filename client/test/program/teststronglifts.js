@@ -1,10 +1,20 @@
 'use strict';
 
 var assert = require('assert');
-
+var _ = require('underscore');
+var ProgramRegistry = require('../../app/scripts/program/registry.js');
 var sl = require('../../app/scripts/program/stronglifts.js');
 
 describe('Stronglifts', function() {
+  describe('Registration', function(){
+    it('should be a registered program', function() {
+      assert.ok(_.contains(ProgramRegistry.listPrograms(), 'Stronglifts 5x5'));
+      var avail = ProgramRegistry.listWorkouts('Stronglifts 5x5');
+      assert.equal('A', avail[0]);
+      assert.equal('B', avail[1]);
+    });
+  });
+
   describe('Starting from zero', function(){
     var state = {data:[]};
 
