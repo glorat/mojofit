@@ -10,10 +10,26 @@
                 </span>
             </div>
         </div>
+      <!-- Workout selector -->
+        <div class="form-group">
+          <div class="col-xs-5">
+            <select class="form-control input-sm" ng-model="programName" ng-options="p for p in programNames">
+              <option value="">User defined</option>
+            </select>
+          </div>
+          <div class="col-xs-5" ng-show="programName">
+            <select class="form-control input-sm" ng-model="workoutName" ng-options="p for p in workoutNames">
+              <option value="{{workoutName}}">{{workoutName}}</option>
+            </select>
+          </div>
+          <div class="col-xs-2" ng-show="workoutName">
+            <button class="btn btn-sm btn-primary" ng-click="applyWorkout()">Apply</button>
+          </div>
+        </div>
         <div class="form-group">
             <div class="col-xs-8">
               <div class="input-group">
-                <input class="form-control" type="text" id="newActionName" ng-model="newActionName" placeholder="Type exercise" typeahead="name for name in user.usedExercises | filter:$viewValue | limitTo:8">
+                <input class="form-control" type="text" id="newActionName" ng-model="newActionName" placeholder="Type custom exercise" typeahead="name for name in user.usedExercises | filter:$viewValue | limitTo:8">
                 <span class="input-group-btn">
                 <button type="submit" class="btn btn-default" ng-click="addNamedAction();">
                   <span class="glyphicon glyphicon-plus"></span>Add

@@ -6,7 +6,7 @@
     module.exports = myService(require('../mojofit/unitConverter'), require('./registry'), require('underscore'));
   } else if( angular) {
     angular.module('clientApp')
-      .factory('stronglifts', function(UnitConverter){
+      .factory('Stronglifts', function(UnitConverter, ProgramRegistry){
         return myService(UnitConverter, ProgramRegistry, _);
       });
   } else {
@@ -49,7 +49,7 @@
     var maxKg = _.max(inKgs);
     // How many sets got 5 reps at this weight?
     var goodsets = _.where(lastAct.sets, function(s){
-      return (s.reps) && (s.weight) && (s.reps >= 5) && (maxKg == UnitConverter.convert(s.weight, s.unit, 'kg'));
+      return (s.reps) && (s.weight) && (s.reps >= 5) && (maxKg === UnitConverter.convert(s.weight, s.unit, 'kg'));
     });
     if (goodsets.length >= 5) { // 5x5 completed
       return maxKg + cfg[unit][exname].incr;
