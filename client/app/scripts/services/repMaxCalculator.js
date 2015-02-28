@@ -43,7 +43,7 @@
 
   var defaultRepMax = function() {
     return {weight:0, uw:0, est1rm:0};
-  }
+  };
 
         var genRepMaxFull = function (itemsOrig, names, unit) {
             if (names === undefined || itemsOrig === undefined) {
