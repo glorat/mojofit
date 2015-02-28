@@ -45,9 +45,31 @@
     }
     // This will only pick up the first matching action... don't split your actions within the same exname
     var lastAct = _.find(last.actions, function(a){return a.name === exname;});
-    var maxWeight = _.max(lastAct.sets, function(s){return s.foo;});
-    return maxWeight;
+    var inKgs = lastAct.sets.map(function(s){return UnitConverter.convert(s.weight, s.unit, 'kg');});
+    var maxKg = _.max(inKgs);
+    // How many sets got 5 reps at this weight?
+    var goodsets = _.where(lastAct.sets, function(s){
+      return (s.reps) && (s.weight) && (s.reps >= 5) && (maxKg == UnitConverter.convert(s.weight, s.unit, 'kg'));
+    });
+    if (goodsets.length >= 5) { // 5x5 completed
+      return maxKg + cfg[unit][exname].incr;
+    }
+    // Retry weight
+    // TODO: Detect if failed 3 times to deload!
+    return maxKg;
   };
+
+  function genWorkout(exs, lastSLA) {
+    return exs.map(function (ex) {
+      var wgt = nextWeightChooser(lastSLA, ex, 'kg');
+      // Generate 5 sets
+      var sets = _.range(5).map(function () {
+        // with 5 reps
+        return {reps: 5, weight: wgt, unit: 'kg'};
+      });
+      return {name: ex, sets: sets};
+    });
+  }
 
   var workoutA = {
     name : 'A',
@@ -55,22 +77,25 @@
     generate : function(state) {
       var lastSLA = _.find(state.data, function(d){return d.program === NAME && d.workout==='A';});
       var exs = [SQ, BP, BR];
-      var actions = exs.map (function (ex) {
-        var wgt = nextWeightChooser(lastSLA, ex, 'kg');
-        // Generate 5 sets
-        var sets = _.range(5).map(function() {
-          // with 5 reps
-          return {reps:5, weight:wgt, unit:'kg'};
-        });
-        return {name:ex, sets:sets};
-      });
+      var actions = genWorkout(exs, lastSLA);
       return {actions:actions, program:NAME, workout:'A'};
+    }
+  };
+
+  var workoutB = {
+    name : 'B',
+    description : 'Squat/Press/Deadlift',
+    generate : function(state) {
+      var lastSLA = _.find(state.data, function(d){return d.program === NAME && d.workout==='B';});
+      var exs = [SQ, OP, DL];
+      var actions = genWorkout(exs, lastSLA);
+      return {actions:actions, program:NAME, workout:'B'};
     }
   };
 
   var applyWorkout = function(wname, state) {
     if (wname==='B') {
-      return null;
+      return workoutB.generate(state);
     }
     else {
       return workoutA.generate(state);
