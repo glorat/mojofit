@@ -13,16 +13,16 @@
       <!-- Workout selector -->
         <div class="form-group">
           <div class="col-xs-5">
-            <select class="form-control input-sm" ng-model="programName" ng-options="p for p in programNames">
+            <select class="form-control input-sm" ng-model="workout.program" ng-options="p for p in programNames">
               <option value="">User defined</option>
             </select>
           </div>
-          <div class="col-xs-5" ng-show="programName">
-            <select class="form-control input-sm" ng-model="workoutName" ng-options="p for p in workoutNames">
-              <option value="{{workoutName}}">{{workoutName}}</option>
+          <div class="col-xs-5" ng-show="workout.program">
+            <select class="form-control input-sm" ng-model="workout.workout" ng-options="p for p in workoutNames">
+              <option value="{{workout.workout}}">{{workout.workout}}</option>
             </select>
           </div>
-          <div class="col-xs-2" ng-show="workoutName">
+          <div class="col-xs-2" ng-show="workout.workout">
             <button class="btn btn-sm btn-primary" ng-click="applyWorkout()">Apply</button>
           </div>
         </div>
