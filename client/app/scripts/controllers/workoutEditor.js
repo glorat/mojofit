@@ -6,7 +6,7 @@ angular.module('clientApp').directive('workoutEditor', function() {
         restrict: 'E',
         scope: {workout:'='},
         templateUrl: 'views/workout-editor.html',
-        controller: function ($scope, UserState, MojoServer, $timeout) {
+        controller: function ($scope, UserState, MojoServer, ProgramRegistry, Stronglifts, $timeout) {
             // This is just for usedExercises.. can do better?
             $scope.user = UserState.getMyState();
 
@@ -75,7 +75,23 @@ angular.module('clientApp').directive('workoutEditor', function() {
                     reallyCloneLastTime(act);
                 }
             };
+          $scope.programNames = ProgramRegistry.listPrograms();
 
+          $scope.$watch('programName', function(){
+            $scope.workoutNames = ProgramRegistry.listWorkouts($scope.programName);
+            var program = ProgramRegistry.getProgram($scope.programName);
+            $scope.workoutName =  program ? program.chooseWorkout($scope.user) : '';
+          });
+
+          $scope.applyWorkout = function() {
+            if (window.confirm('Apply ' + $scope.programName + ' exercises for workout ' + $scope.workoutName + '?')) {
+              var program = ProgramRegistry.getProgram($scope.programName);
+              var wout = program.applyWorkout($scope.workoutName, $scope.user);
+              $scope.workout.actions = wout.actions;
+              $scope.workout.program = wout.program;
+              $scope.workout.workout = wout.workout;
+            }
+          };
         }
     };
 });

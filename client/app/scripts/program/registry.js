@@ -6,7 +6,7 @@
     module.exports = myService(require('underscore'));
   } else if( angular) {
     angular.module('clientApp')
-      .factory('ProgramRegistry', function(UnitConverter){
+      .factory('ProgramRegistry', function(){
         return myService(_);
       });
   } else {
@@ -21,14 +21,15 @@
   var registerProgram = function(program) {
     programs.push(program);
     // Eagerly compute
-    programNames = programs.map(function(p){return p.name});
+    programNames = programs.map(function(p){return p.name;});
     programWorkoutNames[program.name] = program.availableWorkouts;
   };
 
   return {
     registerProgram : registerProgram,
     listPrograms : function(){return programNames;},
-    listWorkouts: function(p) {return programWorkoutNames[p];}
+    listWorkouts: function(p) {return programWorkoutNames[p];},
+    getProgram: function(nm){return _.find(programs, function(p){return p.name ===nm;});}
   };
 
 }));
