@@ -1,9 +1,9 @@
 <div ng-repeat="d in data">
-  <h4><button type="button" class="btn btn-md btn-primary" disabled="disabled"><b>Level {{d.level}}/10</b></button> - {{ d.exname }}</h4>
+  <h4><button type="button" class="btn btn-md btn-primary" tooltip="This is an explanation of the level"><b>Level {{d.level}}/10</b></button> - {{ d.exname }}</h4>
   <progressbar animate="false" value="d.points" type="success" max="100"><b>{{d.points}}/100</b></progressbar>
 </div>
-<alert ng-show="noWeight()" type="danger">
+<alert id="strength-score-no-weight" ng-show="noWeight()" type="danger">
   Strength levels inaccurate due to missing bodyweight
-  <button class="btn btn-danger" ng-click="editWeight()" ng-show="canEdit()">Fix It</button>
+  <button id="strength-score-fix-weight" class="btn btn-danger" ng-click="editWeight()" ng-show="canEdit()">Fix It</button>
 </alert>
 

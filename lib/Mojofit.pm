@@ -96,6 +96,7 @@ $r->get('/userraw/#username' => sub {
 		$c->render(text => $jsonStream, format=>'json');
 	}
 	else {
+		# FIXME: only 404 if the user doesn't exist in the DB!
 		#$c->res->code(404);
 		#return $c->render(json => "Unknown username $target");
 		return $c->render(json=>{revision=>0, items=>[], prefs=>{}});
