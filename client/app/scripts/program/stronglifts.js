@@ -24,17 +24,17 @@
 
   // TODO: Make this user configurable
   var kgcfg = {};
-  kgcfg[SQ] = {incr:2.5, init:20};
-  kgcfg[DL] = {incr:5, init:40};
-  kgcfg[BP] = {incr:2.5, init:20};
-  kgcfg[OP] = {incr:2.5, init:20};
-  kgcfg[BR] = {incr:2.5, init:30};
+  kgcfg[SQ] = {incr:2.5, init:20, sets:5};
+  kgcfg[DL] = {incr:5, init:40, sets:1};
+  kgcfg[BP] = {incr:2.5, init:20, sets:5};
+  kgcfg[OP] = {incr:2.5, init:20, sets:5};
+  kgcfg[BR] = {incr:2.5, init:30, sets:5};
   var lbcfg = {};
-  lbcfg[SQ] = {incr:5, init:45};
-  lbcfg[DL] = {incr:10, init:95};
-  lbcfg[BP] = {incr:5, init:45};
-  lbcfg[OP] = {incr:5, init:45};
-  lbcfg[BR] = {incr:5, init:65};
+  lbcfg[SQ] = {incr:5, init:45, sets:5};
+  lbcfg[DL] = {incr:10, init:95, sets:1};
+  lbcfg[BP] = {incr:5, init:45, sets:5};
+  lbcfg[OP] = {incr:5, init:45, sets:5};
+  lbcfg[BR] = {incr:5, init:65, sets:5};
 
 
   var cfg = {'kg': kgcfg, 'lb':lbcfg};
@@ -55,10 +55,10 @@
     var inKgs = lastAct.sets.map(function(s){return UnitConverter.convert(s.weight, s.unit, 'kg');});
     var maxKg = _.max(inKgs);
     // How many sets got 5 reps at this weight?
-    var goodsets = _.where(lastAct.sets, function(s){
+    var goodsets = _.filter(lastAct.sets, function(s){
       return (s.reps) && (s.weight) && (s.reps >= 5) && (maxKg === UnitConverter.convert(s.weight, s.unit, 'kg'));
     });
-    if (goodsets.length >= 5) { // 5x5 completed
+    if (goodsets.length >= cfg[unit][exname].sets) { // Nx5 completed
       return maxKg + cfg[unit][exname].incr;
     }
     // Retry weight
@@ -66,13 +66,16 @@
     return maxKg;
   };
 
-  function genWorkout(exs, lastSLA) {
+  function genWorkout(exs, state) {
+    var unit = 'kg';
     return exs.map(function (ex) {
-      var wgt = nextWeightChooser(lastSLA, ex, 'kg');
+      var lastSLA = _.find(state.data, function(d){return d.program === NAME && _.find(d.actions, function(a){return a.name === ex;})});
+      var wgt = nextWeightChooser(lastSLA, ex, unit);
       // Generate 5 sets
-      var sets = _.range(5).map(function () {
+      var setN = cfg[unit][ex].sets;
+      var sets = _.range(setN).map(function () {
         // with 5 reps
-        return {reps: 5, weight: wgt, unit: 'kg'};
+        return {reps: 5, weight: wgt, unit: unit};
       });
       return {name: ex, sets: sets};
     });
@@ -82,9 +85,8 @@
     name : 'A',
     description : 'Squat/Bench/Row',
     generate : function(state) {
-      var lastSLA = _.find(state.data, function(d){return d.program === NAME && d.workout==='A';});
       var exs = [SQ, BP, BR];
-      var actions = genWorkout(exs, lastSLA);
+      var actions = genWorkout(exs, state);
       return {actions:actions, program:NAME, workout:'A'};
     }
   };
@@ -93,9 +95,8 @@
     name : 'B',
     description : 'Squat/Press/Deadlift',
     generate : function(state) {
-      var lastSLA = _.find(state.data, function(d){return d.program === NAME && d.workout==='B';});
       var exs = [SQ, OP, DL];
-      var actions = genWorkout(exs, lastSLA);
+      var actions = genWorkout(exs, state);
       return {actions:actions, program:NAME, workout:'B'};
     }
   };
