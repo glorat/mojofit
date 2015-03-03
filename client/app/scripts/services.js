@@ -53,8 +53,8 @@ angular.module('clientApp')
                 else {
                     workout.actions = [];
                     workout.notes = '';
-                    workout.progrma = edit.program;
-                    workout.workout = edit.workout;
+                    workout.program = '';
+                    workout.workout = '';
                 }
 
             }
