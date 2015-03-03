@@ -13,7 +13,9 @@ describe('anonymous first time user', function() {
   });
 
   it('should be able to start tracking', function () {
-    browser.get('/track');
+    browser.get('/');
+    element(by.id('mylog')).click();
+    element(by.id('btnAddWorkout')).click();
 
     var newActionName = element(by.model('newActionName'));
     newActionName.sendKeys('Squat');
