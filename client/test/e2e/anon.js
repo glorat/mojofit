@@ -15,13 +15,17 @@ describe('anonymous first time user', function() {
   it('should be able to start tracking', function () {
     browser.get('/');
     element(by.id('mylog')).click();
-    element(by.id('btnAddWorkout')).click();
+    element(by.id('showAddWorkout')).click();
+    var btnAddWorkout = element(by.id('btnAddWorkout'));
+    browser.driver.wait(protractor.until.elementIsVisible(btnAddWorkout));
+    btnAddWorkout.click();
 
     var newActionName = element(by.model('newActionName'));
     newActionName.sendKeys('Squat');
     // Auto complete
     newActionName.sendKeys(protractor.Key.ENTER);
     expect(newActionName.getAttribute('value')).toEqual('Barbell Squat');
+
     // Add it
     newActionName.sendKeys(protractor.Key.ENTER);
 
