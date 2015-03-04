@@ -54,7 +54,7 @@
          </p>
 
          <p ng-show="canEdit()">
-             <a class="btn btn-primary btn-large" role="button" href="" ng-click="showAddWorkout=true" ng-hide="showAddWorkout">Add workout...</a>
+             <a id="showAddWorkout" class="btn btn-primary btn-large" role="button" href="" ng-click="showAddWorkout=true" ng-hide="showAddWorkout">Add workout...</a>
          </p>
 
          <div class="alert alert-warning" ng-show="canEdit() && !userStatus.isLoggedIn">
