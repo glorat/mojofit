@@ -37,6 +37,10 @@ angular.module('clientApp').config(['$routeProvider','$locationProvider',
       .when('/plates', {
         templateUrl: 'views/plates.html'
       })
+      .when('/planner', {
+        templateUrl: 'views/planner.html',
+        controller:'PlannerController'
+      })
       .otherwise({
         templateUrl: 'views/main.html',
         controller: 'MainController'

@@ -3,4 +3,5 @@
 angular
   .module('workoutProgram', [
     'mojofit'
-  ]);
+  ]).run(function(Stronglifts) {
+  });
