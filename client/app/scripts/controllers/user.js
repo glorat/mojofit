@@ -140,7 +140,7 @@ angular.module('clientApp').directive('setText', function () {
                     $scope.dispUnit = dispUnit;
                 }
             }
-            $scope.badges = $scope.setBadges.get($scope.data);
+            $scope.badges = $scope.setBadges ? $scope.setBadges.get($scope.data) : [];
         },
         template: tmpl
     };

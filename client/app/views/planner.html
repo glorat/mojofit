@@ -1,0 +1,34 @@
+<div class="form-group row">
+  <div class="col-xs-6">
+    <select class="form-control" ng-model="workout.program" ng-options="p for p in programNames">
+      <option value="">-- Select Program</option>
+    </select>
+  </div>
+  <div class="col-xs-6">
+    <button type="button" class="btn btn-primary" ng-click="applyProgram()">Apply</button>
+  </div>
+</div>
+<div class="row">
+  #Workouts <input type="number" min="3" max="99" ng-model="numWorkouts">
+</div>
+
+<table>
+  <tr ng-repeat="row in items">
+    <td ng-repeat="i in row" valign="top">
+      <div class="panel panel-default">
+        <header class="panel-heading">
+          {{ i.localDate | date : 'fullDate'}} <!--{{ i.date | date:'yyyy-MM-dd HH:mm:ss Z'}}-->
+        </header>
+        <ul ng-repeat="action in i.actions">
+          <li>{{ action.name }}</li>
+          <ul ng-repeat="set in action.sets">
+            <li><set-text data="set"></set-text></li>
+          </ul>
+        </ul>
+        <footer class="panel-footer">
+          {{i.program}} - {{ i.workout }}
+        </footer>
+      </div>
+    </td>
+  </tr>
+</table>
