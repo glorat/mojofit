@@ -5,7 +5,7 @@
   if (typeof module !== 'undefined' && module.exports ) {
     module.exports = myService(require('../mojofit/unitConverter'), require('./registry'), require('underscore'));
   } else if( angular) {
-    angular.module('clientApp')
+    angular.module('workoutProgram')
       .factory('Stronglifts', function(UnitConverter, ProgramRegistry){
         return myService(UnitConverter, ProgramRegistry, _);
       });

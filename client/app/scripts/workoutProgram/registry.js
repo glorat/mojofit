@@ -5,7 +5,7 @@
   if (typeof module !== 'undefined' && module.exports ) {
     module.exports = myService(require('underscore'));
   } else if( angular) {
-    angular.module('clientApp')
+    angular.module('workoutProgram')
       .factory('ProgramRegistry', function(){
         return myService(_);
       });
