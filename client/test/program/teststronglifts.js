@@ -2,8 +2,8 @@
 
 var assert = require('assert');
 var _ = require('underscore');
-var ProgramRegistry = require('.././registry.js');
-var sl = require('.././stronglifts.js');
+var ProgramRegistry = require('../../app/scripts/workoutProgram/registry.js');
+var sl = require('../../app/scripts/workoutProgram/stronglifts.js');
 
 describe('Stronglifts', function() {
   describe('Registration', function(){

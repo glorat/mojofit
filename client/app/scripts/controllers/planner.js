@@ -29,6 +29,7 @@ angular.module('clientApp')
         dayIndex = (dayIndex === days.length-1) ? 0 : dayIndex+1;
 
       });
+      // FIXME: This is foobar
       $scope.items = _.groupBy(user.data, function(d){
         return Math.floor(d.index/days.length);
       });
