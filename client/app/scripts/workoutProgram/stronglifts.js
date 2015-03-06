@@ -21,6 +21,7 @@
   var DL = 'Barbell Deadlift';
   var OP = 'Standing Barbell Shoulder Press (OHP)';
   var BR = 'Pendlay Row';
+  var ALL = [SQ, BP, DL, OP, BR];
 
   // TODO: Make this user configurable
   var kgcfg = {};
@@ -45,32 +46,44 @@
     return newW;
   };
 
-  var nextWeightChooser = function(last, exname, unit) {
-    unit = 'kg'; // FIXME: sorry
-    if (!last) {
-      return cfg[unit][exname].init;
-    }
-    // This will only pick up the first matching action... don't split your actions within the same exname
-    var lastAct = _.find(last.actions, function(a){return a.name === exname;});
-    var inKgs = lastAct.sets.map(function(s){return UnitConverter.convert(s.weight, s.unit, 'kg');});
-    var maxKg = _.max(inKgs);
-    // How many sets got 5 reps at this weight?
-    var goodsets = _.filter(lastAct.sets, function(s){
-      return (s.reps) && (s.weight) && (s.reps >= 5) && (maxKg === UnitConverter.convert(s.weight, s.unit, 'kg'));
+  var updateParams = function(item, params) {
+    var unit = 'kg';
+    ALL.forEach(function(exname) {
+      var lastAct = _.find(item.actions, function(a){return a.name === exname;});
+      if (lastAct) {
+        var inKgs = lastAct.sets.map(function(s){return UnitConverter.convert(s.weight, s.unit, 'kg');});
+        var maxKg = _.max(inKgs);
+        // How many sets got 5 reps at this weight?
+        var goodsets = _.filter(lastAct.sets, function(s){
+          return (s.reps) && (s.weight) && (s.reps >= 5) && (maxKg === UnitConverter.convert(s.weight, s.unit, 'kg'));
+        });
+        if (goodsets.length >= cfg[unit][exname].sets) {
+          // Nx5 completed
+           params[exname].weight = UnitConverter.convert(maxKg,'kg',unit) + cfg[unit][exname].incr;
+        }
+        // TODO: Detect if failed 3 times to deload!
+      }
     });
-    if (goodsets.length >= cfg[unit][exname].sets) { // Nx5 completed
-      return maxKg + cfg[unit][exname].incr;
-    }
-    // Retry weight
-    // TODO: Detect if failed 3 times to deload!
-    return maxKg;
   };
 
   function genWorkout(exs, state) {
     var unit = 'kg';
+
+    var param = {};
+    ALL.forEach(function(exname){
+      param[exname] = {
+        unit : unit,
+        weight : cfg[unit][exname].init
+      };
+    });
+
+    // Go in reverse
+    for( var i =  state.data.length-1; i>= 0 ; i--){
+      updateParams(state.data[i], param);
+    }
+
     return exs.map(function (ex) {
-      var lastSLA = _.find(state.data, function(d){return d.program === NAME && _.find(d.actions, function(a){return a.name === ex;})});
-      var wgt = nextWeightChooser(lastSLA, ex, unit);
+      var wgt = param[ex].weight;
       // Generate 5 sets
       var setN = cfg[unit][ex].sets;
       var sets = _.range(setN).map(function () {
