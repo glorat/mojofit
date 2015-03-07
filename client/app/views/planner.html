@@ -12,6 +12,15 @@
   #Workouts <input type="number" min="3" max="99" ng-model="numWorkouts">
 </div>
 
+<form class="form-horizontal">
+  <div class="form-group" ng-repeat="paramKey in paramKeys">
+    <label class="control-label col-sm-6">{{paramKey}}</label>
+    <div class="col-sm-6">
+      <param-editor param="param[paramKey]"></param-editor>
+    </div>
+  </div>
+</form>
+
 <table>
   <tr ng-repeat="row in items">
     <td ng-repeat="i in row" valign="top">

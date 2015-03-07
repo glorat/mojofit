@@ -1,0 +1,6 @@
+<div ng-switch on="param.type">
+  <div class="animate-switch" ng-switch-when="weight">
+    <weight-input input="param"></weight-input>
+  </div>
+  <div class="animate-switch" ng-switch-default>{{ param | json}}</div>
+</div>
