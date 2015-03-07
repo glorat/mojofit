@@ -46,7 +46,9 @@
     return newW;
   };
 
-  var updateParams = function(item, params) {
+  var updateParams = function(item, origParams) {
+    // Be careful not to actually update anything inside origParams
+    var params = _.clone(origParams);
     var unit = 'kg';
     ALL.forEach(function(exname) {
       var lastAct = _.find(item.actions, function(a){return a.name === exname;});
@@ -59,7 +61,8 @@
         });
         if (goodsets.length >= cfg[unit][exname].sets) {
           // Nx5 completed
-           params[exname].weight = UnitConverter.convert(maxKg,'kg',unit) + cfg[unit][exname].incr;
+          params[exname] = _.clone(params[exname]);
+          params[exname].weight = UnitConverter.convert(maxKg,'kg',unit) + cfg[unit][exname].incr;
         }
         // TODO: Detect if failed 3 times to deload!
       }

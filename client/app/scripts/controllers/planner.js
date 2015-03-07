@@ -8,12 +8,20 @@ angular.module('clientApp')
     $scope.workout = {workout:''};
     $scope.numWorkouts = 12;
 
+    $scope.$watch('workout.program', function(program){
+      var user = {data:[]};
+      var program = ProgramRegistry.getProgram(program);
+      if (program) {
+        $scope.param = program.defaultParam(user, 'kg');
+        $scope.paramKeys = _.keys($scope.param);
+      }
+
+    });
+
     $scope.applyProgram = function() {
       var program = ProgramRegistry.getProgram($scope.workout.program);
       var user = {data:[]};
-      $scope.param = program.defaultParam(user, 'kg');
       var param = $scope.param;
-      $scope.paramKeys = _.keys($scope.param);
 
       var days = [2,2,3];
       var dayIndex = 0;
@@ -23,7 +31,7 @@ angular.module('clientApp')
 
       _.range(num).forEach(function(i){
         var wchoice = program.chooseWorkout(user);
-        var wout = program.applyWorkout(wchoice, user, param);
+        var wout = program.applyWorkout(wchoice, user, dt, param);
         var ud = new Date(dt);
         var localDate = new Date(ud.getUTCFullYear(), ud.getUTCMonth(), ud.getUTCDate()); // For display
         user.data.unshift({date:dt, localDate :localDate, actions:wout.actions, program:program.name, workout:wchoice, index:i});
