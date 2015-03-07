@@ -41,10 +41,22 @@ angular.module('clientApp')
         dayIndex = (dayIndex === days.length-1) ? 0 : dayIndex+1;
 
       });
-      // FIXME: This is foobar
-      $scope.items = _.groupBy(user.data, function(d){
-        return Math.floor(d.index/days.length);
+
+      var rows = [[]];
+      var col = rows[0];
+      var colIndex = 0;
+      // Use of unshift here reverses the order
+      user.data.forEach(function(item){
+        col.unshift(item);
+        colIndex++;
+        if (colIndex === days.length) {
+          colIndex=0;
+          col = [];
+          rows.unshift(col);
+        }
       });
+
+      $scope.items = rows;
 
     };
 
