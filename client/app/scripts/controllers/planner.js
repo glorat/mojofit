@@ -11,7 +11,9 @@ angular.module('clientApp')
     $scope.applyProgram = function() {
       var program = ProgramRegistry.getProgram($scope.workout.program);
       var user = {data:[]};
-      var param = program.defaultParam(user, 'kg');
+      $scope.param = program.defaultParam(user, 'kg');
+      var param = $scope.param;
+      $scope.paramKeys = _.keys($scope.param);
 
       var days = [2,2,3];
       var dayIndex = 0;
@@ -39,3 +41,14 @@ angular.module('clientApp')
     };
 
   });
+
+angular.module('clientApp').directive('paramEditor', function(){
+  return {
+    restrict: 'E',
+    scope: {param: '='},
+    templateUrl: 'views/param-editor.html',
+    controller: function() {
+
+    }
+  };
+});

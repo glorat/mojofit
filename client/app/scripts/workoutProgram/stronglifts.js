@@ -99,7 +99,6 @@
   }
 
   function genWorkout(exs, state, param) {
-    // FIXME: Check off by one error on when param/date is related
     var inScopeData = _.filter(state.data, function(item){return item.date>param.date.value;});
 
     // Go in reverse
