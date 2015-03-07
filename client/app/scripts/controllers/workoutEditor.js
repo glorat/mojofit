@@ -89,7 +89,11 @@ angular.module('clientApp').directive('workoutEditor', function() {
           $scope.applyWorkout = function() {
             if (window.confirm('Apply ' + $scope.workout.program + ' exercises for workout ' + $scope.workout.workout + '?')) {
               var program = ProgramRegistry.getProgram($scope.workout.program);
-              var wout = program.applyWorkout($scope.workout.workout, $scope.user);
+
+              // FIXME: Grab param (and unit) from prefs
+              var param = program.defaultParam($scope.user, 'kg');
+
+              var wout = program.applyWorkout($scope.workout.workout, $scope.user, $scope.workout.date, param);
               $scope.workout.actions = wout.actions;
             }
           };
