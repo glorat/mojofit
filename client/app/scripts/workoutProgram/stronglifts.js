@@ -67,6 +67,7 @@
         // TODO: Detect if failed 3 times to deload!
       }
     });
+    return params;
   };
 
   function genActionFromParam(param, ex) {
@@ -107,7 +108,7 @@
     // Go in reverse
     // FIXME: Explict order inScopeData by date
     for( var i =  inScopeData.length-1; i>= 0 ; i--){
-      updateParams(inScopeData[i], param);
+      param = updateParams(inScopeData[i], param);
     }
 
     return exs.map(function (ex) {
