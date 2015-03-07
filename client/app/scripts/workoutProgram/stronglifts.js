@@ -66,60 +66,81 @@
     });
   };
 
-  function genWorkout(exs, state) {
-    var unit = 'kg';
+  function genActionFromParam(param, ex) {
+    var unit = param[ex].unit;
+    var wgt = param[ex].weight;
+    // Generate 5 sets
+    var setN = cfg[unit][ex].sets;
+    var sets = _.range(setN).map(function () {
+      // with 5 reps
+      return {reps: 5, weight: wgt, unit: unit};
+    });
+    return {name: ex, sets: sets};
+  }
 
+  function defaultParam(state,defaultUnit) {
     var param = {};
-    ALL.forEach(function(exname){
+    ALL.forEach(function (exname) {
       param[exname] = {
-        unit : unit,
-        weight : cfg[unit][exname].init
+        unit: defaultUnit,
+        weight: cfg[defaultUnit][exname].init,
+        type: 'weight'
       };
     });
 
+    var dt = new Date(0);
+    dt.setUTCHours(0,0,0,0);
+
+    param.date = {
+      value: dt.valueOf(),
+      type: 'utcdate'
+    };
+    return param;
+  }
+
+  function genWorkout(exs, state, param) {
+    // FIXME: Check off by one error on when param/date is related
+    var inScopeData = _.filter(state.data, function(item){return item.date>param.date.value;});
+
     // Go in reverse
-    for( var i =  state.data.length-1; i>= 0 ; i--){
-      updateParams(state.data[i], param);
+    // FIXME: Explict order inScopeData by date
+    for( var i =  inScopeData.length-1; i>= 0 ; i--){
+      updateParams(inScopeData[i], param);
     }
 
     return exs.map(function (ex) {
-      var wgt = param[ex].weight;
-      // Generate 5 sets
-      var setN = cfg[unit][ex].sets;
-      var sets = _.range(setN).map(function () {
-        // with 5 reps
-        return {reps: 5, weight: wgt, unit: unit};
-      });
-      return {name: ex, sets: sets};
+      return genActionFromParam(param, ex);
     });
   }
 
   var workoutA = {
     name : 'A',
     description : 'Squat/Bench/Row',
-    generate : function(state) {
+    generate : function(state, dt, param) {
       var exs = [SQ, BP, BR];
-      var actions = genWorkout(exs, state);
-      return {actions:actions, program:NAME, workout:'A'};
+      var actions = genWorkout(exs, state, param);
+      return {date:dt, actions:actions, program:NAME, workout:'A'};
     }
   };
 
   var workoutB = {
     name : 'B',
     description : 'Squat/Press/Deadlift',
-    generate : function(state) {
+    generate : function(state, dt, param) {
       var exs = [SQ, OP, DL];
-      var actions = genWorkout(exs, state);
-      return {actions:actions, program:NAME, workout:'B'};
+      var actions = genWorkout(exs, state, param);
+      return {date:dt, actions:actions, program:NAME, workout:'B'};
     }
   };
 
-  var applyWorkout = function(wname, state) {
+  var applyWorkout = function(wname, state, dt, param) {
+    var defaultUnit = 'kg';
+    param = param || defaultParam(state,defaultUnit);
     if (wname==='B') {
-      return workoutB.generate(state);
+      return workoutB.generate(state, dt, param);
     }
     else {
-      return workoutA.generate(state);
+      return workoutA.generate(state, dt, param);
     }
   };
 
@@ -127,6 +148,7 @@
     name : NAME,
     chooseWorkout : workoutChooser,
     availableWorkouts : ['A','B'],
+    defaultParam : defaultParam,
     applyWorkout : applyWorkout
   };
 

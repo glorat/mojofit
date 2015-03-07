@@ -20,8 +20,9 @@ describe('Stronglifts', function() {
 
     it ('should do workout A with empty bar', function() {
       var x = sl.chooseWorkout(state);
+      var dt = new Date().setUTCHours(0).valueOf();
       assert.equal('A',x);
-      var neww = sl.applyWorkout(x, state);
+      var neww = sl.applyWorkout(x, state, dt);
 
       assert.equal(neww.actions.length, 3);
       assert.equal(neww.actions[0].name, 'Barbell Squat');
@@ -34,7 +35,7 @@ describe('Stronglifts', function() {
 
       x = sl.chooseWorkout(state);
       assert.equal('B',x);
-      neww = sl.applyWorkout(x, state);
+      neww = sl.applyWorkout(x, state, dt);
       assert.equal(neww.actions.length, 3);
       assert.equal('Barbell Squat', neww.actions[0].name);
       assert.equal('Barbell Deadlift', neww.actions[2].name);
@@ -46,7 +47,7 @@ describe('Stronglifts', function() {
       state.data.unshift(neww);
       x = sl.chooseWorkout(state);
       assert.equal('A',x);
-      neww = sl.applyWorkout(x, state);
+      neww = sl.applyWorkout(x, state, dt);
 
       assert.equal(neww.actions.length, 3);
       assert.equal('Barbell Squat', neww.actions[0].name);
@@ -60,7 +61,7 @@ describe('Stronglifts', function() {
       state.data.unshift(neww);
       x = sl.chooseWorkout(state);
       assert.equal('B',x);
-      neww = sl.applyWorkout(x, state);
+      neww = sl.applyWorkout(x, state, dt);
       assert.equal(3, neww.actions.length);
       assert.equal('Barbell Squat', neww.actions[0].name);
       assert.equal('Barbell Deadlift', neww.actions[2].name);
