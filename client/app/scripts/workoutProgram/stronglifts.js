@@ -22,21 +22,31 @@
   var DL = 'Barbell Deadlift';
   var OP = 'Standing Barbell Shoulder Press (OHP)';
   var BR = 'Pendlay Row';
+  var FROMALIAS = {
+    'Squat' : SQ,
+    'Bench' : BP,
+    'Deadlift' : DL,
+    'Press' : OP,
+    'Row' : BR
+  };
+  var TOALIAS = _.invert(FROMALIAS);
+
   var ALL = [SQ, BP, DL, OP, BR];
+  var ALLALIAS = ALL.map(function(ex){return TOALIAS[ex];});
 
   // TODO: Make this user configurable
   var kgcfg = {};
-  kgcfg[SQ] = {incr:2.5, init:20, sets:5};
-  kgcfg[DL] = {incr:5, init:40, sets:1};
-  kgcfg[BP] = {incr:2.5, init:20, sets:5};
-  kgcfg[OP] = {incr:2.5, init:20, sets:5};
-  kgcfg[BR] = {incr:2.5, init:30, sets:5};
+  kgcfg['Squat'] = {incr:2.5, init:20, sets:5};
+  kgcfg['Deadlift'] = {incr:5, init:40, sets:1};
+  kgcfg['Bench'] = {incr:2.5, init:20, sets:5};
+  kgcfg['Press'] = {incr:2.5, init:20, sets:5};
+  kgcfg['Row'] = {incr:2.5, init:30, sets:5};
   var lbcfg = {};
-  lbcfg[SQ] = {incr:5, init:45, sets:5};
-  lbcfg[DL] = {incr:10, init:95, sets:1};
-  lbcfg[BP] = {incr:5, init:45, sets:5};
-  lbcfg[OP] = {incr:5, init:45, sets:5};
-  lbcfg[BR] = {incr:5, init:65, sets:5};
+  lbcfg['Squat'] = {incr:5, init:45, sets:5};
+  lbcfg['Deadlift'] = {incr:10, init:95, sets:1};
+  lbcfg['Bench'] = {incr:5, init:45, sets:5};
+  lbcfg['Press'] = {incr:5, init:45, sets:5};
+  lbcfg['Row'] = {incr:5, init:65, sets:5};
 
 
   var cfg = {'kg': kgcfg, 'lb':lbcfg};
@@ -51,8 +61,8 @@
     // Be careful not to actually update anything inside origParams
     var params = _.clone(origParams);
     var unit = 'kg';
-    ALL.forEach(function(exname) {
-      var lastAct = _.find(item.actions, function(a){return a.name === exname;});
+    ALLALIAS.forEach(function(exname) {
+      var lastAct = _.find(item.actions, function(a){return a.name === FROMALIAS[exname];});
       if (lastAct) {
         var inKgs = lastAct.sets.map(function(s){return UnitConverter.convert(s.weight, s.unit, 'kg');});
         var maxKg = _.max(inKgs);
@@ -85,15 +95,16 @@
       // with 5 reps
       return {reps: 5, weight: wgt, unit: unit};
     });
-    return {name: ex, sets: sets};
+    return {name: FROMALIAS[ex], sets: sets};
   }
 
   function defaultParam(state,defaultUnit) {
     var param = {};
     ALL.forEach(function (exname) {
-      param[exname] = {
+      var exalias = TOALIAS[exname];
+      param[exalias] = {
         unit: defaultUnit,
-        weight: cfg[defaultUnit][exname].init,
+        weight: cfg[defaultUnit][exalias].init,
         type: 'weight'
       };
     });
@@ -132,7 +143,7 @@
     name : 'A',
     description : 'Squat/Bench/Row',
     generate : function(state, dt, param) {
-      var exs = [SQ, BP, BR];
+      var exs = ['Squat', 'Bench', 'Row'];
       var actions = genWorkout(exs, state, param);
       return {date:dt, actions:actions, program:NAME, workout:'A'};
     }
@@ -142,7 +153,7 @@
     name : 'B',
     description : 'Squat/Press/Deadlift',
     generate : function(state, dt, param) {
-      var exs = [SQ, OP, DL];
+      var exs = ['Squat', 'Press', 'Deadlift'];
       var actions = genWorkout(exs, state, param);
       return {date:dt, actions:actions, program:NAME, workout:'B'};
     }
