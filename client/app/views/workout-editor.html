@@ -13,7 +13,7 @@
       <!-- Workout selector -->
         <div class="form-group">
           <div class="col-xs-5">
-            <select class="form-control input-sm" ng-model="workout.program" ng-options="p for p in programNames">
+            <select class="form-control" ng-model="workout.program" ng-options="p.id as p.name for p in programNames">
               <option value="">User defined</option>
             </select>
           </div>

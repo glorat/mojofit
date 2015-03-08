@@ -1,22 +1,31 @@
 'use strict';
 
+angular.module('clientApp')
+  .controller('PlannerIndexController', function ($scope, $routeParams, ProgramRegistry) {
+    $scope.programNames = ProgramRegistry.listPrograms();
+  });
 
 angular.module('clientApp')
-  .controller('PlannerController', function ($scope, ProgramRegistry) {
+  .controller('PlannerController', function ($scope, $routeParams, ProgramRegistry) {
     $scope.programNames = ProgramRegistry.listPrograms();
 
     $scope.workout = {workout:''};
     $scope.numWorkouts = 12;
 
-    $scope.$watch('workout.program', function(program){
+    var initProgram = function(program){
       var user = {data:[]};
       var program = ProgramRegistry.getProgram(program);
       if (program) {
         $scope.param = program.defaultParam(user, 'kg');
         $scope.paramKeys = _.keys($scope.param);
       }
+      $scope.programName = program.name;
+      $scope.workout.program = program.id;
 
-    });
+    };
+
+    var programName = $routeParams.program;
+    initProgram(programName);
 
     $scope.applyProgram = function() {
       var program = ProgramRegistry.getProgram($scope.workout.program);

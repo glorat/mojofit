@@ -15,6 +15,7 @@
   }
 
 }(function(UnitConverter, ProgramRegistry, _) {
+  var ID = 'stronglifts';
   var NAME = 'Stronglifts 5x5';
   var SQ = 'Barbell Squat';
   var BP = 'Barbell Bench Press';
@@ -148,6 +149,7 @@
   };
 
   var program = {
+    id : ID,
     name : NAME,
     chooseWorkout : workoutChooser,
     availableWorkouts : ['A','B'],
