@@ -12,15 +12,19 @@ angular.module('clientApp')
     $scope.workout = {workout:''};
     $scope.numWorkouts = 12;
 
-    var initProgram = function(program){
+    var initProgram = function(programName){
       var user = {data:[]};
-      var program = ProgramRegistry.getProgram(program);
+      var program = ProgramRegistry.getProgram(programName);
       if (program) {
         $scope.param = program.defaultParam(user, 'kg');
         $scope.paramKeys = _.keys($scope.param);
+        $scope.programName = program.name;
+        $scope.workout.program = program.id;
       }
-      $scope.programName = program.name;
-      $scope.workout.program = program.id;
+      else {
+        // 404???
+      }
+
 
     };
 
