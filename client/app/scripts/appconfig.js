@@ -38,6 +38,10 @@ angular.module('clientApp').config(['$routeProvider','$locationProvider',
         templateUrl: 'views/plates.html'
       })
       .when('/planner', {
+        templateUrl: 'views/planner-index.html',
+        controller:'PlannerIndexController'
+      })
+      .when('/planner/:program', {
         templateUrl: 'views/planner.html',
         controller:'PlannerController'
       })

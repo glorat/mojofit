@@ -8,8 +8,8 @@ var sl = require('../../app/scripts/workoutProgram/stronglifts.js');
 describe('Stronglifts', function() {
   describe('Registration', function(){
     it('should be a registered program', function() {
-      assert.ok(_.contains(ProgramRegistry.listPrograms(), 'Stronglifts 5x5'));
-      var avail = ProgramRegistry.listWorkouts('Stronglifts 5x5');
+      assert.ok(_.contains(ProgramRegistry.listPrograms().map(function(p){return p.id;}), 'stronglifts'));
+      var avail = ProgramRegistry.listWorkouts('stronglifts');
       assert.equal(avail[0], 'A');
       assert.equal(avail[1], 'B');
     });
