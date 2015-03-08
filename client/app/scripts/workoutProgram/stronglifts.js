@@ -68,6 +68,11 @@
         // TODO: Detect if failed 3 times to deload!
       }
     });
+
+    // Finally bring up the date
+    params.date = _.clone(params.date);
+    params.date.value = item.date;
+
     return params;
   };
 
@@ -103,7 +108,7 @@
     return param;
   }
 
-  function genWorkout(exs, state, param) {
+  var genParams = function(state, param) {
     var inScopeData = _.filter(state.data, function(item){return item.date>param.date.value;});
 
     // Go in reverse
@@ -111,11 +116,17 @@
     for( var i =  inScopeData.length-1; i>= 0 ; i--){
       param = updateParams(inScopeData[i], param);
     }
+    return param;
+  };
+
+
+  var genWorkout = function (exs, state, param) {
+    param = genParams(state, param);
 
     return exs.map(function (ex) {
       return genActionFromParam(param, ex);
     });
-  }
+  };
 
   var workoutA = {
     name : 'A',
