@@ -16,8 +16,9 @@ angular.module('clientApp')
       var user = {data:[]};
       var program = ProgramRegistry.getProgram(programName);
       if (program) {
+        $scope.paramSchema = program.paramSchemaByField();
         $scope.param = program.defaultParam(user, 'kg');
-        $scope.paramKeys = _.keys($scope.param);
+        $scope.paramKeys = program.paramKeys();
         $scope.programName = program.name;
         $scope.workout.program = program.id;
       }
@@ -78,7 +79,7 @@ angular.module('clientApp')
 angular.module('clientApp').directive('paramEditor', function(){
   return {
     restrict: 'E',
-    scope: {param: '='},
+    scope: {param: '=', schema:'='},
     templateUrl: 'views/param-editor.html',
     controller: function() {
 

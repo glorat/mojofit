@@ -1,6 +1,9 @@
-<div ng-switch on="param.type">
-  <div class="animate-switch" ng-switch-when="weight">
+<div ng-switch on="schema.type">
+  <div ng-switch-when="weight">
     <weight-input input="param"></weight-input>
   </div>
-  <div class="animate-switch" ng-switch-default>{{ param | json}}</div>
+  <div ng-switch-when="choice">
+    <select ng-options="p.id as p.label for p in schema.opts" ng-model="param.value"></select>
+  </div>
+  <div ng-switch-default>{{ param | json}}</div>
 </div>

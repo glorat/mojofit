@@ -91,6 +91,7 @@ angular.module('clientApp')
             return {
               userId:userId,
               data:[],
+              plan:undefined,
               usedExercises:UserStateLoader.defaultExercises,
               revision:0,
               stats:{repMax:{}},
@@ -107,6 +108,7 @@ angular.module('clientApp')
             tgtUser.userId = srcUser.userId;
             tgtUser.revision = srcUser.revision;
             tgtUser.data = srcUser.data;
+            tgtUser.plan = srcUser.plan;
             tgtUser.usedExercises = srcUser.usedExercises;
             tgtUser.workoutDates = srcUser.workoutDates;
             tgtUser.activeDate = srcUser.activeDate;
