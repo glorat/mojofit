@@ -58,14 +58,26 @@ sub handle_submit_workouts {
 	my ($c, $id, $json) = @_;
 	my $items = $json->{items};
 	# Put in event store
-	my $name = $id;
 	my $store = Fitstore->new($id);
 	$store->submit_workouts($items);
+}
+
+sub handle_submit_plan {
+	my ($c, $id, $json) = @_;
+	my $plan = $json->{plan};
+	# Put in event store
+	my $store = Fitstore->new($id);
+	$store->submit_plan($plan);
 }
 
 sub submit_workouts {
 	my $c = shift;
 	$c->submit_any('handle_submit_workouts');
+}
+
+sub submit_plan {
+	my $c = shift;
+	$c->submit_any('handle_submit_plan');
 }
 
 sub submit_weight {

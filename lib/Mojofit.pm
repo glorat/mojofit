@@ -78,6 +78,8 @@ $r->post('/auth/changepass')->to('auth#changepass');
 
 $r->post('/command/submitWorkouts')->to('command#submit_workouts');
 
+$r->post('/command/submitPlan')->to('command#submit_plan');
+
 $r->post('/command/submitWeight')->to('command#submit_weight');
 
 $r->post('/command/submitPrefs')->to('command#submit_prefs');
