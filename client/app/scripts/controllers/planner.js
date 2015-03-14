@@ -33,8 +33,11 @@ angular.module('clientApp')
     };
 
     var programName = $routeParams.program;
-    initProgram(programName);
 
+    $scope.$watch('user.data', function(newData){
+      initProgram(programName);
+    });
+    
     $scope.applyProgram = function() {
       var program = ProgramRegistry.getProgram($scope.workout.program);
       var origUser = $scope.user;
