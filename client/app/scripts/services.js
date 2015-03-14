@@ -79,8 +79,10 @@ angular.module('clientApp').directive('utcDate', function() {
 
   var assert = function(expr, msg) {
     if (!expr) {
-      console.log('utcDate - ' + msg);
-      debugger; // Or log
+      if (consle) {
+        console.log('BUG: utcDate - ' + msg);
+      }
+      // debugger;
     }
   };
 

@@ -211,6 +211,7 @@
       paramSchemaByField : function(){return _.indexBy(paramSchema, function(p){return p.field;});},
       paramKeys : function(){return paramSchema.map(function(p){return p.field;});},
       defaultParam: defaultParam,
+      genParams: genParams,
       applyWorkout: applyWorkout
     };
 

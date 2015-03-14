@@ -6,18 +6,21 @@ angular.module('clientApp')
   });
 
 angular.module('clientApp')
-  .controller('PlannerController', function ($scope, $routeParams, ProgramRegistry) {
+  .controller('PlannerController', function ($scope, $routeParams, ProgramRegistry, UserState) {
+    $scope.user = UserState.getMyState();
     $scope.programNames = ProgramRegistry.listPrograms();
 
     $scope.workout = {workout:''};
     $scope.numWorkouts = 12;
 
     var initProgram = function(programName){
-      var user = {data:[]};
+      var user = $scope.user;
       var program = ProgramRegistry.getProgram(programName);
       if (program) {
         $scope.paramSchema = program.paramSchemaByField();
-        $scope.param = program.defaultParam(user, 'kg');
+        var defParam = program.defaultParam(user, 'kg');
+        var param = program.genParams(user, defParam);
+        $scope.param = param;
         $scope.paramKeys = program.paramKeys();
         $scope.programName = program.name;
         $scope.workout.program = program.id;
@@ -34,6 +37,7 @@ angular.module('clientApp')
 
     $scope.applyProgram = function() {
       var program = ProgramRegistry.getProgram($scope.workout.program);
+      var origUser = $scope.user;
       var user = {data:[]};
       var param = $scope.param;
 
