@@ -50,6 +50,10 @@ sub handle_item_submitted {
 	$self->{dates}->{$ev->{item}->{date}} = 1;
 }
 
+sub handle_plan_submitted {
+	# Nothing todo
+}
+
 sub handle_item_deleted {
 	my ($self, $ev) = @_;
 	delete $self->{dates}->{$ev->{date}};
@@ -100,6 +104,14 @@ sub submit_workouts {
 	# No other validation for now!
 	my @events = map { {action=>'item_submitted', item=>$_}} (@$items);
 	$self->commit_append(\@events);
+}
+
+sub submit_plan {
+	my ($self, $plan) = @_;
+	$plan->{actions} or die ('Plan has no actions');
+	# TODO: Call sanitise_item when we dont care about date there
+	my $event = {action=>'plan_submitted', item=>$plan};
+	$self->commit_append($event);
 }
 
 sub check_delete {
@@ -247,6 +259,12 @@ sub new {
 	return $self;
 }
 
+sub handle_plan_submitted {
+	my ($self, $event) = @_;
+	my $plan = $event->{item};
+	$self->{plan} = $plan;
+}
+
 sub handle_prefs_submitted {
 	my ($self, $event) = @_;
 	my $newprefs = $event->{body};
@@ -293,6 +311,9 @@ sub handle_item_submitted {
 		$self->{bydate}->{$item->{date}}->{$key} = $item->{$key};
 	}
 	
+	# When a workout is submitted, the plan is emptied
+	$self->{plan} = undef;
+	
 	# $self->{bydate}->{$item->{date}} = $item;
 }
 
@@ -329,7 +350,7 @@ sub write_by_date {
 		$self->{bydate}->{$_}
 	} (@keys);
 	open OUT, ">$Fitstore::DATA_DIR/$self->{id}.json";
-	print OUT encode_json({revision=>$self->{index}, items=>\@items, id=>$self->{id}, prefs=>$self->{prefs}});
+	print OUT encode_json({revision=>$self->{index}, items=>\@items, id=>$self->{id}, prefs=>$self->{prefs}, plan=>$self->{plan}});
 	close OUT; 
 	open OUT, ">$Fitstore::DATA_DIR/$self->{id}.revision";
 	print OUT $self->{index};
