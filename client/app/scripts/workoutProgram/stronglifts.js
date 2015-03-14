@@ -16,7 +16,23 @@
 
 }(function(UnitConverter, ProgramRegistry, _) {
 
-  var generateStrongLiftsProgram = function(ID, NAME, setCount, repCount) {
+  var generateStrongLiftsProgram = function(ID, NAME) {
+    var paramSchema = [
+      ['Variant','choice',[
+        {id:'5x5',label:'5x5'},
+        {id:'3x5',label:'3x5'},
+        {id:'3x3',label:'3x3'}
+      ]],
+      ['Squat','weight'],
+      ['Bench','weight'],
+      ['Deadlift','weight'],
+      ['Press','weight'],
+      ['Row','weight'],
+      ['Date','utcdate']
+    ].map(function(i){
+        return {field:i[0], type:i[1], opts:i[2]};
+      });
+
     var SQ = 'Barbell Squat';
     var BP = 'Barbell Bench Press';
     var DL = 'Barbell Deadlift';
@@ -38,17 +54,17 @@
 
     // TODO: Make this user configurable
     var kgcfg = {};
-    kgcfg['Squat'] = {incr: 2.5, init: 20, sets: setCount};
-    kgcfg['Deadlift'] = {incr: 5, init: 40, sets: 1};
-    kgcfg['Bench'] = {incr: 2.5, init: 20, sets: setCount};
-    kgcfg['Press'] = {incr: 2.5, init: 20, sets: setCount};
-    kgcfg['Row'] = {incr: 2.5, init: 30, sets: setCount};
+    kgcfg['Squat'] = {incr: 2.5, init: 20};
+    kgcfg['Deadlift'] = {incr: 5, init: 40};
+    kgcfg['Bench'] = {incr: 2.5, init: 20};
+    kgcfg['Press'] = {incr: 2.5, init: 20};
+    kgcfg['Row'] = {incr: 2.5, init: 30};
     var lbcfg = {};
-    lbcfg['Squat'] = {incr: 5, init: 45, sets: setCount};
-    lbcfg['Deadlift'] = {incr: 10, init: 95, sets: 1};
-    lbcfg['Bench'] = {incr: 5, init: 45, sets: setCount};
-    lbcfg['Press'] = {incr: 5, init: 45, sets: setCount};
-    lbcfg['Row'] = {incr: 5, init: 65, sets: setCount};
+    lbcfg['Squat'] = {incr: 5, init: 45};
+    lbcfg['Deadlift'] = {incr: 10, init: 95};
+    lbcfg['Bench'] = {incr: 5, init: 45};
+    lbcfg['Press'] = {incr: 5, init: 45};
+    lbcfg['Row'] = {incr: 5, init: 65};
 
 
     var cfg = {'kg': kgcfg, 'lb': lbcfg};
@@ -61,9 +77,15 @@
       return newW;
     };
 
+    var setsFor = function(exname, params) {
+      return (exname === 'Deadlift') ? 1 : +params.Variant.value.split('x')[0];
+    };
+
     var updateParams = function (item, origParams) {
       // Be careful not to actually update anything inside origParams
       var params = _.clone(origParams);
+      var s = params.Variant.value.split('x');
+      var repCount = +s[1];
       var unit = 'kg';
       ALLALIAS.forEach(function (exname) {
         var lastAct = _.find(item.actions, function (a) {
@@ -78,7 +100,7 @@
           var goodsets = _.filter(lastAct.sets, function (s) {
             return (s.reps) && (s.weight) && (s.reps >= repCount) && (maxKg === UnitConverter.convert(s.weight, s.unit, 'kg'));
           });
-          if (goodsets.length >= cfg[unit][exname].sets) {
+          if (goodsets.length >= setsFor(exname,params)) {
             // Nx5 completed
             params[exname] = _.clone(params[exname]);
             params[exname].weight = UnitConverter.convert(maxKg, 'kg', unit) + cfg[unit][exname].incr;
@@ -88,17 +110,19 @@
       });
 
       // Finally bring up the date
-      params.date = _.clone(params.date);
-      params.date.value = item.date;
+      params.Date = _.clone(params.Date);
+      params.Date.value = item.date;
 
       return params;
     };
 
     function genActionFromParam(param, ex) {
+      var s = param.Variant.value.split('x');
+      var repCount = +s[1];
       var unit = param[ex].unit;
       var wgt = param[ex].weight;
       // Generate 5 sets
-      var setN = cfg[unit][ex].sets;
+      var setN = setsFor(ex,param);
       var sets = _.range(setN).map(function () {
         // with 5 reps
         return {reps: repCount, weight: wgt, unit: unit};
@@ -112,24 +136,23 @@
         var exalias = TOALIAS[exname];
         param[exalias] = {
           unit: defaultUnit,
-          weight: cfg[defaultUnit][exalias].init,
-          type: 'weight'
+          weight: cfg[defaultUnit][exalias].init
         };
       });
 
       var dt = new Date(0);
       dt.setUTCHours(0, 0, 0, 0);
 
-      param.date = {
-        value: dt.valueOf(),
-        type: 'utcdate'
+      param.Date = {
+        value: dt.valueOf()
       };
+      param.Variant = {value:'5x5'};
       return param;
     }
 
     var genParams = function (state, param) {
       var inScopeData = _.filter(state.data, function (item) {
-        return item.date > param.date.value;
+        return item.date > param.Date.value;
       });
 
       // Go in reverse
@@ -185,6 +208,8 @@
       name: NAME,
       chooseWorkout: workoutChooser,
       availableWorkouts: ['A', 'B'],
+      paramSchemaByField : function(){return _.indexBy(paramSchema, function(p){return p.field;});},
+      paramKeys : function(){return paramSchema.map(function(p){return p.field;});},
       defaultParam: defaultParam,
       applyWorkout: applyWorkout
     };
@@ -194,7 +219,6 @@
     return program;
   };
 
-  generateStrongLiftsProgram('stronglifts3x5','Stronglifts 3x5', 3,5);
   return generateStrongLiftsProgram('stronglifts','Stronglifts 5x5', 5,5);
 
 
