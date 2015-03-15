@@ -1,6 +1,10 @@
 'use strict';
 
 describe('anonymous first time user', function() {
+  var getFirstAction = function () {
+    return element.all(by.repeater('action in workout.actions')).get(0);
+  };
+
   it('should see the home page', function () {
     browser.get('/');
 
@@ -29,10 +33,6 @@ describe('anonymous first time user', function() {
     // Add it
     newActionName.sendKeys(protractor.Key.ENTER);
 
-    var getFirstAction = function() {
-      return element.all(by.repeater('action in workout.actions')).get(0);
-    };
-
     var firstAction = getFirstAction();
     var firstSet =
       firstAction.
@@ -48,15 +48,21 @@ describe('anonymous first time user', function() {
     addSet.click();
     addSet.click();
     expect(firstAction.all(by.repeater('set in action.sets')).count()).toBe(5);
+  });
 
-    // Should be able to navigate elsewhere and return
+
+  // Should be able to navigate elsewhere and return
+  it('should be able to navigate elsewhere and return', function(){
     element(by.id('mylog')).click();
     browser.navigate().back();
 
     // and still have 5 sets from before
-    firstAction = getFirstAction();
+    var firstAction = getFirstAction();
     expect(firstAction.all(by.repeater('set in action.sets')).count()).toBe(5);
 
+  });
+
+  it('should be able to submit workout', function(){
     element(by.id('trackSubmit')).click();
     var dataRepeat = element.all(by.repeater('i in userState.data'));
     //expect(dataRepeat.isPresent()).toBe(true);
