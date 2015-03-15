@@ -58,6 +58,21 @@ sub startup {
 		my $mg = WWW::Mailgun->new($cfg);
 		return $mg;
 	});
+	$self->hook(after_dispatch => sub {
+	    my $tx = shift;
+
+	    # Was the response dynamic?
+	    return if $tx->res->headers->header('Expires');
+	    
+	    # If so, try to prevent caching
+	    $tx->res->headers->header(
+		Expires => Mojo::Date->new(time-365*86400)
+		);
+	    $tx->res->headers->header(
+		"Cache-Control" => "max-age=1, no-cache"
+		);
+		   });
+
 	
 my $r = $self->routes;
 
