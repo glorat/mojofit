@@ -29,19 +29,34 @@ describe('anonymous first time user', function() {
     // Add it
     newActionName.sendKeys(protractor.Key.ENTER);
 
+    var getFirstAction = function() {
+      return element.all(by.repeater('action in workout.actions')).get(0);
+    };
+
+    var firstAction = getFirstAction();
     var firstSet =
-      element.all(by.repeater('action in workout.actions')).
-        get(0).
+      firstAction.
         all(by.repeater('set in action.sets')).
         get(0);
     firstSet.element(by.model('set.reps')).sendKeys(5);
     firstSet.element(by.model('input.weight')).sendKeys(20);
+
     // Hacky way to find the add button. This could break
     var addSet = firstSet.all(by.className('btn-default')).get(0);
     addSet.click();
     addSet.click();
     addSet.click();
     addSet.click();
+    expect(firstAction.all(by.repeater('set in action.sets')).count()).toBe(5);
+
+    // Should be able to navigate elsewhere and return
+    element(by.id('mylog')).click();
+    browser.navigate().back();
+
+    // and still have 5 sets from before
+    firstAction = getFirstAction();
+    expect(firstAction.all(by.repeater('set in action.sets')).count()).toBe(5);
+
     element(by.id('trackSubmit')).click();
     var dataRepeat = element.all(by.repeater('i in userState.data'));
     //expect(dataRepeat.isPresent()).toBe(true);
