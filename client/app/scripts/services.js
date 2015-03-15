@@ -19,6 +19,10 @@ angular.module('clientApp')
     };
 
     function loadForUtcDate(utc) {
+      if (utc === workout.date) {
+        // No change
+        return;
+      }
       var myState = UserState.getMyState();
 
       var edit = _.find(myState.data, function (x) {
@@ -79,7 +83,7 @@ angular.module('clientApp').directive('utcDate', function() {
 
   var assert = function(expr, msg) {
     if (!expr) {
-      if (consle) {
+      if (console) {
         console.log('BUG: utcDate - ' + msg);
       }
       // debugger;
