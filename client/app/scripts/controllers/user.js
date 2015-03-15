@@ -64,14 +64,11 @@ angular.module('clientApp')
       };
 
       $scope.addWorkout = function() {
-        var d = new Date($scope.newWorkout.date);
-        var utcDate = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate());
-        $scope.editWorkout(utcDate);
+        $scope.editWorkout($scope.newWorkout.date);
       };
 
       $scope.editWorkout = function(date) {
-        WorkoutState.
-          setDate(date);
+        WorkoutState.setUtcDate(date);
         $location.
           path('/track');
       };
@@ -103,7 +100,9 @@ angular.module('clientApp')
         $scope.showChart = false;
         $scope.itemsPerPage = 20;
         $scope.currentPage = 1;
-        $scope.newWorkout = {date:new Date()};
+    // FIXME Does this (and mobileuser too) work in western timezone?
+        var today = new Date();
+        $scope.newWorkout = {date:Date.UTC(today.getFullYear(), today.getMonth(),today.getDate())};
         $scope.workoutStatus = {level:'info', message:''};
         $scope.userStatus = MojoServer.getUserStatus();
 
@@ -140,7 +139,7 @@ angular.module('clientApp').directive('setText', function () {
                     $scope.dispUnit = dispUnit;
                 }
             }
-            $scope.badges = $scope.setBadges.get($scope.data);
+            $scope.badges = $scope.setBadges ? $scope.setBadges.get($scope.data) : [];
         },
         template: tmpl
     };

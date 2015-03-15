@@ -8,7 +8,8 @@ angular.module('clientApp')
     $scope.showChart = false;
     $scope.itemsPerPage = 1;
     $scope.currentPage = 1;
-    $scope.newWorkout = {date:new Date()};
+    var today = new Date();
+    $scope.newWorkout = {date:Date.UTC(today.getFullYear(), today.getMonth(),today.getDate())};
     $scope.workoutStatus = {level:'info', message:''};
     $scope.userStatus = MojoServer.getUserStatus();
     $scope.maxPagesSize = 4;

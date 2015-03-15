@@ -1,0 +1,36 @@
+<h1 view-title>{{ programName }} planner</h1>
+<div class="row">
+  #Workouts <input type="number" min="3" max="99" ng-model="numWorkouts">
+</div>
+
+<form class="form-horizontal">
+  <div class="form-group" ng-repeat="paramKey in paramKeys">
+    <label class="control-label col-sm-6">{{paramKey}}</label>
+    <div class="col-sm-6">
+      <param-editor param="param[paramKey]" schema="paramSchema[paramKey]"></param-editor>
+    </div>
+  </div>
+</form>
+
+<button type="button" class="btn btn-primary" ng-click="applyProgram()">Apply</button>
+
+<table>
+  <tr ng-repeat="row in items">
+    <td ng-repeat="i in row" valign="top">
+      <div class="panel panel-default">
+        <header class="panel-heading">
+          {{ i.localDate | date : 'fullDate'}} <!--{{ i.date | date:'yyyy-MM-dd HH:mm:ss Z'}}-->
+        </header>
+        <ul ng-repeat="action in i.actions">
+          <li>{{ action.name }}</li>
+          <ul ng-repeat="set in action.sets">
+            <li><set-text data="set"></set-text></li>
+          </ul>
+        </ul>
+        <footer class="panel-footer">
+          {{i.program}} - {{ i.workout }}
+        </footer>
+      </div>
+    </td>
+  </tr>
+</table>

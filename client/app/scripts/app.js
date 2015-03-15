@@ -18,6 +18,7 @@ angular
         'LocalStorageModule',
         'viewhead',
         'mojofit',
+    'workoutProgram',
     'angulartics',
     'angulartics.google.analytics'
     ]);

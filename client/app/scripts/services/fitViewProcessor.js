@@ -36,29 +36,31 @@
         // return x;
     };
 
+  var processItem = function(item){
+    // And do some name mappings
+    // TODO: Make this a user pref
+    var aliases = {'Bench Press':'Barbell Bench Press', 'Row':'Pendlay Row'};
+    item.date = parseInt(item.date);
+    var dt = new Date(item.date);
+    dt.setUTCHours(0,0,0,0);
+    item.date = dt.valueOf(); // Fixup bad dates
+    item.localDate = new Date(dt.getUTCFullYear(), dt.getUTCMonth(), dt.getUTCDate()); // For display
+    if (item.actions) {
+      item.actions.map(function(action){
+        if (aliases[action.name]) {
+          action.name = aliases[action.name];
+        }
+        action.sets.map(function(set){
+          set.reps = +set.reps;
+          set.weight = +set.weight;
+        });
+      });
+      return item;
+    }};
+
     var processData = function (data) {
-        // And do some name mappings
-        // TODO: Make this a user pref
-        var aliases = {'Bench Press':'Barbell Bench Press', 'Row':'Pendlay Row'};
         // Too many strings in the data
-        data.map(function(item){
-            item.date = parseInt(item.date);
-            var dt = new Date(item.date);
-            dt.setUTCHours(0,0,0,0);
-            item.date = dt.valueOf(); // Fixup bad dates
-            item.localDate = new Date(dt.getUTCFullYear(), dt.getUTCMonth(), dt.getUTCDate()); // For display
-          if (item.actions) {
-            item.actions.map(function(action){
-                if (aliases[action.name]) {
-                    action.name = aliases[action.name];
-                }
-                action.sets.map(function(set){
-                    set.reps = +set.reps;
-                    set.weight = +set.weight;
-                });
-            });
-            return item;
-        }});
+        data.map(processItem);
 
         data.sort(function(a,b) {
             if (b.date < a.date) { return -1; }
@@ -135,14 +137,12 @@
         var data = dataObj.items;
         userData.revision = +dataObj.revision;
         userData.data = processData(data);
+        userData.plan = dataObj.plan ? processItem(dataObj.plan) : undefined;
         userData.usedExercises = usedExercises(data);
         userData.workoutDates = userData.data.map(function(x){return utcDateToLocal(x.date).valueOf();});
         userData.activeDate = new Date(userData.workoutDates[0]);
         userData.showChart = true;
         userData.prefs = dataObj.prefs;
-        if (userData.prefs.dob) {
-          userData.prefs.dob = utcDateToLocal(userData.prefs.dob);
-        }
         userData.stats = {};
         userData.stats.repMax = RepMaxCalculator.genRepMaxFull(userData.data, userData.usedExercises, dataObj.prefs.preferredUnit || 'kg');
         userData.stats.strengthScore = RepMaxCalculator.calcScores(userData.data, userData.stats.repMax, UnitConverter, userData.prefs.gender);

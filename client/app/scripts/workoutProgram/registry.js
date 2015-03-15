@@ -5,7 +5,7 @@
   if (typeof module !== 'undefined' && module.exports ) {
     module.exports = myService(require('underscore'));
   } else if( angular) {
-    angular.module('clientApp')
+    angular.module('workoutProgram')
       .factory('ProgramRegistry', function(){
         return myService(_);
       });
@@ -16,20 +16,20 @@
 
 }(function(_) {
   var programs = [];
-  var programNames = [], programWorkoutNames = {};
+  var programList = [], programWorkoutNames = {};
 
   var registerProgram = function(program) {
     programs.push(program);
     // Eagerly compute
-    programNames = programs.map(function(p){return p.name;});
-    programWorkoutNames[program.name] = program.availableWorkouts;
+    programList = programs.map(function(p){return {id: p.id, name:p.name};});
+    programWorkoutNames[program.id] = program.availableWorkouts;
   };
 
   return {
     registerProgram : registerProgram,
-    listPrograms : function(){return programNames;},
-    listWorkouts: function(p) {return programWorkoutNames[p];},
-    getProgram: function(nm){return _.find(programs, function(p){return p.name ===nm;});}
+    listPrograms : function(){return programList;},
+    listWorkouts: function(id) {return programWorkoutNames[id];},
+    getProgram: function(nm){return _.find(programs, function(p){return p.id ===nm;});}
   };
 
 }));
