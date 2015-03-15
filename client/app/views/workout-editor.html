@@ -4,7 +4,7 @@
     <form class="form-horizontal">
         <div class="form-group">
             <div class="input-group col-xs-12">
-                <input type="text" class="form-control" ng-click="opened=true" placeholder="Date" datepicker-popup="yyyy/MM/dd" ng-model="workout.date" is-open="opened" datepicker-options="dateOptions" close-text="Close" id="trackDate" />
+                <input type="text" class="form-control" ng-click="opened=true" placeholder="Date" datepicker-popup="yyyy/MM/dd" ng-model="workout.date" utc-date is-open="opened" datepicker-options="dateOptions" close-text="Close" id="trackDate" />
                 <span class="input-group-btn">
                     <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
                 </span>
@@ -13,7 +13,7 @@
       <!-- Workout selector -->
         <div class="form-group">
           <div class="col-xs-5">
-            <select class="form-control input-sm" ng-model="workout.program" ng-options="p for p in programNames">
+            <select class="form-control" ng-model="workout.program" ng-options="p.id as p.name for p in programNames">
               <option value="">User defined</option>
             </select>
           </div>

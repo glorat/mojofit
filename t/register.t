@@ -8,6 +8,8 @@ $ENV{'MOJO_MODE'} = 'test';
 
 # Load application class
 my $t = Test::Mojo->new('Mojofit');
+$t->app->log->level('debug');
+
 
 my $app = $t->ua->server->app;
 my $mode = $app->mode;
@@ -91,8 +93,7 @@ $t->get_ok('/')
   my $username = $t->tx->res->json->{userStatus}->{username};
   ok ($username eq 'KevinTam', 'preferred username');
   
-  $t->app->log->level('warn');
-  
+
   # Do more now that we are registered
   $t->post_ok('/command/submitPrefs' => json => {})
   ->status_is(200)
@@ -112,5 +113,37 @@ $t->get_ok('/')
   ->json_is('/prefs/preferredUnit'=>'lb') 
   ->json_is('/prefs/gender'=>'f');  
   
+  # Submit stuff
+  my $plan = {actions=>[{name=>'Action',sets=>[{reps=>5, weight=>'20', unit=>'kg'}]}], program=>'My program', workout=>'Workout A'};
+  $t->post_ok('/command/submitPlan' => json => {plan=>$plan})
+  ->status_is(200)
+  ->json_is('/level'=>'success');
+  
+  $t->get_ok("/userraw/$username")
+  ->status_is(200)
+  ->json_is('/plan/program'=>'My program') ;  
+  
+  # Submit the plan for real as workout
+  $plan->{date} = time();
+  $t->post_ok('/command/submitWorkouts' => json => {items=>[$plan]})
+  ->status_is(200)
+  ->json_is('/level'=>'danger')
+  ->json_like('/message' => qr'Code bug in submission'); # UTC requirement
+ 
+  
+  my $dt = DateTime->from_epoch( epoch => $plan->{date} );
+  $dt = DateTime->new( year => $dt->year, month => $dt->month, day => $dt->day, time_zone => 'UTC' );
+  $plan->{date} = $dt->epoch;
+  $t->post_ok('/command/submitWorkouts' => json => {items=>[$plan]})
+  ->status_is(200)
+  ->json_is('/level'=>'success')
+  ->json_like('/message' => qr'Submitted successfully');
+  
+  $t->get_ok("/userraw/$username")
+  ->status_is(200)
+  ->json_is('/plan'=>undef); # Plan should be cleared after submission
+  
+  #my $foo = $t->tx->res->json;
+  #print STDERR Dumper($foo);
   
 done_testing();

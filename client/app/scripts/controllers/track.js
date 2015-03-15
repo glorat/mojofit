@@ -18,22 +18,28 @@ angular.module('clientApp')
 
         var deleteCB = submitCB;
 
-
-        $scope.submitWorkout = function() {
-            var item = $scope.editWorkout;
-            // Ensure Date is UTC, even though we view in local. I hate JS
-            var d =  new Date(item.date);
-            item.date = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate());
-            $scope.workoutStatus = MojoServer.submitWorkout([item], submitCB);
-
+    $scope.submitWorkout = function() {
+      var item = $scope.editWorkout;
+      $scope.workoutStatus = MojoServer.submitWorkout([item], submitCB);
         };
 
-        $scope.deleteWorkout = function() {
-            var item = $scope.editWorkout;
-            var d =  new Date(item.date);
-            var d2 = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate());
-            $scope.workoutStatus = MojoServer.deleteWorkout(d2, deleteCB);
-        };
+    $scope.submitPlan = function() {
+      var item = $scope.editWorkout;
+      $scope.workoutStatus = MojoServer.submitPlan(item, submitCB);
+    };
+
+    $scope.reset = function() {
+      //$scope.editWorkout = WorkoutState.getWorkout();
+      WorkoutState.setUtcDate($scope.editWorkout.date);
+    };
+
+    $scope.$watch('editWorkout.date',function(newDate) {
+      WorkoutState.setUtcDate(newDate);
+    });
+
+    $scope.deleteWorkout = function() {
+        $scope.workoutStatus = MojoServer.deleteWorkout($scope.editWorkout.date, deleteCB);
+    };
 
     });
 
@@ -54,8 +60,7 @@ angular.module('clientApp')
         };
 
         $scope.submitWeight = function() {
-            var d = new Date($scope.weightInput.date);
-            d = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate());
+            var d =$scope.weightInput.date;
             $scope.workoutStatus = MojoServer.submitWeight(d, $scope.weightInput.bw, submitCB);
         };
     });

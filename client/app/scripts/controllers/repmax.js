@@ -21,9 +21,11 @@ var repmaxFile = function() {
                 }
                 //$scope.repMax = genRepMax($scope.data, $scope.exercises);
 
-                $scope.$watchCollection('[user, exercises]', function (newVals) {
+                $scope.$watchCollection('[user.stats, exercises]', function (newVals) {
                     var exs = _.first(newVals[1], $scope.limitTo);
-                    var repMaxByName = $scope.user.stats.repMax;
+                    var newStats = newVals[0];
+                    //var repMaxByName = $scope.user.stats.repMax;
+                  var repMaxByName = newStats.repMax;
                     var repMax = pickout(exs, repMaxByName);
                     $scope.repMax = repMax;
                 }, false);
@@ -34,9 +36,19 @@ var repmaxFile = function() {
     angular.module('clientApp')
         .controller('RepMaxController', function ($scope, UserState) {
             $scope.width = 10; // That's how much we an fit in a full view
-            var curr = UserState.getCurrentUser();
-            $scope.repMax = pickout(curr.usedExercises, curr.stats.repMax); // RepMaxCalculator.genRepMax(curr.data, curr.usedExercises, 'kg');
-            //UserState.getCurrentUser().repMax;
+        $scope.user = UserState.getMyState();
+
+        $scope.$watchCollection('[user.stats, user.usedExercises]', function (newVals) {
+              //var exs = _.first(newVals[1], $scope.limitTo);
+              var exs = newVals[1];
+              var newStats = newVals[0];
+              //var repMaxByName = $scope.user.stats.repMax;
+              var repMaxByName = newStats.repMax;
+              var repMax = pickout(exs, repMaxByName);
+              $scope.repMax = repMax;
+            }, false);
+
+        //UserState.getCurrentUser().repMax;
         });
 
   angular.module('clientApp').directive('strengthHistoryGraph', function(){

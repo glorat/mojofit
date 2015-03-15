@@ -1,0 +1,12 @@
+<div ng-switch on="schema.type">
+  <div ng-switch-when="weight">
+    <weight-input input="param"></weight-input>
+  </div>
+  <div ng-switch-when="choice">
+    <select ng-options="p.id as p.label for p in schema.opts" ng-model="param.value"></select>
+  </div>
+  <div ng-switch-when="utcdate">
+    <input type="text" class="form-control" datepicker-popup="yyyy/MM/dd" ng-model="param.value" utc-date is-open="opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" />
+  </div>
+  <div ng-switch-default>{{ param | json}}</div>
+</div>

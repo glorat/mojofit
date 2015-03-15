@@ -180,16 +180,16 @@ angular.module('clientApp')
                     });
                 return workoutStatus;
             },
+            submitPlan: function(plan, cb) {
+              var msg = {plan:plan};
+              return genSubmit('submitting plan', workoutStatus, 'submitPlan', msg, cb);
+            },
             submitWeight: function(date, weight, cb) {
               var msg = {date:date, body:weight};
               return genSubmit('submitting weight record', workoutStatus, 'submitWeight', msg, cb);
             },
             submitPrefs: function(origprefs, cb) {
               var prefs = angular.copy(origprefs);
-              if (prefs.dob) {
-                var d = prefs.dob;
-                prefs.dob = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate());
-              }
               return genSubmit('submitting preferences', workoutStatus, 'submitPrefs', prefs, cb);
             },
             deleteWorkout: function(date, cb) {
