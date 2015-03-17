@@ -29,13 +29,12 @@ angular.module('clientApp')
     };
 
     $scope.reset = function() {
-      //$scope.editWorkout = WorkoutState.getWorkout();
       WorkoutState.setUtcDate($scope.editWorkout.date);
     };
 
-    $scope.$watch('editWorkout.date',function(newDate) {
-      WorkoutState.setUtcDate(newDate);
-    });
+    $scope.onDateChanged = function() {
+      WorkoutState.setUtcDate($scope.editWorkout.date);
+    };
 
     $scope.deleteWorkout = function() {
         $scope.workoutStatus = MojoServer.deleteWorkout($scope.editWorkout.date, deleteCB);
