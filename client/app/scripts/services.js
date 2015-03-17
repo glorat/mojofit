@@ -19,10 +19,6 @@ angular.module('clientApp')
     };
 
     function loadForUtcDate(utc) {
-      if (utc === workout.date) {
-        // No change
-        return;
-      }
       var myState = UserState.getMyState();
 
       var edit = _.find(myState.data, function (x) {
