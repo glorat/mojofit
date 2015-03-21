@@ -7,22 +7,57 @@
                 </span>
   </div>
 
-  <form class="form-horizontal">
-    <div class="form-group" ng-repeat="paramKey in paramKeys">
-      <label class="control-label col-sm-6">{{paramKey}}</label>
-      <div class="col-sm-6">
-        <param-editor param="param[paramKey]" schema="paramSchema[paramKey]"></param-editor>
+  <div class="panel panel-default">
+    <header class="panel-heading">Step 1: Select program</header>
+    <form class="form-horizontal">
+      <!-- Workout selector -->
+      <div class="form-group">
+        <div class="col-xs-6">
+          <select class="form-control" ng-model="workout.program.id" ng-options="p.id as p.name for p in programNames">
+            <option value="">User defined</option>
+          </select>
+        </div>
+        <div class="col-xs-6" ng-show="workout.program">
+          <select class="form-control input-sm" ng-model="workout.program.workout" ng-options="p for p in workoutNames">
+            <option value="{{workout.workout}}">{{workout.workout}}</option>
+          </select>
+        </div>
+      </div>
+    </form>
+  </div>
+
+    <!-- Workout param editor -->
+  <div class="panel panel-default" ng-show="paramKeys.length>0">
+    <header class="panel-heading" ng-click="paramCollapsed=!paramCollapsed">Step 2: Program parameters</header>
+    <div class="panel-body" collapse="paramCollapsed">
+      <form class="form-horizontal">
+        <div class="form-group" ng-repeat="paramKey in paramKeys">
+          <label class="control-label col-sm-6">{{paramKey}}</label>
+          <div class="col-sm-6">
+            <param-editor param="workout.program.param[paramKey]" schema="paramSchema[paramKey]"></param-editor>
+          </div>
+        </div>
+        <div class="" ng-show="workout.program.workout">
+          <button type="button" class="btn btn-sm btn-primary" ng-click="applyWorkout()">Generate program</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="panel panel-default">
+    <header class="panel-heading">Step 3: Customize program</header>
+    <workout-editor workout="workout"></workout-editor>
+  </div>
+
+  <div class="panel panel-default" ng-show="workout.program.actions.length>0">
+    <header class="panel-heading">Step 4: Submit plan/workout</header>
+    <div class="panel-body">
+      <div>
+        <button class="btn btn-primary pull-right" ng-click="submitPlan()" id="submitPlan">Save Plan</button>
+      </div>
+      <div class="alert" ng-class="'alert-' + workoutStatus.level" role="alert" ng-show="workoutStatus.message">
+        {{ workoutStatus.message }}
       </div>
     </div>
-  </form>
-
-  <workout-editor workout="workout"></workout-editor>
-  <div>
-    <button class="btn btn-primary pull-right" ng-click="submitPlan()" id="submitPlan">Save Plan</button>
   </div>
-
-  <div class="alert" ng-class="'alert-' + workoutStatus.level" role="alert" ng-show="workoutStatus.message">
-    {{ workoutStatus.message }}
-  </div>
-
 </div>

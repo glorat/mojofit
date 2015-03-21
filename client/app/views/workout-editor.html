@@ -1,23 +1,6 @@
 
 
     <form class="form-horizontal">
-
-      <!-- Workout selector -->
-        <div class="form-group">
-          <div class="col-xs-5">
-            <select class="form-control" ng-model="workout.program.id" ng-options="p.id as p.name for p in programNames">
-              <option value="">User defined</option>
-            </select>
-          </div>
-          <div class="col-xs-5" ng-show="workout.program">
-            <select class="form-control input-sm" ng-model="workout.program.workout" ng-options="p for p in workoutNames">
-              <option value="{{workout.workout}}">{{workout.workout}}</option>
-            </select>
-          </div>
-          <div class="col-xs-2" ng-show="workout.program.workout">
-            <button type="button" class="btn btn-sm btn-primary" ng-click="applyWorkout()">Apply</button>
-          </div>
-        </div>
         <div class="form-group">
             <div class="col-xs-8">
               <div class="input-group">
@@ -47,7 +30,7 @@
         </div><!-- /form-group -->
     </form>
 <div class="">
-    <h3>Track workout for {{workout.date | date}}</h3>
+    <h3 ng-if="showHeading">Track workout for {{workout.date | date}}</h3>
     <form class="form-horizontal" ng-repeat="action in workout.actions">
         <div class="form-group">
             <div class="col-xs-8 col-md-offset-2 col-md-6">
