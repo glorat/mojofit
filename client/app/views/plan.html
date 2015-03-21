@@ -1,33 +1,40 @@
 <div class="section scrollable-content">
   <h2>Plan workout</h2>
+  <!--
   <div class="input-group col-xs-12">
     <input type="text" class="form-control" ng-click="opened=true" placeholder="Date" datepicker-popup="yyyy/MM/dd" ng-model="workout.date" utc-date is-open="opened" datepicker-options="dateOptions" close-text="Close" id="planDate" ng-change="onDateChanged()"/>
                 <span class="input-group-btn">
                     <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
                 </span>
   </div>
-
+-->
   <div class="panel panel-default">
-    <header class="panel-heading">Step 1: Select program</header>
-    <form class="form-horizontal">
-      <!-- Workout selector -->
-      <div class="form-group">
-        <div class="col-xs-6">
-          <select class="form-control" ng-model="workout.program.id" ng-options="p.id as p.name for p in programNames">
-            <option value="">User defined</option>
-          </select>
+    <header class="panel-heading" ng-click="programCollapsed=!programCollapsed">Step 1: Select program</header>
+    <div class="panel-body" collapse="programCollapsed">
+      <form class="form-horizontal">
+        <!-- Workout selector -->
+        <div class="form-group">
+          <div class="col-xs-6">
+            <select class="form-control" ng-model="workout.program.id" ng-options="p.id as p.name for p in programNames">
+              <option value="">User defined</option>
+            </select>
+          </div>
+          <div class="col-xs-6" ng-show="workout.program">
+            <select class="form-control input-sm" ng-model="workout.program.workout" ng-options="p for p in workoutNames">
+              <option value="{{workout.workout}}">{{workout.workout}}</option>
+            </select>
+          </div>
         </div>
-        <div class="col-xs-6" ng-show="workout.program">
-          <select class="form-control input-sm" ng-model="workout.program.workout" ng-options="p for p in workoutNames">
-            <option value="{{workout.workout}}">{{workout.workout}}</option>
-          </select>
+        <div>
+          <button class="btn btn-primary pull-right" ng-click="onChooseProgram()" id="chooseProgram">Use {{workout.program.id}}</button>
         </div>
-      </div>
-    </form>
+      </form>
+    </div>
+
   </div>
 
     <!-- Workout param editor -->
-  <div class="panel panel-default" ng-show="paramKeys.length>0">
+  <div class="panel panel-default" ng-show="paramShow">
     <header class="panel-heading" ng-click="paramCollapsed=!paramCollapsed">Step 2: Program parameters</header>
     <div class="panel-body" collapse="paramCollapsed">
       <form class="form-horizontal">
@@ -38,18 +45,18 @@
           </div>
         </div>
         <div class="" ng-show="workout.program.workout">
-          <button type="button" class="btn btn-sm btn-primary" ng-click="applyWorkout()">Generate program</button>
+          <button type="button" class="btn btn-primary pull-right" ng-click="applyWorkout()">Generate program</button>
         </div>
       </form>
     </div>
   </div>
 
-  <div class="panel panel-default">
+  <div class="panel panel-default" ng-show="workoutShow">
     <header class="panel-heading">Step 3: Customize program</header>
     <workout-editor workout="workout"></workout-editor>
   </div>
 
-  <div class="panel panel-default" ng-show="workout.program.actions.length>0">
+  <div class="panel panel-default" ng-show="workout.actions.length>0">
     <header class="panel-heading">Step 4: Submit plan/workout</header>
     <div class="panel-body">
       <div>
