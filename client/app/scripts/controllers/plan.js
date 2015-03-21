@@ -113,13 +113,17 @@ angular.module('clientApp')
       today.setUTCHours(0,0,0,0);
       WorkoutState.setUtcDate(today); // OR date picker?
 
-      $scope.programCollapsed = 0;
-      $scope.paramShow=0;
-      $scope.workoutShow = 0;
-
-      if (1) {
+      if ($scope.workout.actions.length>0) {
+        // Toggle all back on if we are in fact good
         $scope.paramShow=1;
+        $scope.paramCollapsed=1;
         $scope.workoutShow=1;
+      }
+      else {
+        // Initial wizard state
+        $scope.programCollapsed = 0;
+        $scope.paramShow=0;
+        $scope.workoutShow = 0;
       }
       applyProgram($scope.workout.program.id);
     };
