@@ -1,5 +1,10 @@
 <div class="section scrollable-content">
-  <h2>Plan workout</h2>
+  <div class="row">
+    <h2 class="col-xs-9">Plan workout</h2>
+    <button class="col-xs-3 btn btn-danger pull-right" ng-click="startOver()" id="startOver" ng-show="workout.actions.length>0">Start over</button>
+
+  </div>
+
   <!--
   <div class="input-group col-xs-12">
     <input type="text" class="form-control" ng-click="opened=true" placeholder="Date" datepicker-popup="yyyy/MM/dd" ng-model="workout.date" utc-date is-open="opened" datepicker-options="dateOptions" close-text="Close" id="planDate" ng-change="onDateChanged()"/>
@@ -14,12 +19,16 @@
       <form class="form-horizontal">
         <!-- Workout selector -->
         <div class="form-group">
-          <div class="col-xs-6">
-            <select class="form-control" ng-model="workout.program.id" ng-options="p.id as p.name for p in programNames">
+          <label class="control-label col-xs-3" for="program">Program</label>
+          <div class="col-xs-9">
+            <select id="program" class="form-control" ng-model="workout.program.id" ng-options="p.id as p.name for p in programNames">
               <option value="">User defined</option>
             </select>
           </div>
-          <div class="col-xs-6" ng-show="workout.program">
+        </div>
+        <div class="form-group" ng-show="workout.program">
+          <label class="control-label col-xs-3">Workout</label>
+          <div class="col-xs-9" >
             <select class="form-control input-sm" ng-model="workout.program.workout" ng-options="p for p in workoutNames">
               <option value="{{workout.workout}}">{{workout.workout}}</option>
             </select>
@@ -45,7 +54,7 @@
           </div>
         </div>
         <div class="" ng-show="workout.program.workout">
-          <button type="button" class="btn btn-primary pull-right" ng-click="applyWorkout()">Generate program</button>
+          <button type="button" class="btn btn-primary pull-right" ng-click="applyWorkout()">Generate workout</button>
         </div>
       </form>
     </div>
