@@ -76,28 +76,6 @@ angular.module('clientApp').directive('workoutEditor', function() {
                     reallyCloneLastTime(act);
                 }
             };
-          $scope.programNames = ProgramRegistry.listPrograms();
-
-          $scope.$watch('workout.program.id', function(newVal){
-            $scope.workoutNames = ProgramRegistry.listWorkouts(newVal);
-            var program = ProgramRegistry.getProgram(newVal);
-            if (program && !$scope.workout.program.workout) {
-              // Auto select a program for the user
-              $scope.workout.program.workout =  program ? program.chooseWorkout($scope.user) : '';
-            }
-          });
-
-          $scope.applyWorkout = function() {
-            if (window.confirm('Apply ' + $scope.workout.program.id + ' exercises for workout ' + $scope.workout.program.workout + '?')) {
-              var program = ProgramRegistry.getProgram($scope.workout.program.id);
-
-              // FIXME: Grab param (and unit) from prefs
-              var param = $scope.workout.program.param || program.defaultParam($scope.user, 'kg');
-
-              var wout = program.applyWorkout($scope.workout.workout, $scope.user, $scope.workout.date, param);
-              $scope.workout.actions = wout.actions;
-            }
-          };
         }
     };
 });
