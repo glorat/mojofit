@@ -1,4 +1,5 @@
-<div ng-repeat="set in action.sets" class="col-sm-offset-3">
+<!-- xs-offset-1 needed in case we are embedded in a panel -->
+<div ng-repeat="set in action.sets" class="col-sm-offset-3 col-xs-offset-1">
   <input ng-model="set.reps" type="number" size="2" placeholder="rp" ng-keydown="onLastInputEnter($event, $index)" select-on-click style="width:3em">
   reps x <weight-input input="set"></weight-input>
   <div class="btn-group btn-group-sm" role="group">
