@@ -30,6 +30,10 @@ angular.module('clientApp').config(['$routeProvider','$locationProvider',
         templateUrl: 'views/track.html',
         controller: 'TrackController'
       })
+      .when('/plan', {
+        templateUrl: 'views/plan.html',
+        controller: 'PlanController'
+      })
       .when('/trackweight', {
         templateUrl: 'views/trackweight.html',
         controller: 'TrackWeightController'

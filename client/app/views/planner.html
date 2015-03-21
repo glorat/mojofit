@@ -7,7 +7,7 @@
   <div class="form-group" ng-repeat="paramKey in paramKeys">
     <label class="control-label col-sm-6">{{paramKey}}</label>
     <div class="col-sm-6">
-      <param-editor param="param[paramKey]" schema="paramSchema[paramKey]"></param-editor>
+      <param-editor param="workout.program.param[paramKey]" schema="paramSchema[paramKey]"></param-editor>
     </div>
   </div>
 </form>

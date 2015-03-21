@@ -20,10 +20,10 @@ angular.module('clientApp')
         $scope.paramSchema = program.paramSchemaByField();
         var defParam = program.defaultParam(user, 'kg');
         var param = program.genParams(user, defParam);
-        $scope.param = param;
         $scope.paramKeys = program.paramKeys();
         $scope.programName = program.name;
-        $scope.workout.program = program.id;
+        // FIXME: !!!
+        $scope.workout.program = {id:program.id, param:param, workout:''};
       }
       else {
         // 404???
@@ -37,12 +37,12 @@ angular.module('clientApp')
     $scope.$watch('user.data', function(newData){
       initProgram(programName);
     });
-    
+
     $scope.applyProgram = function() {
-      var program = ProgramRegistry.getProgram($scope.workout.program);
+      var program = ProgramRegistry.getProgram($scope.workout.program.id);
       var origUser = $scope.user;
       var user = {data:[]};
-      var param = $scope.param;
+      var param = $scope.workout.program.param;
 
       var days = [2,2,3];
       var dayIndex = 0;

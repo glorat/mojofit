@@ -11,6 +11,7 @@ angular.module('clientApp').directive('workoutEditor', function() {
             $scope.user = UserState.getMyState();
 
 
+          // I seem to have not copy/pasted this much elsewhere for datepicker
           $scope.dateOptions = {
                 formatYear: 'yy',
                 startingDay: 1
@@ -77,21 +78,21 @@ angular.module('clientApp').directive('workoutEditor', function() {
             };
           $scope.programNames = ProgramRegistry.listPrograms();
 
-          $scope.$watch('workout.program', function(){
-            $scope.workoutNames = ProgramRegistry.listWorkouts($scope.workout.program);
-            var program = ProgramRegistry.getProgram($scope.workout.program);
-            if (!$scope.workout.workout) {
+          $scope.$watch('workout.program.id', function(newVal){
+            $scope.workoutNames = ProgramRegistry.listWorkouts(newVal);
+            var program = ProgramRegistry.getProgram(newVal);
+            if (program && !$scope.workout.program.workout) {
               // Auto select a program for the user
-              $scope.workout.workout =  program ? program.chooseWorkout($scope.user) : '';
+              $scope.workout.program.workout =  program ? program.chooseWorkout($scope.user) : '';
             }
           });
 
           $scope.applyWorkout = function() {
-            if (window.confirm('Apply ' + $scope.workout.program + ' exercises for workout ' + $scope.workout.workout + '?')) {
-              var program = ProgramRegistry.getProgram($scope.workout.program);
+            if (window.confirm('Apply ' + $scope.workout.program.id + ' exercises for workout ' + $scope.workout.program.workout + '?')) {
+              var program = ProgramRegistry.getProgram($scope.workout.program.id);
 
               // FIXME: Grab param (and unit) from prefs
-              var param = program.defaultParam($scope.user, 'kg');
+              var param = $scope.workout.program.param || program.defaultParam($scope.user, 'kg');
 
               var wout = program.applyWorkout($scope.workout.workout, $scope.user, $scope.workout.date, param);
               $scope.workout.actions = wout.actions;
