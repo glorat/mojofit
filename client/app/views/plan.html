@@ -21,7 +21,7 @@
         <div class="form-group">
           <label class="control-label col-xs-3" for="program">Program</label>
           <div class="col-xs-9">
-            <select id="program" class="form-control" ng-model="workout.program.id" ng-options="p.id as p.name for p in programNames">
+            <select id="program" class="form-control" ng-model="workout.program.id" ng-change="onProgramChange()" ng-options="p.id as p.name for p in programNames">
               <option value="">User defined</option>
             </select>
           </div>

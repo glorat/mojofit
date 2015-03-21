@@ -32,7 +32,7 @@ angular.module('clientApp')
         workout.program = edit.program;
       }
       else if (myState.plan) {
-        var plan = myState.plan;
+        var plan = angular.copy(myState.plan);
         workout.actions = plan.actions;
         workout.notes = '';
         workout.program = plan.program;
