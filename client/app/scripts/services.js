@@ -8,7 +8,7 @@ angular.module('clientApp')
     today.setUTCHours(0,0,0,0);
     var utcToday = today.valueOf();
 
-    var workout = {date:utcToday, actions:[]};
+    var workout = {date:utcToday, actions:[], program:{}};
     var weight = {date:utcToday, bw: {weight:0, unit: 'kg'}};
 
     var saneDate = function(d) {
@@ -30,20 +30,17 @@ angular.module('clientApp')
         workout.notes = edit.notes;
         // FIXME: Knowledge of the fields in a workout is fragile
         workout.program = edit.program;
-        workout.workout = edit.workout;
       }
       else if (myState.plan) {
         var plan = myState.plan;
         workout.actions = plan.actions;
         workout.notes = '';
         workout.program = plan.program;
-        workout.workout = plan.workout;
       }
       else {
         workout.actions = [];
         workout.notes = '';
-        workout.program = '';
-        workout.workout = '';
+        workout.program = {id:'', workout:''};
       }
       workout.date = utc;
     }
