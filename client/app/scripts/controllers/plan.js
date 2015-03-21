@@ -15,6 +15,10 @@ angular.module('clientApp')
 
     };
 
+    var submitPlanCB = function() {
+      UserState.reloadMyState();
+    };
+
     var deleteCB = submitCB;
 
     $scope.submitWorkout = function() {
@@ -24,7 +28,7 @@ angular.module('clientApp')
 
     $scope.submitPlan = function() {
       var item = $scope.workout;
-      $scope.workoutStatus = MojoServer.submitPlan(item, submitCB);
+      $scope.workoutStatus = MojoServer.submitPlan(item, submitPlanCB);
     };
 
     $scope.reset = function() {
