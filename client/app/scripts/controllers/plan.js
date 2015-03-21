@@ -18,64 +18,71 @@ angular.module('clientApp')
     var deleteCB = submitCB;
 
     $scope.submitWorkout = function() {
-      var item = $scope.editWorkout;
+      var item = $scope.workout;
       $scope.workoutStatus = MojoServer.submitWorkout([item], submitCB);
     };
 
     $scope.submitPlan = function() {
-      var item = $scope.editWorkout;
+      var item = $scope.workout;
       $scope.workoutStatus = MojoServer.submitPlan(item, submitCB);
     };
 
     $scope.reset = function() {
-      WorkoutState.setUtcDate($scope.editWorkout.date);
+      WorkoutState.setUtcDate($scope.workout.date);
     };
 
     $scope.onDateChanged = function() {
-      WorkoutState.setUtcDate($scope.editWorkout.date);
+      WorkoutState.setUtcDate($scope.workout.date);
     };
 
-    $scope.startOver = function() {
+    $scope.deletePlan = function() {
       var w = $scope.workout;
       w.actions = [];
       w.notes = '';
       w.program = {id:'', workout:''};
-
-      $scope.programCollapsed = 0;
-      $scope.paramShow=0;
-      $scope.workoutShow = 0;
-
     };
 
     $scope.programNames = ProgramRegistry.listPrograms();
 
     var applyProgram = function(newVal){
+      // When *anything* changes program, keep display in sync
       $scope.workoutNames = ProgramRegistry.listWorkouts(newVal);
       var program = ProgramRegistry.getProgram(newVal);
-      if (program && !$scope.workout.program.workout) {
-        // Auto select a program for the user
-        $scope.workout.program.workout =  program ? program.chooseWorkout($scope.user) : '';
+      if (program) {
         $scope.programName = program.name;
-
 
         // Update display
         $scope.paramKeys = program.paramKeys();
         $scope.paramSchema = program.paramSchemaByField();
-        var defParam = program.defaultParam($scope.user, 'kg');
-        var param = program.genParams($scope.user, defParam);
-
-
-        // Update model
-        $scope.workout.program.id = program.id;
-        $scope.workout.program.workout =  program ? program.chooseWorkout($scope.user) : '';
-        $scope.workout.program.param = param;
 
       }
     };
+    $scope.$watch('workout.program.id', applyProgram);
+
+    $scope.onProgramChange = function() {
+      // When user changes program, auto-select workoutt
+      var program = ProgramRegistry.getProgram($scope.workout.program.id);
+      if (program) {
+        $scope.workout.program.workout = program ? program.chooseWorkout($scope.user) : '';
+      }
+    };
+
 
     $scope.onChooseProgram = function() {
+
+      var program = ProgramRegistry.getProgram($scope.workout.program.id);
+      if (program) {
+        var defParam = program.defaultParam($scope.user, 'kg');
+        var param = program.genParams($scope.user, defParam);
+
+        // Update model
+        $scope.workout.program.param = param;
+      }
+
+
       $scope.programCollapsed=1;
       $scope.paramShow=1;
+      $scope.paramCollapsed=0;
       if ((!$scope.workout.program.param) || $scope.workout.program.param.length===0) {
         // Skip step 2
         $scope.workoutShow=1;
@@ -83,22 +90,40 @@ angular.module('clientApp')
       }
     };
 
-    $scope.$watch('workout.program.id', applyProgram);
-
     $scope.applyWorkout = function() {
-      if ($scope.workout.actions.length==0 || window.confirm('Apply ' + $scope.workout.program.id + ' exercises for workout ' + $scope.workout.program.workout + '?')) {
-        var program = ProgramRegistry.getProgram($scope.workout.program.id);
+      var wout = $scope.workout;
+      if ($scope.workout.actions.length==0 || window.confirm('Apply ' + wout.program.id + ' exercises for workout ' + wout.program.workout + '?')) {
+        var program = ProgramRegistry.getProgram(wout.program.id);
 
         // FIXME: Grab param (and unit) from prefs
-        var param = $scope.workout.program.param || program.defaultParam($scope.user, 'kg');
+        var param = wout.program.param || program.defaultParam($scope.user, 'kg');
 
-        var wout = program.applyWorkout($scope.workout.workout, $scope.user, $scope.workout.date, param);
-        $scope.workout.actions = wout.actions;
+        var woutNew = program.applyWorkout(wout.program.workout, $scope.user, wout.date, param);
+        $scope.workout.actions = woutNew.actions;
 
         // Hide the params now and show next step
         $scope.paramCollapsed = 1;
         $scope.workoutShow = 1;
       }
     };
+
+
+    $scope.startOver = function() {
+      var today = new Date();
+      today.setUTCHours(0,0,0,0);
+      WorkoutState.setUtcDate(today); // OR date picker?
+
+      $scope.programCollapsed = 0;
+      $scope.paramShow=0;
+      $scope.workoutShow = 0;
+
+      if (1) {
+        $scope.paramShow=1;
+        $scope.workoutShow=1;
+      }
+      applyProgram($scope.workout.program.id);
+    };
+
+    $scope.startOver();
 
   });
