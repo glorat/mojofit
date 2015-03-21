@@ -36,6 +36,14 @@ angular.module('clientApp')
     };
 
     $scope.startOver = function() {
+      var w = $scope.workout;
+      w.actions = [];
+      w.notes = '';
+      w.program = {id:'', workout:''};
+
+      $scope.programCollapsed = 0;
+      $scope.paramShow=0;
+      $scope.workoutShow = 0;
 
     };
 
