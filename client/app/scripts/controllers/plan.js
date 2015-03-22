@@ -27,6 +27,7 @@ angular.module('clientApp')
 
     $scope.submitPlan = function() {
       var item = $scope.workout;
+      $scope.workoutCollapsed = 1;
       $scope.workoutStatus = MojoServer.submitPlan(item, submitPlanCB);
     };
 
@@ -135,7 +136,9 @@ angular.module('clientApp')
     $scope.startOver = function() {
       var today = new Date();
       today.setUTCHours(0,0,0,0);
-      WorkoutState.setUtcDate(today); // OR date picker?
+      WorkoutState.setUtcDate(today.valueOf()); // OR date picker?
+
+      $scope.workoutCollapsed = undefined;
 
       if ($scope.workout.actions.length>0) {
         // Toggle all back on if we are in fact good
