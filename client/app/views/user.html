@@ -1,5 +1,11 @@
 <h1 view-title id="trainingLogTitle">Training log for <em>{{ userId }}</em></h1>
 
+<div class="progress" ng-show="userLoadState[userId] && userLoadState[userId] !== 'success'">
+  <div class="progress-bar progress-bar-warning progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+    {{ userLoadState[userId] }} data for {{userId}}
+  </div>
+</div>
+
         <!--
 <form>
     <input type="number" name="minsets" value="<%== $minsets %>" size="2" max="99"> sets x <input type="number" name="minreps" value="<%== $minreps %>" width="2"> reps<br>
