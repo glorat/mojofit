@@ -1,5 +1,13 @@
 <div class="section scrollable-content">
   <h3 view-title><em>{{ userId }}'s Log</em></h3>
+
+  <div class="progress" ng-show="userLoadState[userId] && userLoadState[userId] !== 'success'">
+    <div class="progress-bar progress-bar-warning progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+      {{ userLoadState[userId] }} data for {{userId}}
+    </div>
+  </div>
+
+
   <div class="">
     <div class="alert alert-warning" ng-show="canEdit() && !userStatus.isLoggedIn">
       This log is temporarily saved but not registered. Please <a href="#/login" class="alert-link">register</a> so your log is saved permanently and you can view it on your desktop

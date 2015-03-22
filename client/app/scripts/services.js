@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('clientApp')
-    .factory('WorkoutState', function (UserState, $log) {
+    .factory('WorkoutState', function (UserState) {
     var user = UserState.getMyState();
 
     var today = new Date();
@@ -10,13 +10,6 @@ angular.module('clientApp')
 
     var workout = {date:utcToday, actions:[], program:{}};
     var weight = {date:utcToday, bw: {weight:0, unit: 'kg'}};
-
-    var saneDate = function(d) {
-      d = new Date(d.valueOf());
-      // JS UI requires local date
-      var localDate = new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
-      return localDate.valueOf();
-    };
 
     function loadForUtcDate(utc) {
       var myState = UserState.getMyState();
