@@ -5,6 +5,7 @@ angular.module('clientApp')
     $scope.workout = WorkoutState.getWorkout();
     $scope.user = UserState.getMyState();
     $scope.userStatus = MojoServer.getUserStatus();
+    $scope.userLoadState = UserState.userLoadState;
 
     var submitCB = function() {
       UserState.reloadMyState();
