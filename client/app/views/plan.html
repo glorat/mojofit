@@ -47,7 +47,7 @@
     <header class="panel-heading" ng-click="paramCollapsed=!paramCollapsed">Step 2: Program parameters</header>
     <div class="panel-body" collapse="paramCollapsed">
       <div class="row">
-        <div class="col-sm-5 col-sm-offset-2 col-xs-3">Next workout<br>Adjust this column to override defaults</div>
+        <div class="col-sm-5 col-sm-offset-2 col-xs-11">Next workout<br>Adjust this column to override defaults</div>
         <div class="col-sm-5 hidden-xs">Previous workout</div>
       </div>
       <div class="row">
@@ -75,7 +75,9 @@
 
   <div class="panel panel-default" ng-show="workoutShow">
     <header class="panel-heading">Step 3: Customize program</header>
-    <workout-editor workout="workout"></workout-editor>
+    <div class="panel-body" collapse="workoutCollapsed">
+      <workout-editor workout="workout"></workout-editor>
+    </div>
   </div>
 
   <div class="panel panel-default" ng-show="workout.actions.length>0">
@@ -91,10 +93,17 @@
             {{ userLoadState[userStatus.username] }} your data
           </div>
         </div>
-        <div ng-show="workoutStatus.level==='success' && userLoadState[userStatus.username] && userLoadState[userStatus.username] === 'success'">
-          Now go do it... TODO
-        </div>
       </div>
+    </div>
+  </div>
+
+  <div class="panel panel-default" ng-show="workoutStatus.level==='success' && userLoadState[userStatus.username] && userLoadState[userStatus.username] === 'success'">
+    <header class="panel-heading">Step 5: Track your workout</header>
+    <div class="panel-body">
+      <ul>
+        <li><a href="#/track">Log workout</a></li>
+        <li>More options to come including using your phone</li>
+      </ul>
     </div>
   </div>
 </div>

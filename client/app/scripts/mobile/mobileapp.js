@@ -18,6 +18,11 @@ angular.module('Gainstrack', [
       controller: 'TrackController',
       reloadOnSearch: false
     })
+      .when('/plan', {
+        templateUrl: 'views/plan.html',
+        controller: 'PlanController',
+        reloadOnSearch: false
+      })
       .when('/trackweight', {
         templateUrl: 'views/trackweight.html',
         controller: 'TrackWeightController',

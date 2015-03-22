@@ -58,6 +58,7 @@ angular.module('clientApp')
             loadForUtcDate(utc);
           },
           setUtcDate:function(utc) {
+            // TODO: Assert isUtcDate here
             loadForUtcDate(utc);
           }
 
