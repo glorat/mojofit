@@ -19,8 +19,6 @@ angular.module('clientApp')
       UserState.reloadMyState();
     };
 
-    var deleteCB = submitCB;
-
     $scope.submitWorkout = function() {
       var item = $scope.workout;
       $scope.workoutStatus = MojoServer.submitWorkout([item], submitCB);
@@ -96,7 +94,7 @@ angular.module('clientApp')
 
     $scope.applyWorkout = function() {
       var wout = $scope.workout;
-      if ($scope.workout.actions.length==0 || window.confirm('Apply ' + wout.program.id + ' exercises for workout ' + wout.program.workout + '?')) {
+      if ($scope.workout.actions.length===0 || window.confirm('Apply ' + wout.program.id + ' exercises for workout ' + wout.program.workout + '?')) {
         var program = ProgramRegistry.getProgram(wout.program.id);
 
         // FIXME: Grab param (and unit) from prefs

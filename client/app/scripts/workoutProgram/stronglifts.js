@@ -53,6 +53,7 @@
     });
 
     // TODO: Make this user configurable
+    /*jshint sub:true*/
     var kgcfg = {};
     kgcfg['Squat'] = {incr: 2.5, init: 20};
     kgcfg['Deadlift'] = {incr: 5, init: 40};
