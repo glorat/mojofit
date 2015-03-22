@@ -69,6 +69,17 @@ angular.module('clientApp')
       }
     };
 
+    var lastWorkoutProgram = function() {
+      // TODO: Consider checking if the program is actually known
+      if ($scope.user.data[0]
+        && $scope.user.data[0].program) {
+        return $scope.user.data[0].program;
+      }
+      else {
+        return undefined;
+      }
+    };
+
 
     $scope.onChooseProgram = function() {
 
@@ -77,6 +88,15 @@ angular.module('clientApp')
         var defParam = program.defaultParam($scope.user, 'kg');
         var param = program.genParams($scope.user, defParam);
 
+        // Grab last time's params for comparison
+        var last = lastWorkoutProgram();
+        if (last && last.id === $scope.workout.program.id) {
+          $scope.prevParam = last.param;
+        }
+        else {
+          $scope.prevParam = undefined;
+        }
+
         // Update model
         $scope.workout.program.param = param;
       }
@@ -84,7 +104,8 @@ angular.module('clientApp')
 
       $scope.programCollapsed=1;
       $scope.paramShow=1;
-      $scope.paramCollapsed=0;
+      // Don't change between different forms of falsiness or it goes buggy
+      $scope.paramCollapsed = $scope.paramCollapsed ? 0 : $scope.paramCollapsed;
       if ((!$scope.workout.program.param) || $scope.workout.program.param.length===0) {
         // Skip step 2
         $scope.workoutShow=1;
@@ -126,6 +147,13 @@ angular.module('clientApp')
         $scope.programCollapsed = 0;
         $scope.paramShow=0;
         $scope.workoutShow = 0;
+        // Make some initial smart decisions
+        var last = lastWorkoutProgram();
+        if (last) {
+          $scope.workout.program.id = last.id;
+          $scope.onProgramChange();
+        }
+
       }
       applyProgram($scope.workout.program.id);
     };

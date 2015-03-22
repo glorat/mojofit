@@ -46,19 +46,32 @@
   <div class="panel panel-default" ng-show="paramShow">
     <header class="panel-heading" ng-click="paramCollapsed=!paramCollapsed">Step 2: Program parameters</header>
     <div class="panel-body" collapse="paramCollapsed">
-      <form class="form-horizontal">
-        <div class="form-group" ng-repeat="paramKey in paramKeys">
-          <label class="control-label col-sm-6">{{paramKey}}</label>
-          <div class="col-sm-6">
-            <param-editor param="workout.program.param[paramKey]" schema="paramSchema[paramKey]"></param-editor>
-          </div>
-        </div>
-        <div class="" ng-show="workout.program.workout">
-          <button type="button" class="btn btn-primary pull-right" ng-click="applyWorkout()">Generate workout</button>
-        </div>
-      </form>
+      <div class="row">
+        <div class="col-sm-5 col-sm-offset-2 col-xs-3">Next workout</div>
+        <div class="col-sm-5 hidden-xs">Previous workout</div>
+      </div>
+      <div class="row">
+          <form class="form-horizontal">
+            <div class="form-group" ng-repeat="paramKey in paramKeys">
+              <label class="control-label col-sm-2 col-xs-3">{{paramKey}}</label>
+              <div class="col-sm-5 col-xs-9">
+                <param-editor param="workout.program.param[paramKey]" schema="paramSchema[paramKey]"></param-editor>
+              </div>
+              <div class="col-sm-5 hidden-xs" ng-show="prevParam">
+                <param-editor param="prevParam[paramKey]" schema="paramSchema[paramKey]"></param-editor>
+              </div>
+            </div>
+            <div class="col-sm-7 col-xs-12" ng-show="workout.program.workout">
+              <button type="button" class="btn btn-primary pull-right" ng-click="applyWorkout()">Generate workout</button>
+            </div>
+          </form>
+      </div>
+
     </div>
   </div>
+
+
+
 
   <div class="panel panel-default" ng-show="workoutShow">
     <header class="panel-heading">Step 3: Customize program</header>
