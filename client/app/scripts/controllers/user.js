@@ -24,7 +24,10 @@ function drawChart() {
 
 angular.module('clientApp')
   .factory('SetupSharedUserController', function() {
-    var setupSharedUserController = function($scope,$filter,WorkoutState,$location){
+    var setupSharedUserController = function($scope,$filter,WorkoutState,UserState,$location){
+      $scope.userState = UserState.getCurrentUser();
+      $scope.userLoadState = UserState.userLoadState;
+
       $scope.scoreFor = function(date, exname) {
         // TODO: Pull this from strengthHistory.cols
         var INDICES = ['foo Date', 'Barbell Squat','Barbell Bench Press','Barbell Deadlift'];
@@ -95,7 +98,6 @@ angular.module('clientApp')
 angular.module('clientApp')
   .controller('UserCtrl', function ($scope, $http, MojoServer, $routeParams, UserState, googleChartApiPromise, WorkoutState, $location, $filter, SetupSharedUserController) {
         $scope.userId = $routeParams.userId;
-        $scope.userState = UserState.getCurrentUser();
         UserState.setCurrentUserId($scope.userId);
         $scope.showChart = false;
         $scope.itemsPerPage = 20;
@@ -118,7 +120,7 @@ angular.module('clientApp')
         });
       }
     });
-    SetupSharedUserController.setup($scope, $filter, WorkoutState, $location);
+    SetupSharedUserController.setup($scope, $filter, WorkoutState, UserState, $location);
   });
 
 

@@ -5,6 +5,7 @@ angular.module('clientApp')
 
         var userStatus = MojoServer.getUserStatus();
 
+        var userLoadState = {}; // userId -> state // Public read
         var myCache = {}; // userId -> {state:String, data:Object}
         // var fv = foo(RepMaxCalculator);
         var fv = fitViewProcessor;
@@ -50,13 +51,14 @@ angular.module('clientApp')
             $log.info('Loading user data from server for '+userId );
             if (!myCache.hasOwnProperty(userId)) {
                 myCache[userId] = {};
+                userLoadState[userId] = 'initializing'; // Redundant but good for reasoning
             }
-            if (myCache[userId].state === 'requesting') {
+            if (userLoadState[userId] === 'requesting') {
                 $log.info('Dropping duplicate get request for ' + userId);
                 return;
             }
 
-            myCache[userId].state = 'requesting';
+            userLoadState[userId] = 'requesting';
             MojoServer.getUserRaw(userId).success(function(data) {
                 // Due to aliasing, server may have stored userId
                 // and we don't want to gen it at runtime server currently
@@ -66,12 +68,12 @@ angular.module('clientApp')
                     localStorageService.set('mydata', data);
                 }
                 $log.info('Done user state request for ' + userId);
-                myCache[userId].state = 'done';
+                userLoadState[userId] = 'success';
                 myCache[userId].data = data;
                 getCb(data);
             }).error(function(){
               $log.warn('Failed user state request for ' + userId);
-              myCache[userId].state = 'error';
+              userLoadState[userId] = 'error';
             });
         };
 
@@ -79,7 +81,9 @@ angular.module('clientApp')
             loadUser: loadUser,
             //loadUserInto : loadUserInto,
             //copyUserInto: copyUserInto,
-            defaultExercises: defaultExercises
+            defaultExercises: defaultExercises,
+            userLoadState : userLoadState,
+            SUCCESS : 'success'
         };
     });
 
@@ -171,7 +175,8 @@ angular.module('clientApp')
            clearCache:function() {
              $log.info('Clearing localCache of myData');
              localStorageService.set('mydata', {});
-           }
+           },
+      userLoadState:UserStateLoader.userLoadState
         };
         return ret;
     });
