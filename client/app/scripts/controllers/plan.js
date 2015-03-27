@@ -79,8 +79,7 @@ angular.module('clientApp')
 
     var lastWorkoutProgram = function() {
       // TODO: Consider checking if the program is actually known
-      if ($scope.user.data[0]
-        && $scope.user.data[0].program) {
+      if ($scope.user.data[0] && $scope.user.data[0].program) {
         return $scope.user.data[0].program;
       }
       else {
