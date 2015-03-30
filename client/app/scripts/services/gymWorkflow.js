@@ -20,6 +20,7 @@
   var self = {};
   self.workItems = undefined;
   self.workIndex = 0;
+  self.timerStart = Date.now();
 
   function workoutToWorkflow(workout) {
     var items = [];
@@ -66,6 +67,11 @@
   };
 
   self.next = function() {
+    if (self.workItems[self.workIndex].type === 'Work') {
+      // If you've just finished work, reset the timer!
+      self.timerStart = Date.now();
+    }
+
     if (self.hasNext()) {
       self.workIndex++;
     }
@@ -75,6 +81,11 @@
     if (self.hasPrev()) {
       self.workIndex--;
     }
+  };
+
+  /** In seconds */
+  self.timer = function() {
+    return (Date.now() - self.timerStart)/1000;
   };
 
   return self;
