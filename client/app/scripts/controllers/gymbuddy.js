@@ -21,7 +21,8 @@ angular.module('clientApp')
     var relink = function() {
       self.workItem = GymWorkflow.workItems[GymWorkflow.workIndex];
       // TODO: Read docs on search method
-      if ( (0===self.workItem.action.name.search('Barbell')) &&
+      if (self.workItem &&
+        (0===self.workItem.action.name.search('Barbell')) &&
         self.workItem.set &&
         self.workItem.set.weight) {
         var aset = self.workItem.set;
@@ -45,8 +46,13 @@ angular.module('clientApp')
     self.onDone = function() {
       // Set some state
       self.onNext();
-
     };
+
+    self.onComplete = function() {
+      window.alert('Not Implemented');
+    };
+
+    self.toActions = GymWorkflow.toActions;
 
     if (self.workout.actions.length > 0) {
       GymWorkflow.resetWorkflow();
