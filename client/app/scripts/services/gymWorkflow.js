@@ -4,19 +4,19 @@
 
   if (typeof module !== 'undefined' && module.exports ) {
     // FIXME: require('WorkoutState')
-
-    module.exports = myService(undefined);
+    var us = require('underscore');
+    module.exports = myService(undefined, us);
   } else if( angular) {
     angular.module('clientApp')
       .factory('GymWorkflow', function(WorkoutState){
-        return myService(WorkoutState);
+        return myService(WorkoutState, _);
       });
   } else {
     // Die?
     // window.myService = myService;
   }
 
-}(function (WorkoutState) {
+}(function (WorkoutState, _) {
   var self = {};
   self.workItems = undefined;
   self.workIndex = 0;
@@ -30,7 +30,7 @@
     var doAction = function(action, ai) {
 
       var doSet = function(aset, si) {
-        items.push({type:'Setup', action:action, actionIndex:ai, set:aset, setIndex:si});
+        // items.push({type:'Setup', action:action, actionIndex:ai, set:aset, setIndex:si});
         items.push({type:'Work', action:action, actionIndex:ai, set:aset, setIndex:si});
         items.push({type:'Feedback', action:action, actionIndex:ai, set:aset, setIndex:si}); // Feedback resets timer
         lastSet = aset;
@@ -48,6 +48,28 @@
       doAction(workout.actions[ai], ai);
     }
     return items;
+  }
+
+  /**
+   * Reconstruct a list of actions from the workflow
+   * We must be careful of all the JS copy by ref here
+   * Most things won't be changed so we can copy by ref
+   * But since workflow can add sets/actions, those are reconstructed
+   */
+  function workflowToActions() {
+    var work = _.filter(self.workItems, function(w){return w.type==='Work';});
+    var actions = [];
+    var curAction = {name:'a nonce string', sets:[]};
+    work.forEach(function(w){
+      if (w.action.name !== curAction.name) {
+        // New action to push
+        curAction = w.action;
+        actions.push(curAction);
+        curAction.sets = [];
+      }
+      curAction.sets.push(w.set);
+    });
+    return actions;
   }
 
   function resetWorkflow() {
@@ -87,6 +109,8 @@
   self.timer = function() {
     return (Date.now() - self.timerStart)/1000;
   };
+
+  self.toActions = workflowToActions;
 
   return self;
 
