@@ -2,7 +2,7 @@
 
 
 angular.module('clientApp')
-  .controller('GymBuddyController', function (GymWorkflow, WorkoutState, PlateCalculator, $timeout) {
+  .controller('GymBuddyController', function (GymWorkflow, WorkoutState, PlateCalculator, $timeout, $interval) {
     var self = this;
 
     // This is the plan!
@@ -12,6 +12,11 @@ angular.module('clientApp')
 
     self.hasPrev = GymWorkflow.hasPrev;
     self.hasNext = GymWorkflow.hasNext;
+    self.timer = 0;
+
+    $interval(function() {
+      self.timer = GymWorkflow.timer();
+    }, 100);
 
     var relink = function() {
       self.workItem = GymWorkflow.workItems[GymWorkflow.workIndex];

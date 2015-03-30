@@ -18,7 +18,7 @@
         ></div>
       <p class="form-control-static text-center" ng-show="gym.workItem.set">On set {{ gym.workItem.setIndex+1 }} of {{ gym.workItem.action.sets.length }}</p>
       <div ng-show="gym.workItem.type === 'Feedback'">
-        Well done! Now rest
+        Well done! Now rest for between 30 and 180 seconds, depending on how tired you are. When you are ready, press Done
       </div>
       <div ng-show="gym.workItem.type === 'Begin'">
         Get ready for the {{ gym.workItem.action.name }}. You have {{ gym.workItem.action.sets.length}} sets to do
@@ -29,7 +29,7 @@
         </div>
       </div>
       <div ng-show="gym.workItem.type === 'Work'">
-        Do those sets
+        Do the set! When you have done it, press Done
       </div>
       <div ng-show="gym.workItem.type === 'Setup'">
         Get ready to do {{ gym.workItem.set.weight }} {{ gym.workItem.set.unit }} for {{ gym.workItem.set.reps }} reps
@@ -39,7 +39,7 @@
   </div>
   <div class="section scrollable-footer">
     <div class="row">
-      Timer: 00:00:00
+      Timer: {{ gym.timer | number:0 }} seconds
     </div>
     <div class="row">
       <button class="btn btn-default col-xs-2" ng-disabled="!gym.hasPrev()" ng-click="gym.onPrev()">Prev</button>
