@@ -90,24 +90,9 @@
 
 
     <div>
-        <pagination total-items="userState.data.length" items-per-page="itemsPerPage" max-size="10" ng-model="currentPage"></pagination>
-        <div ng-repeat="i in userState.data | startFrom:(currentPage-1)*itemsPerPage | limitTo:itemsPerPage" class="panel panel-default">
-            <header class="panel-heading">
-                {{ i.localDate | date : 'fullDate'}} <!--{{ i.date | date:'yyyy-MM-dd HH:mm:ss Z'}}-->
-                <button ng-show="canEdit()" type="button" class="btn btn-default" aria-label="Edit" ng-click="editWorkout(i.date)">
-                    <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
-                </button>
-            </header>
-            <ul ng-repeat="action in i.actions | filter:exnameFilter">
-                <li>{{ action.name }} <span class="label label-primary">{{ scoreFor(i.date, action.name)}}</span></li>
-                <ul ng-repeat="set in action.sets">
-                    <li><set-text data="set" set-badges="userState.setBadges"></set-text></li>
-                </ul>
-            </ul>
-            <div ng-show="i.body">
-                <button class="btn btn-default" ng-click="editWeight(i.date)"><span class="glyphicon glyphicon-scale"></span>Bodyweight: {{ i.body.weight }}{{i.body.unit}}</button>
-            </div>
-            <footer class="panel-footer" ng-show="i.notes.length && !exnameFilter">{{ i.notes }}</footer>
+      <pagination total-items="userState.data.length" items-per-page="itemsPerPage" max-size="10" ng-model="currentPage"></pagination>
+        <div ng-repeat="i in userState.data | startFrom:(currentPage-1)*itemsPerPage | limitTo:itemsPerPage">
+          <workout-panel user-state="userState" user-status="userStatus" workout-date="i.date"></workout-panel>
         </div>
       There are {{userState.data.length}} log entries...
 
