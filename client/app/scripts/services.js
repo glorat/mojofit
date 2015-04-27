@@ -66,6 +66,23 @@ angular.module('clientApp')
         return ret;
     });
 
+angular.module('clientApp')
+  .filter('stringDate', function() {
+    function pad(n, width, z) {
+      z = z || '0';
+      n = n + '';
+      return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+    }
+
+    return function(input) {
+
+      var d1 = new Date(input);
+      // Need to add one to month in JS
+      return '' +  pad(d1.getUTCFullYear(),4) + pad(1+d1.getUTCMonth(),2) + pad(d1.getUTCDate(),2);
+
+    };
+  });
+
 angular.module('clientApp').directive('utcDate', function() {
 
   var assert = function(expr, msg) {
