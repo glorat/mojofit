@@ -10,9 +10,17 @@ angular.module('clientApp').directive('workoutPanel', function() {
     scope: {userStatus:'=', userState: '=', workoutDate: '='},
     templateUrl: 'views/workout-panel.html',
     controllerAs : 'vm',
-    controller: function ($scope, $location, WorkoutState, $filter) {
+    controller: function ($scope, $location, WorkoutState, $filter, $rootScope) {
       $scope.i = _.find($scope.userState.data, function(item) {return item.date === $scope.workoutDate;});
       // if (!i) ... ??? 404?
+
+      // Because $scope.i is being evaulated statically, it goes stale when UserState changes
+      // This event handler will trigger the update
+      // TODO: Perhaps GetCurrentUser should return a promise of updates? Or maybe this indeed is best
+      $rootScope.$on('UserState:stateLoaded', function(){
+        $scope.i = _.find($scope.userState.data, function(item) {return item.date === $scope.workoutDate;});
+      });
+
 
       var scoreFor = function(date, exname) {
         // TODO: Pull this from strengthHistory.cols
