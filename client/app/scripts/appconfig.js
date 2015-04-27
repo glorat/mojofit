@@ -8,6 +8,9 @@ angular.module('clientApp').config(['$routeProvider','$locationProvider',
         controller: 'UserCtrl',
         controllerAs: 'user'
       })
+      .when('/user/:userId/:workoutDate', {
+        templateUrl: 'views/workoutReport.html'
+      })
       .when('/slic', {
         templateUrl: 'views/slic.html'
       })
