@@ -75,7 +75,7 @@ sub filterMaxWeight {
 	@kgs or return $action;
 	my $max = max (@kgs);
 	$max ||= 0;
-	my @maxsets = grep {$_->kg == $max} (@{$action->{sets}});
+	my @maxsets = grep {$_->kg && $_->kg == $max} (@{$action->{sets}});
 	$action->{sets} = \@maxsets;
 	return $action;
 }
@@ -85,7 +85,7 @@ sub filterMaxWeight {
 sub getMaxFromSets {
 	my ($sets, $minset) = @_;
 	my %setreps;
-	map { $setreps{$_->kg}++} (@$sets);
+	map { $setreps{$_->kg}++ if $_->kg} (@$sets);
 	foreach my $kg (sort keys %setreps) {
 		return $kg if $setreps{$kg}>=$minset;
 	}
