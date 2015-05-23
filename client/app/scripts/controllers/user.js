@@ -63,7 +63,19 @@ angular.module('clientApp')
  */
 angular.module('clientApp')
   .controller('UserCtrl', function ($scope, $http, MojoServer, $routeParams, UserState, googleChartApiPromise, WorkoutState, $location, $filter, SetupSharedUserController) {
-        $scope.userId = $routeParams.userId;
+    if ($routeParams.userId) {
+      $scope.userId = $routeParams.userId;
+    }
+    else if (MojoServer.getUserStatus().username) {
+      $scope.userId = MojoServer.getUserStatus().username;
+    }
+    else {
+      // Not logged in, no user generated, redirect!
+      $location.path('/');
+      return;
+    }
+
+
         UserState.setCurrentUserId($scope.userId);
         $scope.showChart = false;
         $scope.itemsPerPage = 20;
