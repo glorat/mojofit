@@ -11,16 +11,15 @@ angular.module('clientApp').directive('workoutPanel', function() {
     templateUrl: 'views/workout-panel.html',
     controllerAs : 'vm',
     controller: function ($scope, $location, WorkoutState, $filter, $rootScope) {
+      var compressedData = {actions:[]};
+
       var enrichDataActions = function(data) {
         if (data && data.actions) {
-          data.actions.forEach(compressAction);
+          compressedData.actions = data.actions.map(compressAction);
         }
       };
 
       var compressAction = function(action) {
-        // Memo!
-        if (action.compressedSets) {return;}
-
         var csets = [];
         var lastset = {name:'a nonce value', multiReps:[]};
         action.sets.forEach(function(aset) {
@@ -43,7 +42,9 @@ angular.module('clientApp').directive('workoutPanel', function() {
             aset.reps = aset.multiReps.join('|');
           }
         });
-        action.compressedSets = csets;
+        var newact = angular.copy(action);
+        newact.compressedSets = csets;
+        return newact;
       };
 
       $scope.i = _.find($scope.userState.data, function(item) {return item.date === $scope.workoutDate;});
@@ -108,7 +109,8 @@ angular.module('clientApp').directive('workoutPanel', function() {
         canEdit : canEdit,
         scoreFor: scoreFor,
         editWeight: editWeight,
-        editWorkout: editWorkout
+        editWorkout: editWorkout,
+        compressedData: compressedData
       };
     }
   };
