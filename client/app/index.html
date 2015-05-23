@@ -45,7 +45,8 @@
 
 
           <li class=""><a ng-href="#">Home</a></li>
-          <li class=""><a id="mylog" ng-href="/user/{{ userStatus.username}}" ng-show="userStatus.username">My Log</a></li>
+          <li class=""><a id="mylog" ng-if="userStatus.isLoggedIn" ng-href="/user/{{ userStatus.username}}">My Log</a></li>
+          <li class=""><a id="mylog" ng-if="!userStatus.isLoggedIn" ng-href="/user/">My Log</a></li>
           <li class=""><a ng-href="/user/KevinTam">Kevin's Log</a></li>
           <li class=""><a href="http://blog.gainstrack.com">News/Blog</a></li>
 
@@ -67,7 +68,7 @@
           <!-- <li><a ng-href="/about">About</a></li> -->
         </ul>
             <div class="" >
-                <span class="hidden-xs" ng-show="userStatus.username" ng-bind-template="Welcome {{ userStatus.username}}"></span>
+                <span class="hidden-xs" ng-if="userStatus.isLoggedIn" ng-bind-template="Welcome {{ userStatus.username}}"></span>
              </div>
         </div>
 

@@ -8,6 +8,11 @@ angular.module('clientApp').config(['$routeProvider','$locationProvider',
         controller: 'UserCtrl',
         controllerAs: 'user'
       })
+      .when('/user', {
+        templateUrl: 'views/user.html',
+        controller: 'UserCtrl',
+        controllerAs: 'user'
+      })
       .when('/user/:userId/:workoutDate', {
         templateUrl: 'views/workoutReport.html'
       })
