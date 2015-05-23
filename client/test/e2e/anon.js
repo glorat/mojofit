@@ -64,12 +64,12 @@ describe('anonymous first time user', function() {
 
   it('should be able to submit workout', function(){
     element(by.id('trackSubmit')).click();
-    var dataRepeat = element.all(by.repeater('i in userState.data'));
+    var dataRepeat = element.all(by.repeater('action in i.actions'));
     //expect(dataRepeat.isPresent()).toBe(true);
     expect(dataRepeat.count()).toBe(1);
 
     // expect(by.id('strength-score-no-weight').visible).toBe(1); // FIXME: How to express this?
-    element(by.id('strength-score-fix-weight')).click();
+    element(by.partialButtonText('Bodyweight')).click();
     element(by.model('input.weight')).sendKeys(75);
     element(by.id('submitWeight')).click();
     // This takes us back to our log
