@@ -64,7 +64,8 @@ describe('anonymous first time user', function() {
 
   it('should be able to submit workout', function(){
     element(by.id('trackSubmit')).click();
-    var dataRepeat = element.all(by.repeater('action in i.actions'));
+    // TODO: Make the selector more resistant to me changing my mind on the repeater name
+    var dataRepeat = element.all(by.repeater('action in vm.compressedData.actions'));
     //expect(dataRepeat.isPresent()).toBe(true);
     expect(dataRepeat.count()).toBe(1);
 
