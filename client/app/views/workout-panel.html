@@ -8,7 +8,7 @@
   </header>
   <ul ng-repeat="action in i.actions | filter:exnameFilter">
     <li>{{ action.name }} <span class="label label-primary">{{ vm.scoreFor(i.date, action.name)}}</span></li>
-    <ul ng-repeat="set in action.sets">
+    <ul ng-repeat="set in action.compressedSets">
       <li><set-text data="set" set-badges="userState.setBadges"></set-text></li>
     </ul>
   </ul>
