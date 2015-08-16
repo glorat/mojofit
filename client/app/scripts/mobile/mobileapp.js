@@ -6,7 +6,8 @@ angular.module('Gainstrack', [
   'ui.bootstrap',
   'Gainstrack.controllers.Main',
   'mojofit',
-  'clientApp'
+  'clientApp',
+  'Firestitch.angular-counter'
 ])
 
   .config(function($routeProvider) {
@@ -43,7 +44,11 @@ angular.module('Gainstrack', [
       templateUrl: 'views/score.html',
       controller: 'ScoreController',
       reloadOnSearch: false
-    });
+    })
+      .when('/gymbuddy', {
+        templateUrl: 'views/mobile/gymbuddy.html',
+        reloadOnSearch: false
+      });
 
   })
   .run(['angularticsGainstrack', function (angularticsGainstrack) {

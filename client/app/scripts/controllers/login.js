@@ -39,7 +39,11 @@ angular.module('clientApp')
     });
 
 angular.module('clientApp')
-    .controller('UserStatusController', function ($scope, MojoServer) {
+    .controller('UserStatusController', function ($scope, MojoServer, $route) {
         $scope.userStatus = MojoServer.getUserStatus();
+
+      $scope.reload = function() {
+        $route.reload();
+      };
 
     });
