@@ -123,9 +123,11 @@ Here are your login details.
 Email: $email
 Password: $pass
 
-The website is still in early beta. You can change your password at http://www.gainstrack.com/login
+The website is still in early beta. You can change your password at https://www.gainstrack.com/login
 
 To see the latest news on developments, please visit http://blog.gainstrack.com
+
+For questions, feedback and support, please reply to this email!
 
 Thanks,
 

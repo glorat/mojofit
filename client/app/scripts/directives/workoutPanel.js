@@ -11,7 +11,44 @@ angular.module('clientApp').directive('workoutPanel', function() {
     templateUrl: 'views/workout-panel.html',
     controllerAs : 'vm',
     controller: function ($scope, $location, WorkoutState, $filter, $rootScope) {
+      var compressedData = {actions:[]};
+
+      var enrichDataActions = function(data) {
+        if (data && data.actions) {
+          compressedData.actions = data.actions.map(compressAction);
+        }
+      };
+
+      var compressAction = function(action) {
+        var csets = [];
+        var lastset = {name:'a nonce value', multiReps:[]};
+        action.sets.forEach(function(aset) {
+          if (aset.weight === lastset.weight) {
+            lastset.multiReps.push(aset.reps);
+          }
+          else {
+            var cset = angular.copy(aset);
+            cset.multiReps = [aset.reps];
+            csets.push(cset);
+            lastset = cset;
+          }
+        });
+
+        csets.forEach(function(aset) {
+          if (aset.multiReps.length>1 && _.all(aset.multiReps, function(r){return r === aset.multiReps[0];})) {
+            aset.reps = aset.multiReps.length + 'x' + aset.multiReps[0];
+          }
+          else {
+            aset.reps = aset.multiReps.join('|');
+          }
+        });
+        var newact = angular.copy(action);
+        newact.compressedSets = csets;
+        return newact;
+      };
+
       $scope.i = _.find($scope.userState.data, function(item) {return item.date === $scope.workoutDate;});
+      enrichDataActions($scope.i);
       // if (!i) ... ??? 404?
 
       // Because $scope.i is being evaulated statically, it goes stale when UserState changes
@@ -19,6 +56,8 @@ angular.module('clientApp').directive('workoutPanel', function() {
       // TODO: Perhaps GetCurrentUser should return a promise of updates? Or maybe this indeed is best
       $rootScope.$on('UserState:stateLoaded', function(){
         $scope.i = _.find($scope.userState.data, function(item) {return item.date === $scope.workoutDate;});
+        enrichDataActions($scope.i);
+
       });
 
 
@@ -70,7 +109,8 @@ angular.module('clientApp').directive('workoutPanel', function() {
         canEdit : canEdit,
         scoreFor: scoreFor,
         editWeight: editWeight,
-        editWorkout: editWorkout
+        editWorkout: editWorkout,
+        compressedData: compressedData
       };
     }
   };
