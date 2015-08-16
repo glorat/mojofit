@@ -44,6 +44,12 @@ angular.module('clientApp')
       w.actions = [];
       w.notes = '';
       w.program = {id:'', workout:''};
+      $scope.workoutStatus = MojoServer.submitPlan(w, function(){
+        UserState.reloadMyState();
+        // Note that it's still going to delete in background so fake it locally for now
+        applyProgram('');
+      });
+
     };
 
     $scope.programNames = ProgramRegistry.listPrograms();
@@ -73,8 +79,7 @@ angular.module('clientApp')
 
     var lastWorkoutProgram = function() {
       // TODO: Consider checking if the program is actually known
-      if ($scope.user.data[0]
-        && $scope.user.data[0].program) {
+      if ($scope.user.data[0] && $scope.user.data[0].program) {
         return $scope.user.data[0].program;
       }
       else {
@@ -159,7 +164,7 @@ angular.module('clientApp')
         }
 
       }
-      applyProgram($scope.workout.program.id);
+      applyProgram($scope.workout.program ? $scope.workout.program.id : '');
     };
 
     $scope.startOver();

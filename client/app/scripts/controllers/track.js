@@ -2,7 +2,7 @@
 
 
 angular.module('clientApp')
-    .controller('TrackController', function ($scope, $location, WorkoutState, UserState, MojoServer) {
+    .controller('TrackController', function ($scope, $location, WorkoutState, UserState, MojoServer, stringDateFilter) {
         $scope.editWorkout = WorkoutState.getWorkout();
         $scope.user = UserState.getMyState();
         $scope.userStatus = MojoServer.getUserStatus();
@@ -11,7 +11,10 @@ angular.module('clientApp')
             UserState.reloadMyState();
             var id = $scope.userStatus.username;
             if (id) {
-                $location.path('/user/' + id);
+              // TODO: Use string formatter. Must be one in JS
+              var url = '/user/' + id + "/" + stringDateFilter($scope.editWorkout.date);
+
+                $location.path(url);
             }
 
         };

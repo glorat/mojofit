@@ -1,0 +1,63 @@
+<div ng-controller="GymBuddyController as gym">
+  <div class="section section-wide">
+    <h4 class="text-center" ng-bind-template="{{ gym.workItem.action.name }}">Loading exercise...</h4>
+    <form class="form-horizontal">
+      <div fs-counter value="gym.workItem.set.weight"
+           data-suffix=" kg"
+           data-min="0"
+           data-max="1000"
+           data-step="1"
+           ng-if="gym.workItem.set"
+        ></div>
+      <div fs-counter value="gym.workItem.set.reps"
+           data-suffix=" reps"
+           data-min="0"
+           data-max="100"
+           data-step="1"
+           ng-if="gym.workItem.set"
+        ></div>
+    </form>
+
+    <div class="text-center">
+      <p class="form-control-static " ng-show="gym.workItem.set">On set {{ gym.workItem.setIndex+1 }} of {{ gym.workItem.action.sets.length }}</p>
+
+      <div ng-show="gym.workItem.type === 'Feedback'">
+        Well done! Now rest for between 30 and 180 seconds, depending on how tired you are.<br>
+        When you are ready, press Continue
+      </div>
+      <div ng-show="gym.workItem.type === 'Begin'">
+        Get ready for the {{ gym.workItem.action.name }}. You have {{ gym.workItem.action.sets.length}} sets to do
+        <div class="form-group text-left">
+          <ul ng-repeat="set in gym.workItem.action.sets" class="col-xs-offset-1">
+            <li>{{ set.reps }} reps x {{ set.weight}} {{set.unit}}</li>
+          </ul>
+        </div>
+      </div>
+      <div ng-show="gym.workItem.type === 'Work'">
+        Get ready to do {{ gym.workItem.set.weight }} {{ gym.workItem.set.unit }} for {{ gym.workItem.set.reps }} reps
+        <plate-solution solution="gym.plateSolution" ng-if="gym.plateSolution"></plate-solution>
+      </div>
+      <div ng-show="gym.workItem.type === 'Setup'">
+        <!-- This will never happen -->
+      </div>
+    </div>
+<!--
+    <div>
+      {{ gym.workout.actions | json}}<br>
+      {{ gym.toActions() | json }}
+    </div>
+    -->
+  </div>
+  <div class="section scrollable-footer">
+    <div class="row">
+      Timer: {{ gym.timer | number:0 }} seconds
+    </div>
+    <div class="row">
+      <button class="btn btn-default col-xs-2" ng-disabled="!gym.hasPrev()" ng-click="gym.onPrev()">Prev</button>
+      <button ng-if="gym.hasNext()" class="btn btn-success btn-lg col-xs-8" ng-click="gym.onDone()">Continue</button>
+      <button ng-if="!gym.hasNext()" class="btn btn-primary btn-lg col-xs-8" ng-click="gym.onComplete()">Complete!</button>
+      <button class="btn btn-default col-xs-2" ng-disabled="!gym.hasNext()" ng-click="gym.onNext()">Next</button>
+    </div>
+
+  </div>
+</div>
