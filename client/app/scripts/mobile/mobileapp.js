@@ -35,6 +35,9 @@ angular.module('Gainstrack', [
         controllerAs: 'user',
         reloadOnSearch: false
       })
+      .when('/user/:userId/:workoutDate', {
+        templateUrl: 'views/workoutReport.html'
+      })
     .when('/repMax', {
       templateUrl: 'views/mobile/rep-max-table.html',
       controller: 'RepMaxController',
