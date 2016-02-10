@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('clientApp')
-    .factory('MojoServer', function ($http, $rootScope, $log) {
+    .factory('MojoServer', function ($http, $rootScope, $log, localStorageService) {
     var urlPrefix = ''; // http://www.gainstrack.com
         var userStatus = {isLoggedIn:undefined, id:'', username:''};
         var registerStatus = {message:'',level:'info'};
@@ -15,7 +15,7 @@ angular.module('clientApp')
     var app = document.URL.indexOf( 'http://' ) === -1 && document.URL.indexOf( 'https://' ) === -1;
     if ( app ) {
       // PhoneGap application
-      urlPrefix = 'http://www.gainstrack.com';
+      urlPrefix = 'https://www.gainstrack.com';
     } else {
       // Web page
     }
@@ -50,7 +50,15 @@ angular.module('clientApp')
         var refreshUserStatus = function() {
             userStatusReqStatus = 'requesting';
             doPost('/auth/getUserStatus').success(function(data) {
-                handleStatus(data);
+              localStorageService.set('getUserStatus', data);
+              handleStatus(data);
+            }).error(function(e){
+              $log.warn('Unable to getUserStatus ' + e);
+              var cachedUser = localStorageService.get('getUserStatus');
+              if (cachedUser && cachedUser.userStatus && cachedUser.userStatus.id) {
+                $log.warn('Using pre-stashed userStatus for ' + cachedUser.userStatus.id);
+                handleStatus(cachedUser);
+              }
             });
         };
 
