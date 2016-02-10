@@ -48,6 +48,10 @@ angular.module('Gainstrack', [
       controller: 'ScoreController',
       reloadOnSearch: false
     })
+      .when('/news', {
+        template: '<iframe src="http://blog.gainstrack.com" height="100%" width="100%"></iframe>',
+        reloadOnSearch: false
+      })
       .when('/gymbuddy', {
         templateUrl: 'views/mobile/gymbuddy.html',
         reloadOnSearch: false
