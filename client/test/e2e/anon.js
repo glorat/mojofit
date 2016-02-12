@@ -51,7 +51,6 @@ describe('anonymous first time user', function() {
   });
 
 
-  // Should be able to navigate elsewhere and return
   it('should be able to navigate elsewhere and return', function(){
     element(by.id('mylog')).click();
     browser.navigate().back();
@@ -60,6 +59,12 @@ describe('anonymous first time user', function() {
     var firstAction = getFirstAction();
     expect(firstAction.all(by.repeater('set in action.sets')).count()).toBe(5);
 
+  });
+
+  it ('should be able to refresh the page and still have it', function() {
+    browser.refresh();
+    var firstAction = getFirstAction();
+    expect(firstAction.all(by.repeater('set in action.sets')).count()).toBe(5);
   });
 
   it('should be able to submit workout', function(){

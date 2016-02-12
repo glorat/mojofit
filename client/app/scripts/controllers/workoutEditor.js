@@ -6,7 +6,7 @@ angular.module('clientApp').directive('workoutEditor', function() {
         restrict: 'E',
         scope: {workout:'='},
         templateUrl: 'views/workout-editor.html',
-        controller: function ($scope, UserState, MojoServer, ProgramRegistry, Stronglifts, $timeout) {
+        controller: function ($scope, UserState, MojoServer, ProgramRegistry, Stronglifts, $timeout, $interval, localStorageService, $log) {
             // This is just for usedExercises.. can do better?
             $scope.user = UserState.getMyState();
 
@@ -76,6 +76,17 @@ angular.module('clientApp').directive('workoutEditor', function() {
                     reallyCloneLastTime(act);
                 }
             };
+          // Code to regularly save the workout state in case we navigate away and service memory is lost
+          var wk = localStorageService.get('workoutEditor');
+          if (wk) {
+            // No other checks to do apart from existance?
+            $scope.workout = wk;
+          }
+          $scope.$watch('workout', function(toSave) {
+            $log.info('Want to stash ' + angular.toJson(toSave));
+            localStorageService.set('workoutEditor', toSave);
+          }, true);
+
         }
     };
 });

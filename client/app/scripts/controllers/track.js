@@ -12,7 +12,7 @@ angular.module('clientApp')
             var id = $scope.userStatus.username;
             if (id) {
               // TODO: Use string formatter. Must be one in JS
-              var url = '/user/' + id + "/" + stringDateFilter($scope.editWorkout.date);
+              var url = '/user/' + id + '/' + stringDateFilter($scope.editWorkout.date);
 
                 $location.path(url);
             }
