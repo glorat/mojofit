@@ -31,9 +31,9 @@ module.exports = function(config) {
       'app/scripts/*.js',
       'app/scripts/services/*.js',
       'app/scripts/controllers/*.js',
-      'test/mock/**/*.js',
+      'app/scripts/workoutProgram/*.js',
       'test/spec/**/*.js',
-      'test/e2e/**/*.js'
+      'app/views/*.html'
     ],
 
     // list of files / patterns to exclude
@@ -57,7 +57,8 @@ module.exports = function(config) {
     // Which plugins to enable
     plugins: [
       'karma-phantomjs-launcher',
-      'karma-jasmine'
+      'karma-jasmine',
+      'karma-ng-html2js-preprocessor'
     ],
 
     // Continuous Integration mode
@@ -76,5 +77,16 @@ module.exports = function(config) {
     // },
     // URL root prevent conflicts with the site root
     // urlRoot: '_karma_'
+
+    preprocessors: {
+      "app/views/*.html": ["ng-html2js"]
+    },
+
+    ngHtml2JsPreprocessor: {
+      stripPrefix: 'app/',
+
+      // the name of the Angular module to create
+      moduleName: "clientAppTemplates"
+    }
   });
 };
