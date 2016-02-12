@@ -5,27 +5,30 @@ angular.module('clientApp').directive('strengthScore', function () {
     restrict: 'E',
     scope: {user: '='},
     templateUrl: 'views/strength-score.html',
-    controller: function ($scope, MojoServer, WorkoutState, UserState, $location) {
-      $scope.userStatus = MojoServer.getUserStatus();
+    controller: 'strengthScoreController'
+  };
+});
 
-      $scope.$watch('user.stats', function (newVal) {
-        $scope.data = newVal.strengthScore;
-      }, false);
 
-      $scope.editWeight = function() {
-        var dt = _.last($scope.user.data).date;
-        WorkoutState.setWeightDate(dt);
-        $location.path('/trackweight');
-      };
+angular.module('clientApp').controller('strengthScoreController', function ($scope, MojoServer, WorkoutState, UserState, $location) {
+  $scope.userStatus = MojoServer.getUserStatus();
 
-      $scope.canEdit = function() {
-        return ($scope.user.userId === $scope.userStatus.id) || ($scope.user.userId === $scope.userStatus.username);
-      };
+  $scope.$watch('user.stats', function (newVal) {
+    $scope.data = newVal.strengthScore;
+  }, false);
 
-      $scope.noWeight = function(){
-        return ($scope.user.data.length>0) && ! _.last($scope.user.data).body.weight;
-      };
-    }
+  $scope.editWeight = function() {
+    var dt = _.last($scope.user.data).date;
+    WorkoutState.setWeightDate(dt);
+    $location.path('/trackweight');
+  };
+
+  $scope.canEdit = function() {
+    return ($scope.user.userId === $scope.userStatus.id) || ($scope.user.userId === $scope.userStatus.username);
+  };
+
+  $scope.noWeight = function(){
+    return ($scope.user.data.length>0) && ! _.last($scope.user.data).body.weight;
   };
 });
 
