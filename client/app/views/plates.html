@@ -10,8 +10,8 @@
         <input type="number" min="0" step="any" style="width:6em" ng-model="pc.barbell.weight">
 
         <div class="btn-group">
-            <label class="btn btn-sm btn-default" ng-model="pc.barbell.unit" btn-radio="'kg'">kg</label>
-            <label class="btn btn-sm btn-default" ng-model="pc.barbell.unit" btn-radio="'lb'">lb</label>
+            <label class="btn btn-sm btn-default" ng-model="pc.barbell.unit" uib-btn-radio="'kg'">kg</label>
+            <label class="btn btn-sm btn-default" ng-model="pc.barbell.unit" uib-btn-radio="'lb'">lb</label>
         </div>
 
         <p>Enter the number of <strong>pairs</strong> you have for each plate</p>
@@ -21,8 +21,8 @@
             <input type="number" step="any" style="width:6em" ng-model="plate[0]" min="1">
 
             <div class="btn-group">
-                <label class="btn btn-sm btn-default" ng-model="plate[2]" btn-radio="'kg'">kg</label>
-                <label class="btn btn-sm btn-default" ng-model="plate[2]" btn-radio="'lb'">lb</label>
+                <label class="btn btn-sm btn-default" ng-model="plate[2]" uib-btn-radio="'kg'">kg</label>
+                <label class="btn btn-sm btn-default" ng-model="plate[2]" uib-btn-radio="'lb'">lb</label>
             </div>
         </div>
         <button class="btn btn-primary" type="submit" ng-click="pc.solve()" analytics-on="click" analytics-event="plate solve" analytics-category="Tools">Apply</button>
@@ -40,8 +40,8 @@
         <label for="targetWeight">Target weight</label>
         <input id="targetWeight" type="number" ng-model="pc.target.weight" ng-change="pc.refresh()" style="width:6em" min="1">
         <div class="btn-group">
-            <label class="btn btn-default" ng-model="pc.target.unit" btn-radio="'kg'">kg</label>
-            <label class="btn btn-default" ng-model="pc.target.unit" btn-radio="'lb'">lb</label>
+            <label class="btn btn-default" ng-model="pc.target.unit" uib-btn-radio="'kg'">kg</label>
+            <label class="btn btn-default" ng-model="pc.target.unit" uib-btn-radio="'lb'">lb</label>
         </div>
     </div>
 </div>
