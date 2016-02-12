@@ -9,7 +9,7 @@ angular.module('clientApp').directive('workoutPanel', function() {
     restrict: 'E',
     scope: {userStatus:'=', userState: '=', workoutDate: '='},
     templateUrl: 'views/workout-panel.html',
-    controllerAs : 'vm',
+    // controllerAs : 'vm', // Not working since angular 1.3.x, see below for workarond
     controller: function ($scope, $location, WorkoutState, $filter, $rootScope) {
       var compressedData = {actions:[]};
 
@@ -105,13 +105,15 @@ angular.module('clientApp').directive('workoutPanel', function() {
         }
       };
 
-      return {
+      var ctrl = {
         canEdit : canEdit,
         scoreFor: scoreFor,
         editWeight: editWeight,
         editWorkout: editWorkout,
         compressedData: compressedData
       };
+      $scope.vm = ctrl; // Workaround for controllerAs not working
+      return ctrl;
     }
   };
 });
