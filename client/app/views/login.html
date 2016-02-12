@@ -30,22 +30,22 @@
         Date of birth:
       </div>
       <div class="input-group col-xs-8">
-        <input type="text" class="form-control" ng-click="opened=true" placeholder="Date" datepicker-popup="yyyy/MM/dd" ng-model="userState.prefs.dob" utc-date is-open="opened" datepicker-options="dateOptions" close-text="Close" id="dob" required />
+        <input type="date" class="form-control" ng-click="opened=true" placeholder="Date" utc-date uib-datepicker-popup="yyyy/MM/dd" ng-model="userState.prefs.dob" is-open="opened" datepicker-options="dateOptions" close-text="Close" id="dob" required />
 
       </div>
     </div>
     <div>
     <div class="col-xs-4">Gender:</div>
       <div class="btn-group col-xs-8">
-        <label class="btn btn-success" ng-model="userState.prefs.gender" btn-radio="'m'">Male</label>
-        <label class="btn btn-success" ng-model="userState.prefs.gender" btn-radio="'f'">Female</label>
+        <label class="btn btn-success" ng-model="userState.prefs.gender" uib-btn-radio="'m'">Male</label>
+        <label class="btn btn-success" ng-model="userState.prefs.gender" uib-btn-radio="'f'">Female</label>
       </div>
     </div>
     <div class="col-xs-4">Preferred Unit:</div>
 
     <div class="btn-group col-xs-8">
-      <label class="btn btn-success" ng-model="userState.prefs.preferredUnit" btn-radio="'kg'">kg</label>
-      <label class="btn btn-success" ng-model="userState.prefs.preferredUnit" btn-radio="'lb'">lb</label>
+      <label class="btn btn-success" ng-model="userState.prefs.preferredUnit" uib-btn-radio="'kg'">kg</label>
+      <label class="btn btn-success" ng-model="userState.prefs.preferredUnit" uib-btn-radio="'lb'">lb</label>
     </div>
     <button type="submit" class="btn btn-primary">Submit</button>
   </form>

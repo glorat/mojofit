@@ -2,7 +2,7 @@
 <h2>Track workout</h2>
   <p ng-hide="editWorkout.actions.length>0">Or try the <a href="#/plan">workout planner</a> to auto-generate your workout!</p>
     <div class="input-group col-xs-12">
-      <input type="text" class="form-control" ng-click="opened=true" placeholder="Date" datepicker-popup="yyyy/MM/dd" ng-model="editWorkout.date" utc-date is-open="opened" datepicker-options="dateOptions" close-text="Close" id="trackDate" ng-change="onDateChanged()"/>
+      <input type="date" class="form-control" ng-click="opened=true" placeholder="Date" uib-datepicker-popup="yyyy/MM/dd" ng-model="editWorkout.date" utc-date is-open="opened" datepicker-options="dateOptions" close-text="Close" id="trackDate" ng-change="onDateChanged()"/>
                 <span class="input-group-btn">
                     <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
                 </span>

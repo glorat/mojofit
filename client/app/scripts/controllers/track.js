@@ -43,6 +43,13 @@ angular.module('clientApp')
         $scope.workoutStatus = MojoServer.deleteWorkout($scope.editWorkout.date, deleteCB);
     };
 
+      $scope.open = function($event) {
+        $event.preventDefault();
+        $event.stopPropagation();
+
+        $scope.opened = true;
+      };
+
     });
 
 

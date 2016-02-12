@@ -40,7 +40,7 @@
         <div class="panel panel-default ">
             <header class="panel-heading">Workout Calendar</header>
             <div>
-               <datepicker ng-model="userState.activeDate" multi-select="userState.workoutDates"></datepicker>
+               <uib-datepicker ng-model="userState.activeDate" multi-select="userState.workoutDates"></uib-datepicker>
             </div>
          </div>
         <div class="panel panel-default">
@@ -68,7 +68,7 @@
              This log is saved anonymously. You may bookmark this page but to maintain your log, please <a href="#/login" class="alert-link">register</a>
          </div>
 
-         <div class="panel panel-default" collapse="!showAddWorkout">
+         <div class="panel panel-default" uib-collapse="!showAddWorkout">
              <header class="panel-heading">Add workout</header>
              <new-workout new-workout="newWorkout"></new-workout>
              <footer>
@@ -90,7 +90,7 @@
 
 
     <div>
-      <pagination total-items="userState.data.length" items-per-page="itemsPerPage" max-size="10" ng-model="currentPage"></pagination>
+      <uib-pagination total-items="userState.data.length" items-per-page="itemsPerPage" max-size="10" ng-model="currentPage"></uib-pagination>
         <div ng-repeat="i in userState.data | startFrom:(currentPage-1)*itemsPerPage | limitTo:itemsPerPage">
           <workout-panel user-state="userState" user-status="userStatus" workout-date="i.date"></workout-panel>
         </div>

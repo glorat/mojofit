@@ -97,7 +97,7 @@ angular.module('clientApp').directive('actionSetsEditor', function() {
         restrict: 'E',
         scope: {action:'='},
         templateUrl: 'views/action-editor.html',
-        controller: function ($scope, UserState, UnitConverter, PlateCalculator, $modal) {
+        controller: function ($scope, UserState, UnitConverter, PlateCalculator, $uibModal) {
           var userPrefs = UserState.getMyState().prefs;
           $scope.dispUnit = userPrefs.preferredUnit; // This is a non-reactive var
 
@@ -111,7 +111,7 @@ angular.module('clientApp').directive('actionSetsEditor', function() {
             return PlateCalculator.getSolutionFor(aset.weight, aset.unit);
           };
           $scope.showPlates = function(aset) {
-            var m = $modal.open({
+            var m = $uibModal.open({
               template: '<div class="modal-body"><h2>Use these plates</h2><plate-solution solution="solution"></plate-solution><button class="btn btn-primary" ng-click="$close(solution)">Use {{ solution.total | number:1 }}{{solution.unit}}</button><button class="btn btn-danger" ng-click="$dismiss()">Cancel</button></div>',
               controller: function($scope, solution) {
                 $scope.solution = solution;
