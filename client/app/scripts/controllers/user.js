@@ -86,18 +86,16 @@ angular.module('clientApp')
         $scope.workoutStatus = {level:'info', message:''};
         $scope.userStatus = MojoServer.getUserStatus();
 
-    // This ajax currently fills in jusonData
-    $.ajax({
-      url: '/userjson/' + $scope.userId,
-      dataType:'script',
-      async: true,
-      /*jshint unused: vars */
-      success: function(data, text, foo) {
-        googleChartApiPromise.then(function () {
-          drawChart();
-        });
-      }
+
+    $http.get('/userjson/' + $scope.userId).success(function(data, status, headers, config){
+      // This ajax currently fills in jsonData
+      // TODO: We can simply receive JSON and parse that, rather than a JSONP style call
+      eval(data);
+      googleChartApiPromise.then(function () {
+        drawChart();
+      });
     });
+
     SetupSharedUserController.setup($scope, $filter, WorkoutState, UserState, $location);
   });
 
