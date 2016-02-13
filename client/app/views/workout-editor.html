@@ -13,13 +13,13 @@
               </div>
             </div>
 
-            <div class="col-xs-4 btn-group dropdown" is-open="status.isopen">
+            <div class="col-xs-4 btn-group" uib-dropdown is-open="status.isopen">
 
-                <button type="button" class="btn btn-default dropdown-toggle" aria-expanded="false">
+                <button type="button" class="btn btn-default" uib-dropdown-toggle aria-expanded="false">
                   <span class="glyphicon glyphicon-plus"></span>
                   Quick <span class="caret"></span>
                 </button>
-                <ul class="dropdown-menu dropdown-menu-right" role="menu" ng-show="status.isopen">
+                <ul class="dropdown-menu-right" uib-dropdown-menu role="menu" ng-show="status.isopen">
                     <li ng-repeat="ex in user.usedExercises | limitTo:8">
                         <a href="" ng-click="addNamedAction(ex);false">
                         <span class="glyphicon glyphicon-plus"></span> {{ ex }}
@@ -39,11 +39,11 @@
             </div>
             <div class="col-xs-4 col-md-4">
 
-                <div class="btn-group dropdown" is-open="dd.isopen">
-                    <button type="button" class="btn btn-default dropdown-toggle" aria-expanded="false" >
+                <div class="btn-group" uib-dropdown is-open="dd.isopen">
+                    <button type="button" class="btn btn-default" uib-dropdown-toggle aria-expanded="false" >
                         Action <span class="caret"></span>
                     </button>
-                    <ul class="dropdown-menu" role="menu" ng-show="dd.isopen">
+                    <ul uib-dropdown-menu role="menu" ng-show="dd.isopen">
                         <li><a href="" ng-click="removeAction($index)">Delete...</a></li>
                         <li class="divider"></li>
                         <li><a href="" ng-click="cloneLastTime($index)" analytics-on="click" analytics-event="log clone action" analytics-category="Tools">Clone last time</a></li>

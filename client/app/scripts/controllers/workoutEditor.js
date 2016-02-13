@@ -83,7 +83,6 @@ angular.module('clientApp').directive('workoutEditor', function() {
             $scope.workout = wk;
           }
           $scope.$watch('workout', function(toSave) {
-            $log.info('Want to stash ' + angular.toJson(toSave));
             localStorageService.set('workoutEditor', toSave);
           }, true);
 

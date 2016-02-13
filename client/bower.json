@@ -14,6 +14,13 @@
     "add-to-homescreen": "~3.1.1",
     "gm.datepickerMultiSelect": "gm.datepicker-multi-select#^1.0.7"
   },
+  "overrides": {
+    "bootstrap": {
+      "main": [
+        "dist/css/bootstrap.css"
+      ]
+    }
+  },
   "devDependencies": {
     "angular-mocks": "~1.4.0",
     "angular-scenario": "~1.4.0"
