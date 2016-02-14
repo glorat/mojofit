@@ -78,8 +78,7 @@ angular.module('clientApp').directive('workoutEditor', function() {
             };
           // Code to regularly save the workout state in case we navigate away and service memory is lost
           var wk = localStorageService.get('workoutEditor');
-          if (wk) {
-            // No other checks to do apart from existance?
+          if (wk && wk.date == $scope.workout.date) {
             $scope.workout = wk;
           }
           $scope.$watch('workout', function(toSave) {
