@@ -28,6 +28,10 @@
       ['Deadlift','weight'],
       ['Press','weight'],
       ['Row','weight'],
+      ['Unit','choice',[
+        {id:'lb',label:'lb'},
+        {id:'kg',label:'kg'}
+      ]],
       ['Date','utcdate']
     ].map(function(i){
         return {field:i[0], type:i[1], opts:i[2]};
@@ -87,24 +91,25 @@
       var params = _.clone(origParams);
       var s = params.Variant.value.split('x');
       var repCount = +s[1];
-      var unit = 'kg';
+      var unit = params.Unit.value;
       ALLALIAS.forEach(function (exname) {
         var lastAct = _.find(item.actions, function (a) {
           return a.name === FROMALIAS[exname];
         });
         if (lastAct) {
-          var inKgs = lastAct.sets.map(function (s) {
-            return UnitConverter.convert(s.weight, s.unit, 'kg');
+          var normWeight = lastAct.sets.map(function (s) {
+            return UnitConverter.convert(s.weight, s.unit, unit);
           });
-          var maxKg = _.max(inKgs);
+          var maxWeight = _.max(normWeight);
           // How many sets got 5 reps at this weight?
           var goodsets = _.filter(lastAct.sets, function (s) {
-            return (s.reps) && (s.weight) && (s.reps >= repCount) && (maxKg === UnitConverter.convert(s.weight, s.unit, 'kg'));
+            return (s.reps) && (s.weight) && (s.reps >= repCount) && (maxWeight === UnitConverter.convert(s.weight, s.unit, unit));
           });
           if (goodsets.length >= setsFor(exname,params)) {
             // Nx5 completed
             params[exname] = _.clone(params[exname]);
-            params[exname].weight = UnitConverter.convert(maxKg, 'kg', unit) + cfg[unit][exname].incr;
+            params[exname].weight = maxWeight + cfg[unit][exname].incr;
+            params[exname].unit = unit; // Normalise units on next workout to avoid rounding issues
           }
           // TODO: Detect if failed 3 times to deload!
         }
@@ -148,6 +153,7 @@
         value: dt.valueOf()
       };
       param.Variant = {value:'5x5'};
+      param.Unit = {value:defaultUnit}
       return param;
     }
 

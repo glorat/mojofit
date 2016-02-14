@@ -18,7 +18,7 @@ angular.module('clientApp')
       var program = ProgramRegistry.getProgram(programName);
       if (program) {
         $scope.paramSchema = program.paramSchemaByField();
-        var defParam = program.defaultParam(user, 'kg');
+        var defParam = program.defaultParam(user, $scope.user.prefs.preferredUnit || 'kg');
         var param = program.genParams(user, defParam);
         $scope.paramKeys = program.paramKeys();
         $scope.programName = program.name;

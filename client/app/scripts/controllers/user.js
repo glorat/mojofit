@@ -101,7 +101,7 @@ angular.module('clientApp')
 
 
 angular.module('clientApp').directive('setText', function () {
-    var tmpl = '{{ data.reps }} x {{ data.weight }} {{ data.unit }} <span ng-show="dispValue">({{ dispValue | number : 1}} {{dispUnit}})</span> <span class="label label-primary" ng-repeat="badge in badges">{{ badge }}</span>';
+    var tmpl = '{{ data.reps }} x {{ data.weight | number : 1 }} {{ data.unit }} <span ng-show="dispValue">({{ dispValue | number : 1}} {{dispUnit}})</span> <span class="label label-primary" ng-repeat="badge in badges">{{ badge }}</span>';
 
     return {
         restrict: 'E',
