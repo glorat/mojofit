@@ -45,7 +45,7 @@
     <!-- Workout param editor -->
   <div class="panel panel-default" ng-show="paramShow">
     <header class="panel-heading" ng-click="paramCollapsed=!paramCollapsed">Step 2: Program parameters</header>
-    <div class="panel-body" collapse="paramCollapsed">
+    <div class="panel-body" uib-collapse="paramCollapsed">
       <div class="row">
         <div class="col-sm-5 col-sm-offset-2 col-xs-11">Next workout<br>Adjust this column to override defaults</div>
         <div class="col-sm-5 hidden-xs">Previous workout</div>
@@ -75,7 +75,7 @@
 
   <div class="panel panel-default" ng-show="workoutShow">
     <header class="panel-heading">Step 3: Customize program</header>
-    <div class="panel-body" collapse="workoutCollapsed">
+    <div class="panel-body" uib-collapse="workoutCollapsed">
       <workout-editor workout="workout"></workout-editor>
     </div>
   </div>
@@ -102,7 +102,7 @@
     <header class="panel-heading">Step 5: Track your workout</header>
     <div class="panel-body">
       <ul>
-        <li><a href="#/track">Log workout</a></li>
+        <li><a href="/track">Log workout</a></li>
         <li>More options to come including using your phone</li>
       </ul>
     </div>
