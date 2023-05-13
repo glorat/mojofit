@@ -10,7 +10,7 @@ use File::Copy qw(copy);
 
 our $DATA_DIR;
 
-our $MAX_DATE = DateTime::Format::DateParse->parse_datetime('2020-01-01')->epoch; # 2020 bug :)
+our $MAX_DATE = DateTime::Format::DateParse->parse_datetime('2030-01-01')->epoch; # 2020 bug :)
 our $MIN_DATE = 60*60*24*265; # Go on... log all the way back to epoch + 1yr (to mitigate silly parsing bugs)
 
 # TODO: Maintain last submitted workout so that accidental dupe requests can be treated as idempotent
